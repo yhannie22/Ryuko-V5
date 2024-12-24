@@ -8,11 +8,7 @@ module.exports.config = {
   prefix: true,
 	category: "with prefix",
 	usages: `text to speech messages`,
-	cooldowns: 5,
-	dependencies: {
-		"path": "",
-		"fs-extra": ""
-	}
+	cooldowns: 5
 };
 
 

@@ -8,10 +8,7 @@ module.exports.config = {
 	description: "wikipedia search",
 	category: "without prefix",
 	usages: "[en] [question]",
-	cooldowns: 1,
-	dependencies: {
-        "wikijs": ""
-    }
+	cooldowns: 1
 }
 
 module.exports.languages = {

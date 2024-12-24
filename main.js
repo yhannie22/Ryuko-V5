@@ -75,7 +75,7 @@ try {
   accountsValue = accountsPath;
   log(`loading ${chalk.blueBright(`accounts`)} data path.`, "load");
 } catch (err) {
-  return log(`can't load ${chalk.blueBright(`accounts`)}`, "error");
+  return log(`can't load ${chalk.blueBright(`accounts`)}`, "err");
   process.exit(0);
 }
 try {
@@ -88,8 +88,8 @@ try {
 
 var envconfigValue;
 try {
-  const envConfigPath = "./main/config/envconfig.json";
-  global.client.envConfigPath = envConfigPath;
+  const envconfigPath = "./main/config/envconfig.json";
+  global.client.envConfigPath = envconfigPath;
   envconfigValue = require(global.client.envConfigPath);
 } catch (err) {
   process.exit(0);
@@ -101,6 +101,7 @@ try {
 }
 
 const{ Sequelize, sequelize } = require("./main/system/database/index.js");
+const { kStringMaxLength } = require('buffer');
 for (const property in listPackage) {
     try {
         global.nodemodule[property] = require(property)
@@ -137,14 +138,22 @@ global.getText = function(...args) {
   }
   return text;
 };
+
+if (!global.config.email) {
+  logger(`please enter your email in ${chalk.blueBright(`config.json`)}`, 'err');
+  process.exit(0);
+}
+if (!global.config.prefix) {
+  logger(`please enter your bots prefix ${chalk.blueBright('config.json')}`, "err");
+}
 const commandsPath = "./script/commands";
   const commandsList = readdirSync(commandsPath).filter(command => command.endsWith('.js') && !global.config.disabledcmds.includes(command));
-  console.clear();
+  
   console.log(`${chalk.blue(`\nLOADING COMMANDS`)}`);
   for (const command of commandsList) {
     try {
       const module = require(`${commandsPath}/${command}`);
-      const { config } = module;
+      const { config} = module;
       if (!config?.name) {
         try {
           throw new Error(`the name of ${chalk.red(command)} is empty or wrong format`);
@@ -156,14 +165,6 @@ const commandsPath = "./script/commands";
       if (!config?.category) {
         try {
           throw new Error(`the category of ${chalk.red(command)} is empty or wrong format`);
-        } catch (err) {
-          logger.commands(err.message);
-          continue;
-        }
-      }
-      if (!config?.cooldowns) {
-        try {
-          throw new Error(`the cooldowns of ${chalk.red(command)} is empty or wrong format`);
         } catch (err) {
           logger.commands(err.message);
           continue;
@@ -195,41 +196,13 @@ const commandsPath = "./script/commands";
           continue;
         }
       }
-      const { dependencies, envConfig } = config;
-        if (dependencies) {
-          Object.entries(dependencies).forEach(([reqDependency, dependencyVersion]) => {
-            if (listPackage[reqDependency]) return;
-            try {
-              execSync(`npm install --save ${reqDependency}${dependencyVersion ? `@${dependencyVersion}` : ''}`, {
-                stdio: 'inherit',
-                env: process.env,
-                shell: true,
-                cwd: join('node_modules')
-              });
-              require.cache = {};
-            } catch (error) {
-              const errorMessage = `failed to install package ${reqDependency}\n`;
-              log.commands(chalk.red(errorMessage));
-            }
-          });
-        }
-        if (envConfig) {
-              const moduleName = config.name;
-              global.configModule[moduleName] = global.configModule[moduleName] || {};
-              global.envConfig[moduleName] = global.envConfig[moduleName] || {};
-              for (const envConfigKey in envConfig) {
-                global.configModule[moduleName][envConfigKey] = global.envConfig[moduleName][envConfigKey] ?? envConfig[envConfigKey];
-                global.envConfig[moduleName][envConfigKey] = global.envConfig[moduleName][envConfigKey] ?? envConfig[envConfigKey];
-              }
-              var = envConfigPath = require("./main/config/envconfig.json");
-              envConfigPath[moduleName] = envConfig;
-              writeFileSync(global.client.envConfigPath, JSON.stringify(envConfigPath, null, 4), 'utf-8');
-            }
+      
+       
         if (module.handleEvent) global.client.eventRegistered.push(config.name);
       global.client.commands.set(config.name, module);
       logger.commands(`successfully loaded ${chalk.blue(command)} file`);
     } catch (err) {
-      logger(`failed to load ${chalk.red(command)} : ${err}`, "error");
+      logger.commands(`failed to load ${chalk.red(command)} : ${err}`);
       continue;
     }
   }
@@ -237,13 +210,13 @@ const commandsPath = "./script/commands";
 
 
   const evntsPath = "./script/events";
-  const evntsList = readdirSync(evntsPath).filter(events => events.endsWith('.js') && !global.config.disabledevnts.includes(command));
+  const evntsList = readdirSync(evntsPath).filter(events => events.endsWith('.js') && !global.config.disabledevnts.includes(events));
   console.log(`${chalk.blue(`\nLOADING EVENTS`)}`)
   for (const ev of evntsList) {
     try {
       const events = require(`${evntsPath}/${ev}`);
-      const { config, onLoad, run } = event;
-      if (!config || !config?.name || !run) {
+      const { config, onLoad, run } = events;
+      if (!config || !config?.name ) {
         try {
           throw new Error(`failed to load ${chalk.red(ev)} file, wrong format`);
         } catch (err) {
@@ -259,10 +232,10 @@ const commandsPath = "./script/commands";
           continue;
         }
       }
-      global.client.events.set(config.name, event);
+      global.client.events.set(config.name, events);
       logger.events(`successfully loaded ${chalk.blue(ev)} file`);
     } catch (err) {
-      logger(`failed to load ${chalk.red(ev)} : ${err}`, "error");
+      logger.events(`failed to load ${chalk.red(ev)} : ${err}`, "error");
       continue;
     }
   }
@@ -271,9 +244,9 @@ const commandsPath = "./script/commands";
  
 
 async function startLogin(appstate, {models: botModel}, filename) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     try {
-      login(appstate, (err, api) => {
+      await login(appstate, (err, api) => {
       if (err) {
         reject(chalk.red('invalid appstate'));
         return;
@@ -287,60 +260,92 @@ async function startLogin(appstate, {models: botModel}, filename) {
           
           addUser(name, userId);
           global.client.accounts.set(userId, filename);
+          
           global.client.api = api;
-          (async () => {
+          
       const cmdsPath = "./script/commands";
       const cmdsList = readdirSync(cmdsPath).filter(command => command.endsWith('.js') && !global.config.disabledcmds.includes(command));
       for (const cmds of cmdsList) {
         try {
           const module = require(`${cmdsPath}/${cmds}`);
-          const { config } = module;
-           if (module.onLoad) {
+          const { config, onLoad} = module;
+           if (onLoad) {
               const moduleData = {};
               moduleData.api = api;
               moduleData.models = botModel;
-              try {
-                module.onLoad(moduleData);
-              } catch (err) {
-                reject(err);
-              }
+              
+               module.onLoad(moduleData);
+           
             }
+            if (config.envConfig) {
+              const moduleName = config.name;
+              global.configModule[moduleName] = global.configModule[moduleName] || {};
+              global.envConfig[moduleName] = global.envConfig[moduleName] || {};
+              for (const envConfigKey in envConfig) {
+                global.configModule[moduleName][envConfigKey] = global.envConfig[moduleName][envConfigKey] ?? envConfig[envConfigKey];
+                global.envConfig[moduleName][envConfigKey] = global.envConfig[moduleName][envConfigKey] ?? envConfig[envConfigKey];
+              }
+              var envConfigPath = require("./main/config/envconfig.json");
+              var configPah = "./main/config/envconfig.json";
+              
+              
+              envConfigPath[moduleName] = config.envConfig;
+              
+
+              fs.writeFileSync(configPah, JSON.stringify(envConfigPath, null, 4), 'utf-8');
+              
+            }
+            if (config.envConfig) {
+              fs.writeFileSync(cjcjcc);
+            }
+            
+             } catch (err) {
+          resolve(err)  
+          
+          
+    
+        }
+      }
+    
+    
+      const eventsPath = "./script/events";
+      const eventsList = readdirSync(eventsPath).filter(events => events.endsWith('.js') && !global.config.disabledevnts.includes(events));
+      for (const ev of eventsList) {
+        try {
+          const events = require(`${eventsPath}/${ev}`);
+          
+          const { config, onLoad, run } = events;
+          if (onLoad) {
+            const eventData = {};
+            eventData.api = api,
+            eventData.models = botModel;
+            onLoad(eventData);
+          }
         } catch (err) {
           reject(`someting went wrong : ${err}`);
+          
+
+      
         }
       }
-    })(),
-    (async () => {
-      const eventsPath = "./script/events";
-      const eventsList = readdirSync(eventsPath).filter(events => events.endsWith('.js') && !global.config.disabledevnts.includes(command));
-      try {
-        const { config, onLoad, run } = event;
-        if (onLoad) {
-          const eventData = {};
-          eventData.api = api,
-          eventData.models = botModel;
-          await onLoad(eventData);
-        }
-      } catch (err) {
-        reject(`someting went wrong : ${err}`);
-      }
-    })();
+    
     const listenerData = {};
     listenerData.api = api;
     listenerData.models = botModel;
+
     const listener = require('./main/system/listen.js')(listenerData);
     global.handleListen = api.listenMqtt(async (error, message) => {
       if (error) {
-       reject(error);
+       reject(`error listen: ${error}`);
       }
-      if (['presence', 'typ', 'read_receipt'].some(data => data === message.type)) ;
-      listener(message);
+      if (['presence', 'typ', 'read_receipt'].some(data => data === message.type)) return;
+      return listener(message);
     });
-        })()
+        })();
         
       } catch (err) {
         reject(err) 
-        return;
+ 
       }
     });
 
@@ -348,11 +353,10 @@ async function startLogin(appstate, {models: botModel}, filename) {
 
     } catch (err) {
       reject(err);
-      return;
+     
     }
   })
 }
-
 
 async function loadBot(botData) {
   const appstatePath = './states';
@@ -363,6 +367,7 @@ async function loadBot(botData) {
       try {
         let data = `${appstatePath}/${states}`;
         const appstateData = JSON.parse(fs.readFileSync(data, "utf8"));
+        
         const loginDatas = {};
         loginDatas.appState = appstateData;
         try {
@@ -376,13 +381,23 @@ async function loadBot(botData) {
         
       } catch (err) {
 
-        log.login(`can't read ${chalk.red(states)} file`);
-                
-        await rmStates(path.parse(states).name);
+        logger(`can't load ${chalk.red('login')} system, some appstates is wrong format or empty. check your appstates one by one`, 'err');
+        rmStates(path.parse(states).name);
+       
         
      }
     }
-   } catch (err) {}
+   } catch (err) {
+
+
+   }
+  }
+
+
+
+  async function startAi(model) {
+    await loadBot(model);
+ 
   }
 
 
@@ -396,14 +411,14 @@ async function on() {
     authentication.Sequelize = Sequelize;
     authentication.sequelize = sequelize;
     const models = require('./main/system/database/model.js')(authentication);
-    log.login(`loaded ${chalk.blueBright('database')} system`);
-    log.login(`this bot was made by ryuko, do not change credits.`);
-    log.login(`this version is for beta test, encountered an error? please contact me in facebook : www.facebook.com/profile/ryukodev`);
-    log.login(`enjoy the multiple appstate with ryuko v5`);
+    log.database(`loaded ${chalk.blueBright('database')} system`);
+    log.database(`this bot was made by ryuko, do not change credits.`);
+    log.database(`this version is for beta test, encountered an error? please contact me in facebook : www.facebook.com/profile/ryukodev`);
+    log.database(`enjoy the multiple appstate with ryuko v5`);
     const botData = {};
     botData.models = models;
-    loadBot(botData);
-  } catch (error) { log(`can't deploy ${chalk.blueBright('database')} system : ${error}`, "error") }
+    startAi(botData);
+  } catch (error) { log(`can't deploy ${chalk.blueBright('database')} system : ${error}`, "err") }
 }
 
 on();

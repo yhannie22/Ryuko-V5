@@ -16,7 +16,7 @@ const axios = require('axios');
 module.exports.onLoad = function() {
     const { writeFileSync, existsSync } = global.nodemodule["fs-extra"];
     const { resolve } = global.nodemodule["path"];
-    const log = require('../../ryuko/catalogs/ryukoc.js');
+    const log = require('../../main/utility/logs.js');
     const path = resolve(__dirname, 'system', 'system.json');
     if (!existsSync(path)) {
         const obj = {
@@ -34,7 +34,7 @@ module.exports.handleEvent = async ({ api, event, args, Threads }) => {
     const { threadID, messageID } = event;
     const { resolve } = global.nodemodule["path"];
     const path = resolve(__dirname, '../commands', 'system', 'system.json');
-    const { talk } = global.apiryuko;
+   
     const { ryuko } = require(path);
 
     if (ryuko.hasOwnProperty(threadID) && ryuko[threadID] == true) {
@@ -56,7 +56,7 @@ module.exports.run = async ({ api, event, args, permssion }) => {
     const path = resolve(__dirname, 'system', 'system.json');
     const { threadID, messageID } = event;
     const database = require(path);
-    const { talk } = global.apiryuko;
+    
     const { ryuko } = database;
 
     if (!args[0]) { api.sendMessage("enter a message", threadID, messageID) } else {

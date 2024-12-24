@@ -8,12 +8,7 @@ module.exports.config = {
   premium: false,
 	category: "system", 
 	usages: "resend",
-	cooldowns: 0,
-  dependencies: {"request":"",       
-                 "fs-extra":"",
-                 "axios":""
-                }
-
+	cooldowns: 0
 };
 
 module.exports.handleEvent = async function ({ event, api, client, Users }) {

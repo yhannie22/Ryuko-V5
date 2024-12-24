@@ -22,6 +22,9 @@ module.exports = async (log, type) => {
     case "evnts":
       console.log(`${chalk.blue(configLog.evnts)} - ${log}`);
       break;
+    case"error":
+      console.log(`${chalk.red(configLog.error)} - ${log}`);
+      break;
     default:
     console.log(`${chalk.blue(configLog.load)} - ${log}`);
     break;
@@ -38,4 +41,12 @@ module.exports.events = async (log) => {
 
 module.exports.login = async (log) => {
   console.log(`${chalk.blue(configLog.login)} - ${log}`)
+}
+
+module.exports.error = async (log) => {
+  console.log(`${chalk.red(configLog.error)} - ${log}`);
+}
+
+module.exports.database = async (log) => {
+  console.log(`${chalk.blue(`database`)} - ${log}`);
 }

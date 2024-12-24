@@ -28,13 +28,9 @@ module.exports.addUser = async (name, userID) => {
 
 module.exports.rmStates = async (states) => {
   const fbstatesFolder = "states";
-  const statesFile = path.join(fbstatesFolder, `${states}.json`)
-  try {
-      await fs.unlinkSync(statesFile);
-      log.login(`removed ${chalk.red(`${states}.json`)} file : can't read`)
-    } catch (error) {
-      console.log(error);
-  }
+  const statesFile = join(`${fbstatesFolder}/${states}.json`)
+  fs.unlinkSync(statesFile);
+  
   
 }
 

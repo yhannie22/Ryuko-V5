@@ -8,10 +8,7 @@ module.exports.config = {
 	description: "running shell",
 	category: "system",
 	usages: "[Script]",
-	cooldowns: 5,
-	dependencies: {
-		"eval": ""
-	}
+	cooldowns: 5
 };
 
 module.exports.run = async function({ api, event, args, Threads, Users, Currencies, models }) {

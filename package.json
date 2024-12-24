@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "aes-js": "^3.1.2",
-    "axios": "latest",
+    "axios": "^1.7.9",
     "bluebird": "^3.7.2",
     "chalkercli": "^1.6.0",
     "cheerio": "^0.22.0",
@@ -23,7 +23,7 @@
     "filipino-badwords-list": "^1.1.2",
     "fs": "^0.0.1-security",
     "fs-extra": "^11.2.0",
-    "googlethis": "^1.7.1",
+    "googlethis": "^1.8.0",
     "gradient-string": "^2.0.0",
     "https-proxy-agent": "^4.0.0",
     "jimp": "^0.22.8",

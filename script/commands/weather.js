@@ -14,7 +14,7 @@ module.exports.config = {
 		"request": ""
 	},
 	envConfig: {
-		"OPEN_WEATHER": "b7f1db5959a1f5b2a079912b03f0cd96"
+		"OPEN_WEATHER": ""
 	}
 };
 
@@ -31,7 +31,7 @@ module.exports.run = async ({ api, event, args, getText }) => {
 	const moment = global.nodemodule["moment-timezone"];
 	const { throwError } = global.utils;
 	const { threadID, messageID } = event;
-  const { weather } = global.apiryuko;
+  const weather = "b7f1db5959a1f5b2a079912b03f0cd96" ;
 	
 	var city = args.join(" ");
 	if (city.length == 0) return throwError(this.config.name, threadID, messageID);

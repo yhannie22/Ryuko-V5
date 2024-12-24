@@ -51,7 +51,7 @@ adding custom.js
 
 ## BOX APPROVAL
 
-``box approval`` is set as default, you can disable it on ``ryuko.json`` by setting the ``approval`` value into ``false``</br>
+``box approval`` is set as default, you can disable it on ``config.json`` by setting the ``approval`` value into ``false``</br>
 
 you can approve box by using ``approve`` command without using prefix, how to use? just type ``approve (box/remove) (uid/tid)``</br>
 
@@ -82,9 +82,6 @@ module.exports.config = {
   category: "example", // command category.
   usages: "example", // command ussage.
   cooldowns: 5, // 5 seconds command cooldown.
-  dependencies: {
-		"name": "version" // not required but if the command have a npm packages, you can type the package name and version to automatically install the package.
-	}
 };
 
 module.exports.run = async ({api, event, args}) => {

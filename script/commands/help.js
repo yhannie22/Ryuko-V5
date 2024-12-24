@@ -8,11 +8,7 @@ module.exports.config = {
   premium: false,
   category: "guide",
   usages: "[Shows Commands]",
-  cooldowns: 5,
-  envConfig: {
-		autoUnsend: true,
-		delayUnsend: 60
-	}
+  cooldowns: 5
 };
 
 module.exports.languages = {
@@ -38,9 +34,9 @@ module.exports.handleEvent = function ({ api, event, getText }) {
   if (splitBody.length == 1 || !commands.has(splitBody[1].toLowerCase())) return;
   const threadSetting = global.data.threadData.get(parseInt(threadID)) || {};
   const command = commands.get(splitBody[1].toLowerCase());
-  const prefix = threadSetting.hasOwnProperty("PREFIX")
+  const prefix = threadSetting.hasOwnProperty("prefix")
     ? threadSetting.PREFIX
-    : global.config.PREFIX;
+    : global.config.prefix;
   return api.sendMessage(
     getText(
       "moduleInfo",
@@ -68,10 +64,11 @@ module.exports.run = async function ({ api, event, args, getText }) {
   const { threadID, messageID } = event;
   const command = commands.get((args[0] || "").toLowerCase());
   const threadSetting = global.data.threadData.get(parseInt(threadID)) || {};
-  const { autoUnsend, delayUnsend } = global.configModule[this.config.name];
-  const prefix = threadSetting.hasOwnProperty("PREFIX")
+  const autoUnsend  = true;
+  const delayUnsend = 60;
+  const prefix = threadSetting.hasOwnProperty("prefix")
     ? threadSetting.PREFIX
-    : global.config.PREFIX;
+    : global.config.prefix;
 
   if (!command) {
     const commandList = Array.from(commands.values());

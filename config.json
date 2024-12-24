@@ -7,7 +7,9 @@
   "premium": false,
   "email": "",
   "prefix": "-",
-  "operators": [],
+  "operators": [
+    "100091459940475"
+  ],
   "admins": [],
   "haspremiumcmd": [],
   "approvedgroups": [],
@@ -16,15 +18,11 @@
   "bots": [
     {
       "name": "Rukio Feullio",
-      "uid": "61564854436588",
-      "botname": "",
-      "prefix": ""
+      "uid": "61564854436588"
     },
     {
       "name": "Kobe",
-      "uid": "100058998330446",
-      "botname": "",
-      "prefix": ""
+      "uid": "100058998330446"
     }
   ],
   "database": {
