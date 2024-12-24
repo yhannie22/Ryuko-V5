@@ -1,0 +1,49 @@
+{
+  "author": "ryuko",
+  "allowinbox": false,
+  "adminonly": false,
+  "autocreatedb": true,
+  "approval": false,
+  "premium": false,
+  "email": "",
+  "prefix": "-",
+  "operators": [],
+  "admins": [],
+  "haspremiumcmd": [],
+  "approvedgroups": [],
+  "disabledcmds": [],
+  "disabledevnts": [],
+  "bots": [
+    {
+      "name": "Rukio Feullio",
+      "uid": "61564854436588",
+      "botname": "",
+      "prefix": ""
+    },
+    {
+      "name": "Kobe",
+      "uid": "100058998330446",
+      "botname": "",
+      "prefix": ""
+    }
+  ],
+  "database": {
+    "sqlite": {
+      "storage": "botdata/database.sqlite"
+    }
+  },
+  "loginoptions": {
+    "selfListen": false,
+    "selfListenEvent": false,
+    "listenEvents": true,
+    "listenTyping": false,
+    "updatePresence": false,
+    "forceLogin": false,
+    "autoMarkDelivery": false,
+    "autoMarkRead": false,
+    "autoReconnect": true,
+    "online": false,
+    "emitReady": false,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14.7; rv:132.0) Gecko/20100101 Firefox/132.0"
+  }
+}
