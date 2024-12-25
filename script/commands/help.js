@@ -66,7 +66,7 @@ module.exports.run = async function ({ api, event, args, getText }) {
   const threadSetting = global.data.threadData.get(parseInt(threadID)) || {};
   const autoUnsend  = true;
   const delayUnsend = 60;
-  const prefix = threadSetting.hasOwnProperty("prefix")
+  const prefix = threadSetting.hasOwnProperty("PREFIX")
     ? threadSetting.PREFIX
     : global.config.prefix;
 

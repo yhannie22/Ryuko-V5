@@ -11,7 +11,7 @@ module.exports = async (log, type) => {
       console.log(`${chalk.red(configLog.error)} - ${log}`);
       break;
     case "warn":
-      console.log(`${chalk.yellow(configLog.warn)} - ${log}`);
+      console.warn(`${chalk.yellow(configLog.warn)} - ${log}`);
       break;
     case "login":
       console.log(`${chalk.blue(configLog.login)} - ${log}`);

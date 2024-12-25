@@ -29,13 +29,13 @@ module.exports.languages = {
 module.exports.run = async function ({ api, event, args, Threads, Users, permssion, getText }) {
     const content = args.slice(1, args.length);
     const { threadID, messageID, mentions } = event;
-    const { configPath } = global.client;
+    const configPath = require('../../config.json');
     const { approvedgroups } = global.config;
     const { userName } = global.data;
     const { writeFileSync } = global.nodemodule["fs-extra"];
     const mention = Object.keys(mentions);
-    delete require.cache[require.resolve(configPath)];
-    var config = require(configPath);
+    delete require.cache[require.resolve('../../config.json')];
+    var config = require('../../config.json');
     
        
     switch (args[0]) {

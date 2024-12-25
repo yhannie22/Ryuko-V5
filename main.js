@@ -1,3 +1,5 @@
+
+
 const { addUser, rmStates } = require('./main/system/editconfig.js');
 const log = require("./main/utility/logs.js");
 const logger = require("./main/utility/logs.js")
@@ -12,7 +14,6 @@ const packages = JSON.parse(readFileSync('package.json'));
 const fs = require("fs-extra");
 const process = require('process');
 const moment = require("moment-timezone");
-
 
 global.client = new Object({
   commands: new Map(),
@@ -240,20 +241,15 @@ const commandsPath = "./script/commands";
     }
   }
 
-
- 
-
-async function startLogin(appstate, {models: botModel}, filename) {
+async function startLogin(appstate, { models: botModel }, filename) {
   return new Promise(async (resolve, reject) => {
     try {
       await login(appstate, (err, api) => {
-      if (err) {
-        reject(chalk.red('invalid appstate'));
-        return;
-      }
-      try {
-        (async () => {
-          const userId = await api.getCurrentUserID();
+        if (err) {
+          reject(err); 
+        }
+        (async ()=> {
+            const userId = await api.getCurrentUserID();
           const info = (await api.getUserInfo(userId))[userId];
           const name = info.name;
           log.login(`logged in ${chalk.blueBright(filename)} file`);
@@ -296,7 +292,7 @@ async function startLogin(appstate, {models: botModel}, filename) {
               
             }
             if (config.envConfig) {
-              fs.writeFileSync(cjcjcc);
+              fs.writeFileSync(cjcjcc); ,// do not remove this, yes this is error but if you remove this, multiple appstate won't work
             }
             
              } catch (err) {
@@ -306,8 +302,8 @@ async function startLogin(appstate, {models: botModel}, filename) {
     
         }
       }
-    
-    
+    })(),
+    (async () => {
       const eventsPath = "./script/events";
       const eventsList = readdirSync(eventsPath).filter(events => events.endsWith('.js') && !global.config.disabledevnts.includes(events));
       for (const ev of eventsList) {
@@ -328,7 +324,7 @@ async function startLogin(appstate, {models: botModel}, filename) {
       
         }
       }
-    
+        })();
     const listenerData = {};
     listenerData.api = api;
     listenerData.models = botModel;
@@ -341,61 +337,56 @@ async function startLogin(appstate, {models: botModel}, filename) {
       if (['presence', 'typ', 'read_receipt'].some(data => data === message.type)) return;
       return listener(message);
     });
-        })();
-        
-      } catch (err) {
-        reject(err) 
- 
-      }
-    });
 
-   
-
+  
+      });
     } catch (err) {
-      reject(err);
-     
+      reject(err); 
     }
-  })
+  });
 }
 
 async function loadBot(botData) {
   const appstatePath = './states';
   const listsAppstates = readdirSync(appstatePath).filter(Appstate => Appstate.endsWith('.json'));
   console.log(chalk.blue('\nLOADING LOGIN SYSTEM'));
+  let hasErrors = false; 
   try {
     for (const states of listsAppstates) {
       try {
+        
+        if (fs.readFileSync(`${appstatePath}/${states}`, 'utf8').trim() === '') {
+          console.error(chalk.red(`appstate file "${states}" is empty. removing it.`));
+          rmStates(path.parse(states).name);
+          continue;
+        }
+
         let data = `${appstatePath}/${states}`;
         const appstateData = JSON.parse(fs.readFileSync(data, "utf8"));
-        
+
         const loginDatas = {};
         loginDatas.appState = appstateData;
         try {
           log.login(`logging in ${chalk.blueBright(states)} file`);
           await startLogin(loginDatas, botData, states);
-
-        } catch (err) {
-          log.login(`unexpected error: ${err}`)
+        } catch (err) { 
+          log.login(`unexpected error: ${chalk.red(err)}`);
+          hasErrors = true;
         }
-
-        
       } catch (err) {
-
-        logger(`can't load ${chalk.red('login')} system, some appstates is wrong format or empty. check your appstates one by one`, 'err');
-        rmStates(path.parse(states).name);
-       
-        
-     }
+        log.login(`error processing appstate ${chak.red(states)}: ${err}`);
+        hasErrors = true;
+      }
     }
-   } catch (err) {
 
-
-   }
-  }
-
-
-
-  async function startAi(model) {
+    if (hasErrors) {
+      console.warn("error encountered during login.");
+      
+    }
+  } catch (err) {
+ }
+}
+async function startAi(model) {
     await loadBot(model);
  
   }

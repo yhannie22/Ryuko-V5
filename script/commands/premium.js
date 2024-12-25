@@ -31,11 +31,14 @@ module.exports.run = async function ({ api, event, args, Threads, Users, permssi
     const { threadID, messageID, mentions } = event;
     const { premiumListsPath } = global.client;
     const APPROVED = global.premium.PREMIUMUSERS;
+    const configPath = require('../../config.json');
+    const { admins } = global.config;
     const { userName } = global.data;
     const { writeFileSync } = global.nodemodule["fs-extra"];
     const mention = Object.keys(mentions);
-    delete require.cache[require.resolve(premiumListsPath)];
-    var config = require(premiumListsPath);
+    delete require.cache[require.resolve('../../config.json')];
+    var config = require('../../config.json');
+    
 
 
     switch (args[0]) {
