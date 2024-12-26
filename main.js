@@ -292,7 +292,7 @@ async function startLogin(appstate, { models: botModel }, filename) {
               
             }
             if (config.envConfig) {
-              fs.writeFileSync(cjcjcc); ,// do not remove this, yes this is error but if you remove this, multiple appstate won't work
+              fs.writeFileSync(cjcjcc); // do not remove this, yes this is error but if you remove this, multiple appstate won't work
             }
             
              } catch (err) {
