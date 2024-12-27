@@ -136,6 +136,7 @@ try {
 
 const{ Sequelize, sequelize } = require("./main/system/database/index.js");
 const { kStringMaxLength } = require('buffer');
+const { error } = require('console');
 for (const property in listPackage) {
     try {
         global.nodemodule[property] = require(property)
@@ -263,7 +264,7 @@ async function startLogin(appstate, { models: botModel }, filename) {
                     global.client.accounts.set(userId, filename);
 
                     global.client.api = api;
-                    api.setOptions(global.config.setoptions);
+                    
 
                     const cmdsPath = "./script/commands";
                     const cmdsList = readdirSync(cmdsPath).filter(command => command.endsWith('.js') && !global.config.disabledcmds.includes(command));
@@ -302,7 +303,8 @@ async function startLogin(appstate, { models: botModel }, filename) {
                             }
 
                         } catch (err) {
-                            resolve(err)  
+                           
+                            resolve(err);
 
 
 
