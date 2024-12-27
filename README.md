@@ -81,7 +81,7 @@ module.exports.config = {
   premium: false, // pemium is disabled at config.json file, make sure to turn it on to unlock thi feature.
   category: "example", // command category.
   usages: "example", // command ussage.
-  cooldowns: 5, // 5 seconds command cooldown to avoid spamming it.
+  cooldowns: 5 // 5 seconds command cooldown to avoid spamming it.
 };
 
 module.exports.run = async ({api, event, args, Threads, Users, getText}) => {
