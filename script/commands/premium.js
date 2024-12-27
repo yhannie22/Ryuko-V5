@@ -12,13 +12,13 @@ module.exports.config = {
 };
 
 module.exports.languages = {
-    "vi": {
+    "bangla": {
         "listAdmin": 'Danh sách toàn bộ người điều hành bot: \n\n%1',
         "notHavePermssion": 'Bạn không đủ quyền hạn để có thể sử dụng chức năng "%1"',
         "addedNewAdmin": 'Đã thêm %1 người dùng trở thành người điều hành bot:\n\n%2',
         "removedAdmin": 'Đã gỡ bỏ %1 người điều hành bot:\n\n%2'
     },
-    "en": {
+    "english": {
         "listAdmin": 'approved list : \n\n%1',
         "notHavePermssion": 'you have no permission to use "%1"',
         "addedNewAdmin": 'added new premium user :\n\n%2',
@@ -29,8 +29,8 @@ module.exports.languages = {
 module.exports.run = async function ({ api, event, args, Threads, Users, permssion, getText }) {
     const content = args.slice(1, args.length);
     const { threadID, messageID, mentions } = event;
-    const { premiumListsPath } = global.client;
-    const APPROVED = global.premium.PREMIUMUSERS;
+    const haspremiumcmd = global.config.haspremiumcmd
+
     const configPath = require('../../config.json');
     const { admins } = global.config;
     const { userName } = global.data;
@@ -45,7 +45,7 @@ module.exports.run = async function ({ api, event, args, Threads, Users, permssi
         case "list":
         case "all":
         case "-a": {
-            const listAdmin = APPROVED || config.PREMIUMUSERS || [];
+            const listAdmin = haspremiumcmd || config.haspremiumcmd || [];
             var msg = [];
 
             for (const idAdmin of listAdmin) {
@@ -77,11 +77,11 @@ module.exports.run = async function ({ api, event, args, Threads, Users, permssi
                 for (const id of mention) {
 
                     APPROVED.push(id);
-                    config.PREMIUMUSERS.push(id);
+                    config.haspremiumcmd.push(id);
                     listAdd.push(`${id} - ${event.mentions[id]}`);
                 };
 
-                writeFileSync(premiumListsPath, JSON.stringify(config, null, 2), 'utf8');
+                writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
                 return api.sendMessage(getText("addedNewAdmin", mention.length, listAdd.join("\n").replace(/\@/g, "")), threadID, messageID);
             }
             else if (content.length != 0 && !isNaN(content[0])) {
@@ -96,7 +96,7 @@ module.exports.run = async function ({ api, event, args, Threads, Users, permssi
         const username = await Users.getNameUser(content[0]);
         boxname = `user name : ${username}\nuser id : ${content[0]}`;
       }
-                writeFileSync(premiumListsPath, JSON.stringify(config, null, 2), 'utf8');
+                writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
                 return api.sendMessage('you have been added to premium lists, you are allowed to use premium commands.', content[0], () => {
                 return api.sendMessage(getText("addedNewAdmin", 1, `${boxname}`), threadID, messageID);
                 });
@@ -114,19 +114,19 @@ module.exports.run = async function ({ api, event, args, Threads, Users, permssi
                 var listAdd = [];
 
                 for (const id of mention) {
-                    const index = config.PREMIUMUSERS.findIndex(item => item == id);
-                    APPROVED.splice(index, 1);
-                    config.PREMIUMUSERS.splice(index, 1);
+                    const index = config.haspremiumcmd.findIndex(item => item == id);
+                    haspremiumcmd.splice(index, 1);
+                    config.haspremiumcmd.splice(index, 1);
                     listAdd.push(`${id} - ${event.mentions[id]}`);
                 };
 
-                writeFileSync(premiumListsPath, JSON.stringify(config, null, 2), 'utf8');
+                writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
                 return api.sendMessage(getText("removedAdmin", mention.length, listAdd.join("\n").replace(/\@/g, "")), threadID, messageID);
             }
             else if (content.length != 0 && !isNaN(content[0])) {
-                const index = config.PREMIUMUSERS.findIndex(item => item.toString() == content[0]);
-                APPROVED.splice(index, 1);
-                config.PREMIUMUSERS.splice(index, 1);
+                const index = config.haspremiumcmd.findIndex(item => item.toString() == content[0]);
+                haspremiumcmd.splice(index, 1);
+                config.haspremiumcmd.splice(index, 1);
 
                   let boxname;
                   try {
@@ -136,7 +136,7 @@ module.exports.run = async function ({ api, event, args, Threads, Users, permssi
         const username = await Users.getNameUser(content[0]);
         boxname = `user name : ${username}\nuser id : ${content[0]}`
       }
-                writeFileSync(premiumListsPath, JSON.stringify(config, null, 2), 'utf8');
+                writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
                 return api.sendMessage('you have been removed from premium lists', content[0], () => {
                 return api.sendMessage(getText("removedAdmin", 1, `${boxname}`), threadID, messageID);
                 });

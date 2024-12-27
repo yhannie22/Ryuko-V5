@@ -18,9 +18,11 @@ original file : [BotPack](https://replit.com/@YanMaglinte/BotPack?v=1) by ```Yan
 modified : [ryuko](https://github.com/ryukodeveloper/Ryuko-V4) by ```Ryuko Developer```</br>
 fca : [ws3-fca](https://www.npmjs.com/package/ws3-fca) by ```Kenneth Aceberos```
 
+latest version : [click here](https://www.github.com/ryukodeveloper/Ryuko-V5)
+
 ## UPDATES
 
-• added email function, this updates belongs to premium system and box approval system. if the user is requesting for approval the notification will sent from your email address. enter your email address at ``ryuko.json``.</br>
+• added email function, this updates belongs to premium system and box approval system. if the user is requesting for approval the notification will sent from your email address. enter your email address at ``config.json``.</br>
 • fixed spam in ban system.</br>
 • discover the new feature with ```premium command```, you can enable it by adding a variable named ```premium``` and the value is boolean</br></br>
 ```premium ussage example```
@@ -35,7 +37,7 @@ module.exports.config = {
   usages: "example",
   prefix: true,
   premium: true, // this is the example of premium feature ussage
-  cooldown: 0,
+  cooldown: 0
 }
 ```
 ```txt
@@ -76,12 +78,14 @@ module.exports.config = {
   credits: "", // who created the code
   description: "example", // command description.
   prefix: false, // set to true if you want to use the command with prefix, set to false if you want to use the commands without prefix.
+  premium: false, // pemium is disabled at config.json file, make sure to turn it on to unlock thi feature.
   category: "example", // command category.
   usages: "example", // command ussage.
-  cooldowns: 5, // 5 seconds command cooldown.
+  cooldowns: 5, // 5 seconds command cooldown to avoid spamming it.
 };
 
-module.exports.run = async ({api, event, args}) => {
-  // start coding
+module.exports.run = async ({api, event, args, Threads, Users, getText}) => {
+// simple sending a message if the user execute the command through fbchat
+  api.sendMessage('hello world', event.threadID, event.messageID);
 }
 ```

@@ -7,7 +7,7 @@ const logger = require("./main/utility/logs.js");
 const path = require('path');
 const PORT = 8090 || 9000 || 5555 || 5050 || 5000 || 3003 || 2000 || 1029 || 1010;
 app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname, '/main/webpage/ryuko.html'));
+  res.sendFile(path.join(__dirname, '/main/webpage/index.html'));
 });
 
 console.log(chalk.blue('LOADING MAIN SYSTEM'));

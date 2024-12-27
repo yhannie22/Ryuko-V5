@@ -12,13 +12,13 @@ module.exports.config = {
 };
 
 module.exports.languages = {
-    "vi": {
+    "bangla": {
         "listAdmin": 'Danh sách toàn bộ người điều hành bot: \n\n%1',
         "notHavePermssion": 'Bạn không đủ quyền hạn để có thể sử dụng chức năng "%1"',
         "addedNewAdmin": 'Đã thêm %1 người dùng trở thành người điều hành bot:\n\n%2',
         "removedAdmin": 'Đã gỡ bỏ %1 người điều hành bot:\n\n%2'
     },
-    "en": {
+    "englisb": {
         "listAdmin": 'approved list : \n\n%1',
         "notHavePermssion": 'you have no permission to use "%1"',
         "addedNewAdmin": 'approved %1 box :\n\n%2',
