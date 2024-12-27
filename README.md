@@ -36,9 +36,6 @@ module.exports.config = {
   prefix: true,
   premium: true, // this is the example of premium feature ussage
   cooldown: 0,
-  dependencies: {
-    "": ""
-  }
 }
 ```
 ```txt
