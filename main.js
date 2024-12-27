@@ -388,7 +388,7 @@ async function loadBot(botData) {
         }
 
         if (hasErrors) {
-            console.warn(global.getText("main", "loginErrencounter"));
+            global.send("login error", global.getText("main", "loginErrencounter"));
         }
     } catch (err) {
     }
