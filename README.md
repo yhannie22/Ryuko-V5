@@ -22,7 +22,7 @@ latest version : [click here](https://www.github.com/ryukodeveloper/Ryuko-V5)
 
 ## UPDATES
 
-• to create your appstate go to ``states'`` folder and create your appstate file that ends with ``.json``. you can create a multiple appstates.
+• to create your appstate go to ``states'`` folder and create your appstate file that ends with ``.json``. you can create a multiple appstates.</br>
 • added email function, this updates belongs to premium system and box approval system. if the user is requesting for approval the notification will sent from your email address. enter your email address at ``config.json``.</br>
 • fixed spam in ban system.</br>
 • discover the new feature with ```premium command```, you can enable it by adding a variable named ```premium``` and the value is boolean</br></br>
