@@ -4,15 +4,21 @@ const express = require("express");
 const app = express();
 const chalk = require('chalk');
 const logger = require("./main/utility/logs.js");
+const fs = require('fs-extra')
 const path = require('path');
-const PORT = 8090 || 9000 || 5555 || 5050 || 5000 || 3003 || 2000 || 1029 || 1010;
+const port = 8090 || 9000 || 5555 || 5050 || 5000 || 3003 || 2000 || 1029 || 1010;
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '/main/webpage/index.html'));
 });
 
 console.log(chalk.blue('LOADING MAIN SYSTEM'));
-logger(`loading app on port ${chalk.blueBright(PORT)}`, "load");
-app.listen(PORT, logger(`app loaded on port ${chalk.blueBright(PORT)}`, "load"));
+logger(`loading app on port ${chalk.blueBright(port)}`, "load");
+app.use(express.json());
+app.use(express.static('main/webpage'));
+
+app.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+});
 function startBot(message) {
     (message) ? console.log(chalk.blue(message.toUpperCase())) : "";
     
