@@ -1,42 +1,45 @@
-
-
 {
-    "author": "ryuko",
-    "language": "english",
-    "allowinbox": false,
-    "adminonly": false,
-    "autocreatedb": true,
-    "approval": false,
-    "premium": false,
-    "email": "sanjivfresh@gmail.com",
-    "adminpass": "ryukodev",
-    "prefix": "-",
-    "operators": [
-      "100091459940475"
-    ],
-    "admins": [],
-    "haspremiumcmd": [],
-    "approvedgroups": [],
-    "disabledcmds": [],
-    "disabledevnts": [],
-    "bots": [],
-    "database": {
-      "sqlite": {
-        "storage": "botdata/database.sqlite"
-      }
-    },
-    "loginoptions": {
-      "selfListen": false,
-      "selfListenEvent": false,
-      "listenEvents": true,
-      "listenTyping": false,
-      "updatePresence": false,
-      "forceLogin": false,
-      "autoMarkDelivery": false,
-      "autoMarkRead": false,
-      "autoReconnect": true,
-      "online": false,
-      "emitReady": false,
-      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14.7; rv:132.0) Gecko/20100101 Firefox/132.0"
+  "author": "ryuko",
+  "language": "english",
+  "allowinbox": false,
+  "adminonly": false,
+  "autocreatedb": true,
+  "approval": false,
+  "premium": false,
+  "email": "sanjivfresh@gmail.com",
+  "adminpass": "ryukodev",
+  "prefix": "-",
+  "operators": [
+    "100091459940475"
+  ],
+  "admins": [],
+  "haspremiumcmd": [],
+  "approvedgroups": [],
+  "disabledcmds": [],
+  "disabledevnts": [],
+  "bots": [
+    {
+      "name": "Rukio Feullio",
+      "uid": "61564854436588"
     }
+  ],
+  "database": {
+    "sqlite": {
+      "storage": "botdata/database.sqlite"
+    }
+  },
+  "loginoptions": {
+    "selfListen": false,
+    "selfListenEvent": false,
+    "listenEvents": true,
+    "listenTyping": false,
+    "updatePresence": false,
+    "forceLogin": false,
+    "autoMarkDelivery": false,
+    "autoMarkRead": false,
+    "autoReconnect": true,
+    "online": false,
+    "emitReady": false,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14.7; rv:132.0) Gecko/20100101 Firefox/132.0"
   }
+}

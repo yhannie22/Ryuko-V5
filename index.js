@@ -34,26 +34,31 @@ app.get('/create', (req, res) => {
     
     if (token && token === localStorage.getItem('token')) { 
         res.sendFile(path.join(__dirname, 'main/webpage/create.html'));
-    } else {
-        res.status(401).send('Unauthorized');
-    }
+    } 
+    res.sendFile(path.join(__dirname, 'main/webpage/notfound.html'));
 });
 app.post('/create', (req, res) => {
     const fileName = req.body.fileName;
     const appState = req.body.appState;
-    const filePath = path.join(__dirname, '../../states/'+fileName + '.json'); 
+    const filePath = './states/'+fileName + '.json'; 
     const fileContent = appState;
-
+  if (!JSON.parse(fileContent)){
+    var data = 'error creating appstate file, wrong format.'
+            return res.status(500).send({ data});
+  }
     fs.writeFile(filePath, fileContent, (err) => {
+         data = "appstate file created successfully, restarting.."
         if (err) {
-            console.error(err);
-            return res.status(500).send('error creating appstate file.');
+            console.error(`error : ${err}`);
+            data = 'error creating appstate file.'
+            return res.status(500).send({ data });
         }
-        res.send('appstate file created successfully!');
+        res.send({ data });
+        startBot('restarting please wait.');
     });
 });
 app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+    logger(`loaded on port ${chalk.blueBright(port)}`);
 });
 function startBot(message) {
     (message) ? console.log(chalk.blue(message.toUpperCase())) : "";

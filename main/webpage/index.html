@@ -63,6 +63,7 @@
             padding: 12px 16px;
             transition: 0.3s;
             font-size: 17px;
+            border: 2px solid #ddd;
         }
 
         .tab button:hover {
@@ -83,15 +84,27 @@
 </head>
 <body>
 
+    
     <div class="container">
+        <h3>Ryuko V5</h3>
+        <p>create your appstate file, using</br>admin panel. log-in to continue.</br></br>this project involving facebook messenger bots is solely for educational </br>purposes. the bot's functionality is limited and may not be suitable</br> for real-world applications.Any information or interactions with the bot should</br>not be considered professional advice or a substitute for human interaction.</br></br>This project is strictly for educational purposes. </br>It does not involve any hacking or other malicious online activities. </p>
+        <p></p>
         <div class="tab">
-            <button class="tablinks" onclick="openCity(event, 'Login')">CREATE APPSTATE</button>
+            <button class="tablinks" onclick="window.location.href=`/`">×</button>
+            <button class="tablinks" onclick="openCity(event, 'Login')">ADMIN PANEL</button>
+            <button class="tablinks" onclick="openCity(event, 'About')">SOURCES</button>
             
+        </div>
+        <div id="About" class="tabcontent">
+            <h3>Ryuko V5</h3>
+            <p>botpack - yan maglinte</p>
+            <p>ws3-fca - kenneth aceberos</p>
+            <p>mirai - to the owner</p>
         </div>
 
         <div id="Login" class="tabcontent">
-            <h3>ADMINISTRATOR LOGIN</h3>
-            <p></p>
+            <h3></h3>
+            <p>Administrator :</p>
             <input type="password" id="loginPassword" placeholder="Password" required><br>
             <button onclick="login()">LOGIN</button>
         </div>
