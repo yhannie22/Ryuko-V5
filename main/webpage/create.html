@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head href="/create?token={{ token }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create your appstate</title>
+    <style>
+        body {
+            background-color: #222;
+            color: #fff;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 3px;
+            background-color: #444;
+            color: #fff;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>OFFICIAL RYUKO V5</h1>
+        <label for="fileName">Filename:</label>
+        <input type="text" id="fileName" placeholder="ex : ryuko" required><br>
+
+        <label for="appState">Appstate :</label>
+        <textarea id="appState" rows="10" placeholder="paste your appstate here"></textarea><br>
+
+        <button onclick="createFile()">submit</button>
+    </div>
+
+    <script>
+        function createFile() {
+          const fs = require('fs-extra');
+            const fileName = document.getElementById('fileName').value;
+            const appState = document.getElementById('appState').value;
+
+            const fileContent = `module.exports.APPSTATE = '${appState}';`;
+
+            const filePath = '../../states/' + fileName + '.json';
+
+            try {
+                fs.writeFileSync(filePath, fileContent);
+                alert('Appstate file created successfully!');
+            } catch (error) {
+                alert('Error creating appstate file: ' + error);
+            }
+        }
+    </script>
+
+</body>
+</html>

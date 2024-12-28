@@ -22,12 +22,21 @@ app.post('/login', (req, res) => {
     }
     const config = JSON.parse(data);
     if (loginPassword === config.adminpass) {
-      const token = 'rkdieidjjdkskskekek';
+      const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
       res.send({ token });
     } else {
       res.status(401).send('invalid admin password.');
     }
   });
+});
+app.get('/create', (req, res) => {
+    const token = req.query.token; 
+    
+    if (token && token === localStorage.getItem('token')) { 
+        res.sendFile(path.join(__dirname, 'main/webpage/create.html'));
+    } else {
+        res.status(401).send('Unauthorized');
+    }
 });
 
 app.listen(port, () => {
