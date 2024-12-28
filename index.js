@@ -15,7 +15,7 @@ console.log(chalk.blue('LOADING MAIN SYSTEM'));
 logger(`loading app on port ${chalk.blueBright(port)}`, "load");
 app.use(express.json());
 app.use(express.static('main/webpage'));
-app.post('/login', (req, res) => {
+app.post('/submit', (req, res) => {
   const { loginPassword } = req.body;
   fs.readFile('config.json', 'utf8', (err, data) => {
     if (err) {
