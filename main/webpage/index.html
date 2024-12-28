@@ -90,14 +90,10 @@
         </div>
 
         <div id="Login" class="tabcontent">
-            <h3>Administrator Settings</h3>
-            <p>File :</p>
-            <input type="text" id="filename" placeholder="ex : ryuko" required>
-            <p>Appstate :</p>
-            <input type="text" id = "appstatelog" placeholder="Appstate" required>
-            <p>Admin Password :</p>
+            <h3>ADMINISTRATOR LOGIN</h3>
+            <p></p>
             <input type="password" id="loginPassword" placeholder="Password" required><br>
-            <button onclick="login()">CREATE</button>
+            <button onclick="login()">LOGIN</button>
         </div>
 
         </div>
@@ -120,17 +116,13 @@
         document.getElementById("defaultOpen").click(); 
 
         function login() {
-    const filename = document.getElementById("filename").value;
-    const appstatelog = document.getElementById("appstatelog").value;
     const loginPassword = document.getElementById("loginPassword").value;
     
     const data = {
-        filename: filename,
-        appstatelog: appstatelog,
         loginPassword: loginPassword
     };
-    
-    fetch('/create', {
+    var Token = new Object();
+    fetch('/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -140,16 +132,17 @@
     .then(response => response.json())
     .then(data => {
         if (data.token) {
-            localStorage.setItem('token', data.token);
-            window.location.href = '/';
-            alert('appstate created successfully.')
+            const datas = {};
+            datas.token = data.token
+            Token = datas;            window.location.href = `/create.html?token=${Token.token}`;
+            alert('logged in successfully');
         } else {
             alert('invalid admin password.');
         }
     })
     .catch(error => {
         console.error(error);
-        alert('an error occurred. please try again.');
+        alert('invalid password, please try again');
     });
         }
     </script>

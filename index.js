@@ -7,15 +7,12 @@ const logger = require("./main/utility/logs.js");
 const fs = require('fs-extra')
 const path = require('path');
 const port = 8090 || 9000 || 5555 || 5050 || 5000 || 3003 || 2000 || 1029 || 1010;
-app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname, '/main/webpage/index.html'));
-});
 
 console.log(chalk.blue('LOADING MAIN SYSTEM'));
 logger(`loading app on port ${chalk.blueBright(port)}`, "load");
 app.use(express.json());
 app.use(express.static('main/webpage'));
-app.post('/create', (req, res) => {
+app.post('/login', (req, res) => {
   const { loginPassword } = req.body;
   
   fs.readFile('config.json', 'utf8', (err, data) => {
