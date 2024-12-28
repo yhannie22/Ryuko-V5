@@ -15,24 +15,26 @@ console.log(chalk.blue('LOADING MAIN SYSTEM'));
 logger(`loading app on port ${chalk.blueBright(port)}`, "load");
 app.use(express.json());
 app.use(express.static('main/webpage'));
-app.post('/submit', (req, res) => {
+app.post('/create', (req, res) => {
   const { loginPassword } = req.body;
+  
   fs.readFile('config.json', 'utf8', (err, data) => {
     if (err) {
       console.error(err);
-      return res.status(500).send('An error occurred.');
+      return res.status(500).send('an error occurred.');
     }
     const config = JSON.parse(data);
     if (loginPassword === config.adminpass) {
-      const token = 'xjsifsjduej&#+#6261yrjrlso';
+      const token = 'rkdieidjjdkskskekek';
       res.send({ token });
     } else {
-      res.status(401).send('invalid admin password');
+      res.status(401).send('invalid admin password.');
     }
   });
 });
+
 app.listen(port, () => {
-    logger(`loaded on port ${chalk.blueBright(port)}`);
+    console.log(`Server listening on port ${port}`);
 });
 function startBot(message) {
     (message) ? console.log(chalk.blue(message.toUpperCase())) : "";
