@@ -57,22 +57,26 @@
     </div>
 
     <script>
-        function createFile() {
-          const fs = require('fs-extra');
-            const fileName = document.getElementById('fileName').value;
-            const appState = document.getElementById('appState').value;
+      function createFile() {
+          const fileName = document.getElementById('fileName').value;
+          const appState = document.getElementById('appState').value;
 
-            const fileContent = `module.exports.APPSTATE = '${appState}';`;
-
-            const filePath = '../../states/' + fileName + '.json';
-
-            try {
-                fs.writeFileSync(filePath, fileContent);
-                alert('Appstate file created successfully!');
-            } catch (error) {
-                alert('Error creating appstate file: ' + error);
-            }
-        }
+          fetch('/create', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ fileName: fileName, appState: appState })
+          })
+          .then(response => response.json())
+          .then(data => {
+              alert(data);
+          })
+          .catch(error => {
+              console.error(error);
+              alert('error creating appstate file');
+          });
+      }
     </script>
 
 </body>

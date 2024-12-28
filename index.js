@@ -38,7 +38,20 @@ app.get('/create', (req, res) => {
         res.status(401).send('Unauthorized');
     }
 });
+app.post('/create', (req, res) => {
+    const fileName = req.body.fileName;
+    const appState = req.body.appState;
+    const filePath = path.join(__dirname, '../../states/'+fileName + '.json'); 
+    const fileContent = appState;
 
+    fs.writeFile(filePath, fileContent, (err) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('error creating appstate file.');
+        }
+        res.send('appstate file created successfully!');
+    });
+});
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });
