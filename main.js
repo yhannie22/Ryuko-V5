@@ -252,7 +252,8 @@ async function startLogin(appstate, { models: botModel }, filename) {
         try {
             await login(appstate, (err, api) => {
                 if (err) {
-                    reject(err); 
+                    reject(err)
+                    return;
                 }
                 (async ()=> {
                     const userId = await api.getCurrentUserID();
