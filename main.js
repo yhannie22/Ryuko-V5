@@ -336,7 +336,8 @@ async function startLogin(appstate, { models: botModel }, filename) {
                 const listenerData = {};
                 listenerData.api = api;
                 listenerData.models = botModel;
-                
+                global.custom = require('./custom.js')({ api: api });
+    
                 const listener = require('./main/system/listen.js')(listenerData);
                 global.handleListen = api.listenMqtt(async (error, message) => {
                     if (error) {
