@@ -12,11 +12,11 @@ module.exports.config = {
 };
 
 module.exports.languages = {
-  en: {
+  english: {
     moduleInfo:
       "%1\n%2\n\nusage : %3\ncategory : %4\nwaiting time : %5 seconds(s)\npermission : %6\n\nmodule code by %7.",
     helpList:
-      `there are %1 commands and %2 categories of ${global.config.BOTNAME} ai.`,
+      `there are %1 commands and %2 categories`,
     user: "user",
     adminGroup: "group admin",
     adminBot: "bot admin",
@@ -34,9 +34,7 @@ module.exports.handleEvent = function ({ api, event, getText }) {
   if (splitBody.length == 1 || !commands.has(splitBody[1].toLowerCase())) return;
   const threadSetting = global.data.threadData.get(parseInt(threadID)) || {};
   const command = commands.get(splitBody[1].toLowerCase());
-  const prefix = threadSetting.hasOwnProperty("prefix")
-    ? threadSetting.PREFIX
-    : global.config.prefix;
+  const prefix = global.config.prefix;
   return api.sendMessage(
     getText(
       "moduleInfo",
@@ -66,9 +64,7 @@ module.exports.run = async function ({ api, event, args, getText }) {
   const threadSetting = global.data.threadData.get(parseInt(threadID)) || {};
   const autoUnsend  = true;
   const delayUnsend = 60;
-  const prefix = threadSetting.hasOwnProperty("PREFIX")
-    ? threadSetting.PREFIX
-    : global.config.prefix;
+  const prefix = global.config.prefix;
 
   if (!command) {
     const commandList = Array.from(commands.values());
@@ -122,7 +118,7 @@ module.exports.run = async function ({ api, event, args, getText }) {
       ];
       msg += `${
         category.charAt(0).toLowerCase() + category.slice(1)
-      } category :\n\n${commandNames.join("\n")}\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯\n\n`;
+      } category :\n\n${commandNames.join("\n")}\n`
     }
     const numberFontPage = [
       "1",
