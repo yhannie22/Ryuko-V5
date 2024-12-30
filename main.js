@@ -214,6 +214,19 @@ for (const command of commandsList) {
                 }
             });
         }
+        if (config.envConfig) {
+          const moduleName = config.name;
+          global.configModule[moduleName] = global.configModule[moduleName] || {};
+          global.envConfig[moduleName] = global.envConfig[moduleName] || {};
+          for (const envConfigKey in envConfig) {
+            global.configModule[moduleName][envConfigKey] = global.envConfig[moduleName][envConfigKey] ?? envConfig[envConfigKey];
+            global.envConfig[moduleName][envConfigKey] = global.envConfig[moduleName][envConfigKey] ?? envConfig[envConfigKey];
+          }
+          var envConfigPath = require("./main/config/envconfig.json");
+          var configPah = "./main/config/envconfig.json";
+          envConfigPath[moduleName] = config.envConfig;
+          fs.writeFileSync(configPah, JSON.stringify(envConfigPath, null, 4), 'utf-8');
+        }
         if (global.client.commands.has(config.name || "")) {
             try {
                 throw new Error(global.getText("main", "commandNameExist", chalk.red(command)));
@@ -222,8 +235,6 @@ for (const command of commandsList) {
                 continue;
             }
         }
-
-
         if (module.handleEvent) global.client.eventRegistered.push(config.name);
         global.client.commands.set(config.name, module);
         logger.commands(global.getText("main", "commands", chalk.blueBright(command)));
@@ -301,34 +312,7 @@ async function startLogin(appstate, { models: botModel }, filename) {
                                 module.onLoad(moduleData);
 
                             }
-                            if (config.envConfig) {
-                                const moduleName = config.name;
-                                global.configModule[moduleName] = global.configModule[moduleName] || {};
-                                global.envConfig[moduleName] = global.envConfig[moduleName] || {};
-                                for (const envConfigKey in envConfig) {
-                                    global.configModule[moduleName][envConfigKey] = global.envConfig[moduleName][envConfigKey] ?? envConfig[envConfigKey];
-                                    global.envConfig[moduleName][envConfigKey] = global.envConfig[moduleName][envConfigKey] ?? envConfig[envConfigKey];
-                                }
-                                var envConfigPath = require("./main/config/envconfig.json");
-                                var configPah = "./main/config/envconfig.json";
-
-
-                                envConfigPath[moduleName] = config.envConfig;
-
-
-                                fs.writeFileSync(configPah, JSON.stringify(envConfigPath, null, 4), 'utf-8');
-
-                            }
-                            if (config.envConfig) {
-                                fs.writeFileSync(cjcjcc); // do not remove this, yes this is error but if you remove this, multiple appstate won't work
-                            }
-
-                        } catch (err) {
-
-                            resolve(err);
-
-
-
+                        } catch (err) {resolve(err);
                         }
                     }
                 })(),
