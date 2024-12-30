@@ -219,7 +219,8 @@ Swal.fire({
                     icon: 'success',
                     title: 'Created appstate successfully',
                     text: 'restarting system please wait..',
-                    showConfirmButton: false
+                    showConfirmButton: false,
+                    timer: 1500
                 }).then(() => {
                     window.location.href = "/";
                 });
