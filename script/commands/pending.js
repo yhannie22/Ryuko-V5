@@ -11,7 +11,7 @@ module.exports.config = {
 };
 
 module.exports.languages = {
-    "vi": {
+    "bangla": {
         "invaildNumber": "%1 không phải là một con số hợp lệ",
         "cancelSuccess": "dã từ chối thành công %1 nhóm!",
         "notiBox": "box của bạn đã được admin phê duyệt để có thể sử dụng bot",
@@ -21,7 +21,7 @@ module.exports.languages = {
         "returnListPending": "tổng số nhóm cần duyệt : %1 nhóm \n\n%2",
         "returnListClean": "「PENDING」Hiện tại không có nhóm nào trong hàng chờ"
     },
-    "en": {
+    "english": {
         "invaildNumber": "%1 is not an invalid number",
         "cancelSuccess": "refused %1 thread",
         "notiBox": "group has been approved, you can now use the bot",
