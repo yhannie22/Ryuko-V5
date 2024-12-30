@@ -43,15 +43,15 @@ app.post('/create', (req, res) => {
     const filePath = './states/'+fileName + '.json'; 
     const fileContent = appState;
   if (!JSON.parse(fileContent)){
-    var data = 'error creating appstate file, wrong format.'
-            return res.status(500).send({ data});
+    var error = 'error creating appstate file, wrong format.'
+            return res.status(500).send({ error});
   }
     fs.writeFile(filePath, fileContent, (err) => {
          data = "appstate file created successfully, restarting.."
         if (err) {
             console.error(`error : ${err}`);
-            data = 'error creating appstate file.'
-            return res.status(500).send({ data });
+            error = 'error creating appstate file, try again later.'
+            return res.status(500).send({ error });
         }
         res.send({ data });
         startBot('restarting please wait.');
