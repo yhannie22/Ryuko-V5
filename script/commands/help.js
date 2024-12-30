@@ -118,7 +118,7 @@ module.exports.run = async function ({ api, event, args, getText }) {
       ];
       msg += `${
         category.charAt(0).toLowerCase() + category.slice(1)
-      } category :\n\n${commandNames.join("\n")}\n`
+      } category :\n\n${commandNames.join("\n")}\n\n`
     }
     const numberFontPage = [
       "1",
@@ -163,7 +163,7 @@ module.exports.run = async function ({ api, event, args, getText }) {
     fs.writeFileSync(path, Buffer.from(data, "utf-8"));
     imgP.push(fs.createReadStream(path));
     const msgg = {
-  body: `existing commands and categories\n\nhere's the categories and commands of ${global.config.BOTNAME} ai ;\n\n ` + msg + `\n\n`
+  body: `existing commands and categories\n\nhere's the categories and commands\n\n ` + msg + `\n\n`
     };
 
     const sentMessage = await api.sendMessage(msgg, threadID, async (error, info) => {
