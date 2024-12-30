@@ -196,6 +196,24 @@ for (const command of commandsList) {
                 continue;
             }
         }
+        const { dependencies } = config;
+        if (dependencies) {
+            Object.entries(dependencies).forEach(([reqDependency, dependencyVersion]) => {
+                if (listPackage[reqDependency]) return;
+                try {
+                    execSync(`npm install --save ${reqDependency}${dependencyVersion ? `@${dependencyVersion}` : ''}`, {
+                        stdio: 'inherit',
+                        env: process.env,
+                        shell: true,
+                        cwd: join('./node_modules')
+                    });
+                    require.cache = {};
+                } catch (error) {
+                    const errorMessage = `failed to install package ${reqDependency}\n`;
+                    logger.error(errorMessage);
+                }
+            });
+        }
         if (global.client.commands.has(config.name || "")) {
             try {
                 throw new Error(global.getText("main", "commandNameExist", chalk.red(command)));
@@ -250,7 +268,7 @@ for (const ev of evntsList) {
 
 async function startLogin(appstate, { models: botModel }, filename) {
     return new Promise(async (resolve, reject) => {
-        
+
         try {
             await login(appstate, (err, api) => {
                 if (err) {
@@ -267,7 +285,7 @@ async function startLogin(appstate, { models: botModel }, filename) {
                     global.client.accounts.set(userId, filename);
 
                     global.client.api = api;
-                    
+
 
                     const cmdsPath = "./script/commands";
                     const cmdsList = readdirSync(cmdsPath).filter(command => command.endsWith('.js') && !global.config.disabledcmds.includes(command));
@@ -306,7 +324,7 @@ async function startLogin(appstate, { models: botModel }, filename) {
                             }
 
                         } catch (err) {
-                           
+
                             resolve(err);
 
 
@@ -340,7 +358,7 @@ async function startLogin(appstate, { models: botModel }, filename) {
                 listenerData.api = api;
                 listenerData.models = botModel;
                 global.custom = require('./custom.js')({ api: api });
-    
+
                 const listener = require('./main/system/listen.js')(listenerData);
                 global.handleListen = api.listenMqtt(async (error, message) => {
                     if (error) {
@@ -372,11 +390,11 @@ async function loadBot(botData) {
                     rmStates(path.parse(states).name);
                     continue;
                 }
-               
+
                 let data = `${appstatePath}/${states}`;
-                
+
                 const appstateData = JSON.parse(fs.readFileSync(data, "utf8"));
-                 
+
 
                 const loginDatas = {};
                 loginDatas.appState = appstateData;
@@ -398,7 +416,7 @@ async function loadBot(botData) {
         if (hasErrors) {
             logger.error(global.getText("main", "loginErrencounter"));
             process.exit(1);
-            
+
         }
     } catch (err) {
     }
