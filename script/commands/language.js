@@ -7,7 +7,7 @@ module.exports.config = {
 	description: "change the bot language",
   premium: false,
 	category: "admin",
-	usages: "[vi] [en]",
+	usages: "[bangla] [english]",
 	cooldowns: 5
 };
 
