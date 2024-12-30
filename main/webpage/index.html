@@ -1,164 +1,346 @@
+<!--- CODED BY RYUKO --->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ryuko V5</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
-            background-color: #222;
+            background-color: #121212;
             color: #fff;
-            font-family: sans-serif;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: #1e1e1e;
+            padding: 20px 30px;
+            font-size: 2rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 4px 10px rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+        }
+
+        .header-text {
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        .robot-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: url('https://i.imgur.com/Ze0A8Ch.jpeg') no-repeat center;
+            background-size: cover;
+            margin-left: 5px;
+            margin-right: 35px;
         }
 
         .container {
-            background-color: #333;
-            padding: 20px;
-            border-radius: 5px;
+            max-width: 1000px;
+            width: 100%;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            background-color: #1e1e1e;
+            text-align: center;
+            margin-top: 120px;
         }
 
-        input[type="text"] {
-          width: 90%;
-          padding: 10px;
-          border: 1px solid #ccc;
-          border-radius: 3px;
-          margin-bottom: 5px;
-          background-color: #444;
-          color: #fff;
+        p {
+            line-height: 1.8;
+            margin-bottom: 25px;
+            font-size: 1rem;
+            color: #b0b0b0;
         }
-        input[type="password"] {
-            width:90%;
-            padding: 10px;
-            margin-bottom: 5px;
-            border: none;
-            border-radius: 3px;
-            background-color: #444;
+
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        input[type="password"], input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #333;
+            color: #fff;
+            font-size: 1.2rem;
+        }
+
+        input[type="password"]:focus, input[type="text"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+        }
+
+        .eye-icon {
+            position: absolute;
+            right: 20px;
+            top: 40%;
+            transform: translateY(-60%);
+            cursor: pointer;
+            color: #aaa;
+            font-size: 1.5rem;
+        }
+
+        .eye-icon:hover {
             color: #fff;
         }
 
         button {
             background-color: #4CAF50;
             color: #fff;
-            padding: 10px 20px;
+            padding: 15px 25px;
             border: none;
-            border-radius: 3px;
+            border-radius: 5px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.3rem;
             cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45A049;
         }
 
         .tab {
-            overflow: hidden;
-            border: 1px solid #ddd;
-            background-color: #333;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #444;
+        }
+
+        .tab-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
 
         .tab button {
-            background-color: inherit;
-            float: left;
+            flex: 1;
+            padding: 15px 0;
+            background: transparent;
             border: none;
-            outline: none;
-            padding: 12px 16px;
-            transition: 0.3s;
-            font-size: 17px;
-            border: 2px solid #ddd;
+            font-size: 1.2rem;
+            color: #fff;
+            cursor: pointer;
+            transition: color 0.3s ease, background 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
         }
 
         .tab button:hover {
-            background-color: #ddd;
+            background-color: #333;
         }
 
         .tab button.active {
-            background-color: #4CAF50;
+            color: #4CAF50;
+            border-bottom: 3px solid #4CAF50;
         }
 
         .tabcontent {
             display: none;
-            padding: 6px 12px;
-            border: 1px solid #ddd;
-            border-top: none;
+        }
+
+        .tabcontent.active {
+            display: block;
+        }
+
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 30px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            background: #1e1e1e;
+            width: 100%;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        footer span {
+            color: #FF5252;
+        }
+
+        @media (min-width: 768px) {
+            .header-text {
+                font-size: 2.5rem;
+            }
+
+            p {
+                font-size: 1.3rem;
+            }
+
+            button {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header-text {
+                font-size: 1.5rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+
+            button {
+                font-size: 1.2rem;
+            }
+
+            .container {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="header">
+        <div class="header-text">RYUKO V5</div>
+        <div class="robot-icon"></div>
+    </div>
 
-    
     <div class="container">
-        <h3>Ryuko V5</h3>
         <p>create your appstate file, using</br>admin panel. log-in to continue.</br></br>this project involving facebook messenger bots is solely for educational </br>purposes. the bot's functionality is limited and may not be suitable</br> for real-world applications.Any information or interactions with the bot should</br>not be considered professional advice or a substitute for human interaction.</br></br>This project is strictly for educational purposes. </br>It does not involve any hacking or other malicious online activities. </p>
         <p></p>
+        <br><br>
+        <strong>Design by Jay Mar (Heru)</strong>
         <div class="tab">
-            <button class="tablinks" onclick="window.location.href=`/`">×</button>
-            <button class="tablinks" onclick="openCity(event, 'Login')">ADMIN PANEL</button>
-            <button class="tablinks" onclick="openCity(event, 'About')">SOURCES</button>
-            
+            <div class="tab-container">
+                <button class="tablinks active" onclick="openTab(event, 'Login')">ADMIN PANEL</button>
+                <button class="tablinks" onclick="openTab(event, 'About')">SOURCES</button>
+            </div>
         </div>
         <div id="About" class="tabcontent">
             <h3>Ryuko V5</h3>
-            <p>botpack - yan maglinte</p>
-            <p>ws3-fca - kenneth aceberos</p>
-            <p>mirai - to the owner</p>
+            <p>botpack - Yan Maglinte</p>
+            <p>ws3-fca - Kenneth Aceberos</p>
+            <p>mirai - To the owner</p>
         </div>
 
-        <div id="Login" class="tabcontent">
-            <h3></h3>
-            <p>Administrator :</p>
-            <input type="password" id="loginPassword" placeholder="Password" required><br>
+        <div id="Login" class="tabcontent active">
+            <h3>Administrator Login</h3>
+            <div class="password-container">
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <i class="eye-icon" onclick="togglePasswordVisibility()">🙈</i>
+            </div>
             <button onclick="login()">LOGIN</button>
         </div>
+    </div>
 
-        </div>
+    <footer>
+        Made with Ryuko
+    </footer>
 
     <script>
-        function openCity(evt, cityName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-            document.getElementById(cityName).style.display = "block";
-            evt.currentTarget.className += " active";
+        function openTab(evt, tabName) {
+            const tabcontent = document.querySelectorAll('.tabcontent');
+            const tablinks = document.querySelectorAll('.tablinks');
+
+            tabcontent.forEach(content => content.classList.remove('active'));
+            tablinks.forEach(link => link.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
         }
 
-        document.getElementById("defaultOpen").click(); 
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById("loginPassword");
+            const eyeIcon = document.querySelector(".eye-icon");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                eyeIcon.textContent = "👁️";
+            } else {
+                passwordField.type = "password";
+                eyeIcon.textContent = "🙈";
+            }
+        }
 
         function login() {
-    const loginPassword = document.getElementById("loginPassword").value;
-    
-    const data = {
-        loginPassword: loginPassword
-    };
-    var Token = new Object();
-    fetch('/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.token) {
-            const datas = {};
-            datas.token = data.token
-            Token = datas;            window.location.href = `/create.html?token=${Token.token}`;
-            alert('logged in successfully');
-        } else {
-            alert('invalid admin password.');
-        }
-    })
-    .catch(error => {
-        console.error(error);
-        alert('invalid password, please try again');
-    });
+            const loginPassword = document.getElementById("loginPassword").value.trim();
+
+            if (!loginPassword) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Password Required',
+                    text: 'Please enter your password to continue.',
+                    confirmButtonColor: '#4CAF50'
+                });
+                return;
+            }
+
+            const data = { loginPassword };
+
+            fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.token) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Logged In Successfully',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            background: '#333',
+                            color: '#fff',
+                            confirmButtonColor: '#4CAF50'
+                        }).then(() => {
+                            window.location.href = `/create.html?token=${data.token}`;
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid Password',
+                            text: 'Please try again.',
+                            background: '#333',
+                            color: '#fff',
+                            confirmButtonColor: '#4CAF50'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Login error:", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Login Error',
+                        text: 'An error occurred. Please try again.',
+                        background: '#333',
+                        color: '#fff',
+                        confirmButtonColor: '#4CAF50'
+                    });
+                });
         }
     </script>
-
 </body>
 </html>
