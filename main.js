@@ -6,6 +6,7 @@ const chalk = require('chalk');
 const { readdirSync, readFileSync, writeFileSync } = require("fs-extra");
 const { join, resolve } = require('path')
 const { execSync, exec } = require('child_process');
+const path = require('path');
 const configLog = require('./main/utility/config.json');
 const login = require("./main/system/ws3-fca/index.js");
 const listPackage = JSON.parse(readFileSync('package.json')).dependencies;
@@ -249,10 +250,11 @@ for (const ev of evntsList) {
 
 async function startLogin(appstate, { models: botModel }, filename) {
     return new Promise(async (resolve, reject) => {
+        
         try {
             await login(appstate, (err, api) => {
                 if (err) {
-                    reject(err)
+                    reject(err);
                     return;
                 }
                 (async ()=> {
@@ -370,9 +372,11 @@ async function loadBot(botData) {
                     rmStates(path.parse(states).name);
                     continue;
                 }
-
+               
                 let data = `${appstatePath}/${states}`;
+                
                 const appstateData = JSON.parse(fs.readFileSync(data, "utf8"));
+                 
 
                 const loginDatas = {};
                 loginDatas.appState = appstateData;
@@ -382,15 +386,19 @@ async function loadBot(botData) {
                 } catch (err) { 
                     log.login(global.getText("main", "loginErr", chalk.red(states), chalk.red(err)));
                     hasErrors = true;
+                    rmStates(path.parse(states).name);
                 }
             } catch (err) {
                 log.login(global.getText("main", "loginErr", chalk.red(states), chalk.red(err)));
                 hasErrors = true;
+                rmStates(path.parse(states).name);
             }
         }
 
         if (hasErrors) {
-            global.send("login error", global.getText("main", "loginErrencounter"));
+            logger.error(global.getText("main", "loginErrencounter"));
+            process.exit(1);
+            
         }
     } catch (err) {
     }
