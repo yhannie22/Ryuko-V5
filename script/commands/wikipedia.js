@@ -12,11 +12,11 @@ module.exports.config = {
 }
 
 module.exports.languages = {
-    "vi": {
+    "bangla": {
         "missingInput": "Nội dung cần tìm kiếm không được để trống!",
         "returnNotFound": "Không tìm thấy nội dung %1"
     },
-    "en": {
+    "english": {
         "missingInput": "enter what you need to search for.",
         "returnNotFound": "can't find %1"
     }
