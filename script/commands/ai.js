@@ -9,7 +9,7 @@ module.exports.config = {
   category: "without prefix",
   usage: `ai (question)`,
   cooldowns: 3,
-  dependency: {
+  dependencies: {
     "hercai": ""
   }
 };
