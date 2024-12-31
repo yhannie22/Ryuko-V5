@@ -14,21 +14,48 @@ module.exports.config = {
 	}
 };
 
-module.exports.run = async function({ api, event, args, Threads, Users, Currencies, models }) {
-	const eval = require("eval");
-	const output = function (a) {
-		if (typeof a === "object" || typeof a === "array") {
-			if (Object.keys(a).length != 0) a = JSON.stringify(a, null, 4);
-			else a = "";
-		}
 
-		if (typeof a === "number") a = a.toString();
-		
-		return api.sendMessage(a, event.threadID, event.messageID);
+module.exports.run = async function ({ api, args, event, getText}) {
+  const {removeHomeDir} = global.utils;
+  const eval = require('eval');
+	function output(msg) {
+		if (typeof msg == "number" || typeof msg == "boolean" || typeof msg == "function")
+			msg = msg.toString();
+		else if (msg instanceof Map) {
+			let text = `Map(${msg.size}) `;
+			text += JSON.stringify(mapToObj(msg), null, 2);
+			msg = text;
+		}
+		else if (typeof msg == "object")
+			msg = JSON.stringify(msg, null, 2);
+		else if (typeof msg == "undefined")
+			msg = "undefined";
+
+		api.sendMessage(msg, event.threadID, event.messageID);
 	}
-	try {
-		const response = await eval(args.join(" "), { output, api, event, args, Threads, Users, Currencies, models, global }, true);
-		return output(response);
+	function out(msg) {
+		output(msg);
 	}
-	catch (e) { return output(e) };
+	function mapToObj(map) {
+		const obj = {};
+		map.forEach(function (v, k) {
+			obj[k] = v;
+		});
+		return obj;
+	}
+	const cmd = `(async () => {
+		try {
+			${args.join(" ")}
+		}
+		catch(err) {
+			console.log("run command" + err);
+			api.sendMessage(
+				"having some unexpected error\\n" +
+				(err.stack ?
+					removeHomeDir(err.stack) :
+					removeHomeDir(JSON.stringify(err, null, 2) || ""), event.threadID, event.messageID)
+			);
+		}
+	})()`;
+	eval(cmd);
 }
