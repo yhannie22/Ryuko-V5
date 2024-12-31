@@ -13,6 +13,13 @@ module.exports.throwError = function (command, threadID, messageID) {
 	return global.client.api.sendMessage(global.getText("utils", "throwError", ((threadSetting.hasOwnProperty("PREFIX")) ? threadSetting.PREFIX : global.config.PREFIX), command), threadID, messageID);
   
 }
+module.exports.removeHomeDir = async function(fullPath) {
+	if (!fullPath || typeof fullPath !== "string")
+		throw new Error('The first argument (fullPath) must be a string');
+	while (fullPath.includes(process.cwd()))
+		fullPath = fullPath.replace(process.cwd(), "");
+	return fullPath;
+}
 
 module.exports.getGUID = function() {
     var sectionLength = Date.now();
