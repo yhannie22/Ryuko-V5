@@ -196,7 +196,7 @@ for (const command of commandsList) {
                 continue;
             }
         }
-        const { dependencies } = config;
+        const { dependencies, envConfig } = config;
         if (dependencies) {
             Object.entries(dependencies).forEach(([reqDependency, dependencyVersion]) => {
                 if (listPackage[reqDependency]) return;
@@ -214,7 +214,7 @@ for (const command of commandsList) {
                 }
             });
         }
-        if (config.envConfig) {
+        if (envConfig) {
           const moduleName = config.name;
           global.configModule[moduleName] = global.configModule[moduleName] || {};
           global.envConfig[moduleName] = global.envConfig[moduleName] || {};
