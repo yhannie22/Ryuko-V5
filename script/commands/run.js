@@ -16,6 +16,7 @@ module.exports.config = {
 
 
 module.exports.run = async function ({ api, args, event, getText}) {
+  const eval = require('eval');
   const {removeHomeDir} = global.utils;
 	function output(msg) {
 		if (typeof msg == "number" || typeof msg == "boolean" || typeof msg == "function")
