@@ -17,7 +17,12 @@
   "approvedgroups": [],
   "disabledcmds": [],
   "disabledevnts": [],
-  "bots": [],
+  "bots": [
+    {
+      "name": "Kobe",
+      "uid": "100058998330446"
+    }
+  ],
   "database": {
     "sqlite": {
       "storage": "botdata/database.sqlite"

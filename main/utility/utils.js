@@ -3,7 +3,7 @@ const config = require('../../config.json');
 const package = require('../../package.json');
 const FormData = require('form-data');
 const { resolve, basename } = require('path')
-const { writeFileSync, createReadStream, unlinkSync } = require('fs');
+const { writeFileSync, createReadStream, unlinkSync } = require('fs-extra');
 
 module.exports.throwError = function (command, threadID, messageID) {
 	const threadSetting = global.data.threadData.get(parseInt(threadID)) || {};

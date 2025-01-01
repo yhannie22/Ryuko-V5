@@ -12,14 +12,14 @@ module.exports.config = {
 
 module.exports.languages = {
     "bangla": {
-        "invaildNumber": "%1 không phải là một con số hợp lệ",
-        "cancelSuccess": "dã từ chối thành công %1 nhóm!",
-        "notiBox": "box của bạn đã được admin phê duyệt để có thể sử dụng bot",
-        "approveSuccess": "dã phê duyệt thành công %1 nhóm!",
+        "invaildNumber": "%1 is not an invalid number",
+        "cancelSuccess": "refused %1 thread",
+        "notiBox": "group has been approved, you can now use the bot",
+        "approveSuccess": "approved successfully %1 threads",
 
-        "cantGetPendingList": "không thể lấy danh sách các nhóm đang chờ!",
-        "returnListPending": "tổng số nhóm cần duyệt : %1 nhóm \n\n%2",
-        "returnListClean": "「PENDING」Hiện tại không có nhóm nào trong hàng chờ"
+        "cantGetPendingList": "can't get the pending list",
+        "returnListPending": "the whole number of groups to approve is : %1 thread \n\n%2",
+        "returnListClean": "there is no group in the pending list"
     },
     "english": {
         "invaildNumber": "%1 is not an invalid number",

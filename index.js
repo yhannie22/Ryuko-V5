@@ -12,6 +12,8 @@ console.log(chalk.blue('LOADING MAIN SYSTEM'));
 logger(`loading app on port ${chalk.blueBright(port)}`, "load");
 app.use(express.json());
 app.use(express.static('main/webpage'));
+
+
 app.post('/login', (req, res) => {
   const { loginPassword } = req.body;
   
@@ -54,8 +56,64 @@ app.post('/create', (req, res) => {
             return res.status(500).send({ error });
         }
         res.send({ data });
-        startBot('restarting please wait.');
+        startBot('restarting please wait');
     });
+});
+app.post("/configure", (req, res) => {
+    const {content, type} = req.body;
+    const filePath = 'config.json'; 
+
+    async function updateConfigData(value, where) {
+        var data;
+        var error;
+        try {
+            const configData = await fs.readJson(filePath);
+            configData[where] = value;
+            await fs.writeJson(filePath, configData, { spaces: 2 });
+            data = `successfully changed the value of ${where}`;
+            res.send({data});
+            startBot('restarting please wait');
+        } catch (err) {
+            error = `error updating ${where} : ${err}`;
+            res.status(500).send({ error });
+        }
+    }
+    async function addConfigData(value, where) {
+        var data;
+        var error;
+        try {
+            const configPath = './config.json'
+            const config = require("./config.json");
+            const here = config[where];
+            if (here.includes(value)) {
+                error = `${value} is already in ${where}`;
+                return res.status(500).send({ error });
+            }
+            here.push(value);
+            
+            await fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
+            data = `successfully added value of ${where}`;
+            res.send({data});
+            startBot('restarting please wait');
+        } catch (err) {
+            error = `error adding value ${where} : ${err}`;
+            res.status(500).send({ error });
+        }
+    }
+    switch (type) {
+        case "Email":
+            updateConfigData(content, 'email');
+            break;
+        case "Prefix":
+            updateConfigData(content, 'prefix');
+            break;
+        case "Operator":
+            addConfigData(content, 'operators');
+            break;
+        case "Admin":
+            addConfigData(content, 'admins');
+            break;
+    }
 });
 app.listen(port, () => {
     logger(`loaded on port ${chalk.blueBright(port)}`);

@@ -20,14 +20,14 @@ module.exports.run = async ({ api, event, args, getText }) => {
         case "bangla":
         case "bangla":
             {
-                return api.sendMessage(`ngôn ngữ đã được chuyển sang tiếng việt`, threadID, () => global.config.language = "vi"); 
+                return api.sendMessage(`ngôn ngữ đã được chuyển sang tiếng việt`, threadID, () => global.config.language = "bangla"); 
             }
             break;
         
         case "english":
         case "english":
             {
-                return api.sendMessage(`language has been converted to english`, threadID, () => global.config.language = "en"); 
+                return api.sendMessage(`language has been converted to english`, threadID, () => global.config.language = "english"); 
             }
             break;
     

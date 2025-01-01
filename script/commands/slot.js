@@ -12,14 +12,14 @@ module.exports.config = {
 };
 
 module.exports.languages = {
-    "vi": {
-        "missingInput": "[ SLOT ] Số tiền đặt cược không được để trống hoặc là số âm",
-        "moneyBetNotEnough": "[ SLOT ] Số tiền bạn đặt lớn hơn hoặc bằng số dư của bạn!",
-        "limitBet": "[ SLOT ] Số coin đặt không được dưới 50$!",
-        "returnWin": "🎰 %1 | %2 | %3 🎰\nBạn đã thắng với %4$",
-        "returnLose": "🎰 %1 | %2 | %3 🎰\nBạn đã thua và mất %4$"
+    "bangla": {
+        "missingInput": "the bet money must not be blank or a negative number.",
+        "moneyBetNotEnough": "the money you betted is bigger than your balance.",
+        "limitBet": "your bet is too low, the minimum is 50 pesos.",
+        "returnWin": "%1 | %2 | %3 \nyou won %4$",
+        "returnLose": "%1 | %2 | %3\nyou loss %4$"
     },
-    "en": {
+    "english": {
         "missingInput": "the bet money must not be blank or a negative number.",
         "moneyBetNotEnough": "the money you betted is bigger than your balance.",
         "limitBet": "your bet is too low, the minimum is 50 pesos.",

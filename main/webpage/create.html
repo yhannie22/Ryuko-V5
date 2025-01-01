@@ -1,17 +1,16 @@
+<!--- CODED BY RYUKO --->
 
 <!DOCTYPE html>
 <html lang="en">
-<head href="/create?token={{ token }}">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta charset="UTF-8">
+    <title>Ryuko V5</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-   
-    <title>Create your appstate</title>
     <style>
-   body {
+        body {
             background-color: #121212;
             color: #fff;
             font-family: 'Poppins', sans-serif;
@@ -26,44 +25,7 @@
             box-sizing: border-box;
         }
 
-        .container {
-            max-width: 1000px;
-            width: 100%;
-            padding: 10px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-            background-color: #1e1e1e;
-            text-align: center;
-            margin-top: 50px;
-        }
-
-        
-        input[type="text"], textarea{
-            width: 100%;
-            padding: 3px;
-            margin-bottom: 20px;
-            border: 1px solid #444;
-            border-radius: 5px;
-            background-color: #333;
-            color: #fff;
-            font-size: 1.2rem;
-        }
-
-       button {
-            background-color: #4CAF50;
-            color: #fff;
-            padding: 15px 25px;
-            border: none;
-            border-radius: 5px;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.3rem;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-  button:hover {
-            background-color: #45A049;
-        }
-.header {
+        .header {
             position: fixed;
             top: 0;
             left: 0;
@@ -88,7 +50,8 @@
             font-size: 1.8rem;
             margin: 0;
         }
-.robot-icon {
+
+        .robot-icon {
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -97,7 +60,207 @@
             margin-left: 5px;
             margin-right: 35px;
         }
-@media (max-width: 600px) {
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            background-color: #1e1e1e;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        p {
+            line-height: 1.8;
+            margin-bottom: 25px;
+            font-size: 1rem;
+            color: #b0b0b0;
+        }
+        .home-container {
+            position: relative;
+            animation: fade-in 0.5s ease-in-out forwards;
+            opacity: 0;
+            border-radius: 10px;
+            background-color: #1e1e1e;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .create-container {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            position: relative;
+            animation: fade-in 0.5s ease-in-out forwards;
+            opacity: 0;
+            border-radius: 10px;
+            background-color: #1e1e1e;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .email-container {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            position: relative;
+            animation: fade-in 1s ease-in-out forwards;
+            opacity: 0;
+            border-radius: 10px;
+            background-color: #1e1e1e;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .prefix-container {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            position: relative;
+            animation: fade-in 1.5s ease-in-out forwards;
+            opacity: 0;
+            border-radius: 10px;
+            background-color: #1e1e1e;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .operator-container {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            position: relative;
+            animation: fade-in 2s ease-in-out forwards;
+            opacity: 0;
+            border-radius: 10px;
+            background-color: #1e1e1e;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .admin-container {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            position: relative;
+            animation: fade-in 2.5s ease-in-out forwards;
+            opacity: 0;
+            border-radius: 10px;
+            background-color: #1e1e1e;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+
+
+
+
+        input[type="text"], textarea[type="appState"] {
+            width: 90%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            background-color: #333;
+            color: #fff;
+            font-size: 1.2rem;
+            
+        }
+
+        input[type="text"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+        }
+        textarea[type="appState"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45A049;
+        }
+
+        .tab {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #444;
+        }
+
+        .tab-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .tab button {
+            flex: 1;
+            padding: 15px 0;
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            color: #fff;
+            cursor: pointer;
+            transition: color 0.3s ease, background 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .tab button:hover {
+            background-color: #333;
+        }
+
+        .tab button.active {
+            color: #4CAF50;
+            border-bottom: 3px solid #4CAF50;
+        }
+
+        .tabcontent {
+            display: none;
+        }
+
+        .tabcontent.active {
+            display: block;
+        }
+
+        footer {
+            
+            margin-top: 10px;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            background: #1e1e1e;
+            width: 100%;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        footer span {
+            color: #FF5252;
+        }
+
+        @media (min-width: 768px) {
+            .header-text {
+                font-size: 2.5rem;
+            }
+
+            p {
+                font-size: 1.3rem;
+            }
+
+            button {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 600px) {
             .header-text {
                 font-size: 1.5rem;
             }
@@ -114,40 +277,20 @@
                 padding: 20px;
             }
         }
-   footer {
-            
-            margin-top: 20px;
-            text-align: center;
-            padding: 20px;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-            background: #1e1e1e;
-            width: 100%;
-            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5);
-        }
-
-        footer span {
-            color: #FF5252;
-        }
-@media (min-width: 768px) {
-            .header-text {
-                font-size: 2.5rem;
-            }
-
-            p {
-                font-size: 1.3rem;
-            }
-
-            button {
-                font-size: 1.4rem;
-            }
-        }
-    p {
-            line-height: 1.8;
-            margin-bottom: 25px;
-            font-size: 1rem;
-            color: #b0b0b0;
-        }
+        @keyframes fade-in{
+  0% {
+      transform: translateY(-30%);
+    opacity: 0;
+  }
+  50% {
+      transform: translateY(-10%);
+    opacity: 0;
+  }
+  100% {
+      transform: translateY(0%);
+    opacity:1;
+  }
+}
     </style>
 </head>
 <body>
@@ -157,31 +300,302 @@
     </div>
 
     <div class="container">
-        <h3>CREATE YOUR APPSTATE</h3>
+        <div class="home-container">
+            <h4>LOGGED IN AS ADMINISTRATOR</h4>
+        <p>configure your bot, using admin panel. </br></br>this project involving facebook messenger bots is solely for educational purposes. the bot's functionality is limited and may not be suitable for real-world applications. Any information or interactions with the bot should not be considered professional advice or a substitute for human interaction.</br></br></br>This project is strictly for educational purposes. It does not involve any hacking or other malicious online activities. </p>
+        <p></p>
+        
+        </div>
+        <br>
+        <strong>designed by jay mar (heru)</strong>
+        <div class="tab">
+            <div class="tab-container">
+                <button class="tablinks active" onclick="openTab(event, 'Create')">APPSTATE</button>
+                <button class="tablinks" onclick="openTab(event, 'Config')">CONFIG</button>
+                <button class="tablinks" onclick="openTab(event, 'About')">SOURCES</button>
+            </div>
+        </div>
+        <div id="About" class="tabcontent">
+            <div class="create-container">
+                <h3>Ryuko V5</h3>
+            <p>
+               botpack - Yan Maglinte</br>
+               ws3-fca - Kenneth Aceberos</br>
+               mirai - To the owner
+            </p>
+            </div>
+        </div>
+        <div id="Config" class="tabcontent">
+               <div class="email-container">
+                   <p>edit email
+                   <input type="text" id="email" placeholder="example@whatever.com">
+                   <button onclick="editEmail()">edit</button>
+                   </p>
+               </div>
+               <div class="prefix-container">
+                   <p>edit bot prefix
+                   <input type="text" id="prefix" placeholder="example : - + _ $ & @ / ! ? * etc.">
+                   <button onclick="editPrefix()">edit</button>
+                   </p>
+               </div>
+               <div class="operator-container">
+                   <p>add operator
+                   <input type="text" id="operator" placeholder="facebook uid">
+                   <button onclick="addOperator()">add</button>
+                   </p>
+               </div>
+               <div class="admin-container">
+                   <p>add admin
+                   <input type="text" id="admin" placeholder="facebook uid">
+                   <button onclick="addAdmin()">add</button>
+                   </p>
+               </div>
+        </div>
+
+        <div id="Create" class="tabcontent active">
+            <h3></h3>
+            <div class="create-container">
+                <p>filename 
+        <input type="text" id="fileName" placeholder="ex: ryuko" required>
+        </p>
+                <p>appstate 
+        <textarea id="appState" type="appState" rows="10" placeholder="paste your appstate here"></textarea>
         
 
-        <p for="fileName">Filename:</p>
-        <input type="text" id="fileName" placeholder="ex : ryuko" required><br>
-
-        <p for="appState">Appstate :</p>
-        <textarea id="appState" rows="10" placeholder="paste your appstate here"></textarea><br>
-
-        <button onclick="createFile()">submit</button>
-<strong></br></br>Design by Jay Mar (Heru)</strong>
+        <button onclick="createFile()">create</button>
+        </p>
+           </div>
+          
+        </div>
     </div>
+
     <footer>
         Made with Ryuko
     </footer>
 
-
     <script>
-      function createFile() {
+        function log() {
+            const outputDiv = document.getElementById('logger-output');
+            const newParagraph = document.createElement('p');
+            
+            fetch("/logger", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ content: 'sent' })
+        }).then(res => res.json()).then(data => {
+            if (data.msg) {
+              newParagraph.textContent = data.msg;
+              outputDiv.appendChild(newParagraph);
+            }
+        }).catch(err => {
+            newParagraph.textContent = `can't load outputs err : ${err}`;
+            outputDiv.appendChild(newParagraph);
+        })
+       }
+        
+        function editEmail() {
+            const Email = document.getElementById('email').value;
+            if (!Email) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Email is required',
+                    text: 'Please enter your email to continue.',
+                    confirmButtonColor: '#4CAF50'
+                });
+                return;
+            }
+            fetch('/configure', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ content: Email, type: "Email" })
+          }).then(response => response.json()).then(data => {
+              if (data.error) {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Something went wrong',
+                    text: data.error,
+                    confirmButtonColor: '#4CAF50'
+                });
+              }
+              if (data.data) {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Edited email successfully',
+                    text: 'restarting system please wait..',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                return;
+              }
+          }).catch(err => {
+              Swal.fire({
+                    icon: 'error',
+                    title: 'Error editing email',
+                    text: err,
+                    confirmButtonColor: '#4CAF50'
+                });
+                return;
+          });
+          }
+          function editPrefix() {
+            const Prefix = document.getElementById('prefix').value;
+            if (!Prefix) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Prefix is required',
+                    text: 'Please enter your prefix to continue.',
+                    confirmButtonColor: '#4CAF50'
+                });
+                return;
+            }
+            fetch('/configure', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ content: Prefix, type: "Prefix" })
+          }).then(response => response.json()).then(data => {
+              if (data.error) {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Something went wrong',
+                    text: data.error,
+                    confirmButtonColor: '#4CAF50'
+                });
+              }
+              if (data.data) {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Edited prefix successfully',
+                    text: 'restarting system please wait..',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                return;
+              }
+          }).catch(err => {
+              Swal.fire({
+                    icon: 'error',
+                    title: 'Error editing prefix',
+                    text: err,
+                    confirmButtonColor: '#4CAF50'
+                });
+                return;
+          });
+          }
+          function addOperator() {
+            const Operator = document.getElementById('operator').value;
+            if (!Operator) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'facebook id is required',
+                    text: 'Please enter your facebook id to continue.',
+                    confirmButtonColor: '#4CAF50'
+                });
+                return;
+            }
+            fetch('/configure', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ content: Operator, type: "Operator" })
+          }).then(response => response.json()).then(data => {
+              if (data.error) {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Something went wrong',
+                    text: data.error,
+                    confirmButtonColor: '#4CAF50'
+                });
+              }
+              if (data.data) {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Added operator successfully',
+                    text: 'restarting system please wait..',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                return;
+              }
+          }).catch(err => {
+              Swal.fire({
+                    icon: 'error',
+                    title: 'Error adding operator',
+                    text: err,
+                    confirmButtonColor: '#4CAF50'
+                });
+                return;
+          });
+          }
+          function addAdmin() {
+            const Admin = document.getElementById('admin').value;
+            if (!Admin) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'facebook id is required',
+                    text: 'Please enter your facebook id to continue.',
+                    confirmButtonColor: '#4CAF50'
+                });
+                return;
+            }
+            fetch('/configure', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ content: Admin, type: "Admin" })
+          }).then(response => response.json()).then(data => {
+              if (data.error) {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Something went wrong',
+                    text: data.error,
+                    confirmButtonColor: '#4CAF50'
+                });
+              }
+              if (data.data) {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Added admin successfully',
+                    text: 'restarting system please wait..',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                return;
+              }
+          }).catch(err => {
+              Swal.fire({
+                    icon: 'error',
+                    title: 'Error adding admin',
+                    text: err,
+                    confirmButtonColor: '#4CAF50'
+                });
+                return;
+          });
+          }
+        function openTab(evt, tabName) {
+            const tabcontent = document.querySelectorAll('.tabcontent');
+            const tablinks = document.querySelectorAll('.tablinks');
+
+            tabcontent.forEach(content => content.classList.remove('active'));
+            tablinks.forEach(link => link.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+        function createFile() {
           const fileName = document.getElementById('fileName').value;
           const appState = document.getElementById('appState').value;
 if (!fileName) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'File name required',
+                    title: 'File name is required',
                     text: 'Please enter your file name to continue.',
                     confirmButtonColor: '#4CAF50'
                 });
@@ -237,7 +651,8 @@ Swal.fire({
                 return;
           });
       }
+        
+        
     </script>
-
 </body>
 </html>

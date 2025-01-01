@@ -21,6 +21,15 @@ module.exports.languages = {
     adminGroup: "group admin",
     adminBot: "bot admin",
   },
+  bangla: {
+    moduleInfo:
+      "%1\n%2\n\nusage : %3\ncategory : %4\nwaiting time : %5 seconds(s)\npermission : %6\n\nmodule code by %7.",
+    helpList:
+      `there are %1 commands and %2 categories`,
+    user: "user",
+    adminGroup: "group admin",
+    adminBot: "bot admin",
+  }
 };
 
 

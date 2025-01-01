@@ -12,33 +12,33 @@ module.exports.config = {
 };
 
 module.exports.languages = {
-	"vi": {
-		"reason": "Lý do",
-		"at": "vào lúc",
-		"allCommand": "toàn bộ lệnh",
-		"commandList": "những lệnh",
-		"banSuccess": "[ Ban User ] Đã xử lý thành công yêu cầu cấm người dùng: %1",
-		"unbanSuccess": "[ Unban User ] Đã xử lý thành công yêu cầu gỡ cấm người dùng %1",
-		"banCommandSuccess": "[ banCommand User ] Đã xử lý thành công yêu cầu cấm lệnh đối với người dùng: %1",
-		"unbanCommandSuccess": "[ UnbanCommand User ] Đã xử lý thành công yêu cầu gỡ cấm %1 đối với người dùng: %2",
-		"errorReponse": "%1 Không thể hoàn tất công việc bạn yêu cầu",
-		"IDNotFound": "%1 ID người dùng bạn nhập không tồn tại trong cơ sở dữ liệu",
-		"existBan": "[ Ban User ] Người dùng %1 đã bị ban từ trước %2 %3",
-		"notExistBan": "[ Unban User ] Người dùng bạn nhập chưa từng bị cấm sử dụng bot",
-		"missingCommandInput": "%1 Phần command cần cấm không được để trống!",
-		"notExistBanCommand": "[ UnbanCommand User ] Hiện tại ID người dùng bạn nhập chưa từng bị cấm sử dụng lệnh",
+	"bangla": {
+		"reason": "reason",
+		"at": "at",
+		"allCommand": "all commands",
+		"commandList": "commands",
+		"banSuccess": "banned user : %1",
+		"unbanSuccess": "unbanned user %1",
+		"banCommandSuccess": "banned command with user : %1",
+		"unbanCommandSuccess": "unbanned command %1 with user: %2",
+		"errorReponse": "%1 can't do what you request",
+		"IDNotFound": "%1 ID you import doesn't exist in database",
+		"existBan": "user %1 has been banned before %2 %3",
+		"notExistBan": "user hasn't been banned before",
+		"missingCommandInput": "%1 you have to import the command you want to ban",
+		"notExistBanCommand": "user ID hasn't been banned before",
 
-		"returnBan": "[ Ban User ] Hiện tại bạn đang yêu cầu cấm người dùng:\n- ID và tên người dùng cần cấm: %1%2\n\n❮ Reaction tin nhắn này để xác thực ❯",
-		"returnUnban": "[ Unban User ] Hiện tại bạn đang yêu cầu gỡ cấm người dùng:\n- ID và tên người dùng cần gỡ cấm: %1\n\n❮ Reaction tin nhắn này để xác thực ❯",
-		"returnBanCommand": "[ banCommand User ] Hiện tại bạn đang yêu cầu cấm sử dụng lệnh đối với người dùng:\n - ID và tên người dùng cần cấm: %1\n- Các lệnh cần cấm: %2\n\n❮ Reaction tin nhắn này để xác thực ❯",
-		"returnUnbanCommand": "[ UnbanCommand User ] Hiện tại bạn đang yêu cầu gỡ cấm sử dụng lệnh đối với với người dùng:\n - ID và tên người dùng cần gỡ cấm lệnh: %1\n- Các lệnh cần gỡ cấm: %2\n\n❮ Reaction tin nhắn này để xác thực ❯",
+		"returnBan": "you are requesting to ban user :\nuser id and name who you want to ban : %1%2\n\nreact to this message to complete",
+		"returnUnban": "you are requesting to unban user :\nuser id and name who you want to ban : %1\n\nreact to this message to complete",
+		"returnBanCommand": "you are requesting to ban command with user :\n - user ID and name who you want to ban : %1\n- commands : %2\n\nreact to this message to complete",
+		"returnUnbanCommand": "you are requesting to unban command with user :\nuser id and name : %1\ncommands : %2\n\nreact to this message to complete",
 	
-		"returnResult": "Đây là kết quả phù hợp: \n",
-		"returnNull": "Không tìm thấy kết quả dựa vào tìm kiếm của bạn!",
-		"returnList": "[ User List ]\nHiện tại đang có %1 người dùng bị ban, dưới đây là %2 người dùng\n\n%3",
-		"returnInfo": "[ Info User ] Đây là một sô thông tin về người dùng bạn cần tìm:\n- ID và tên của người dùng: %1n- Có bị ban?: %2 %3 %4\n- Bị ban lệnh?: %5"
+		"returnResult": "this is your result : \n",
+		"returnNull": "there is no result with your input",
+		"returnList": "there are %1 banned user, here are %2 user\n\n%3",
+		"returnInfo": "here is some information about the user who you want to find :\nuser id and name : %1n- banned? : %2 %3 %4\ncommand banned? : %5"
 	},
-	"en": {
+	"english": {
 		"reason": "reason",
 		"at": "at",
 		"allCommand": "all commands",
