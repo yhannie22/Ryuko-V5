@@ -1,16 +1,13 @@
-const crypto = require('crypto');
-const os = require("os");
 const axios = require("axios");
 const config = require('../../config.json');
 const package = require('../../package.json');
 const FormData = require('form-data');
 const { resolve, basename } = require('path')
 const { writeFileSync, createReadStream, unlinkSync } = require('fs');
-const aes = require("aes-js");
 
 module.exports.throwError = function (command, threadID, messageID) {
 	const threadSetting = global.data.threadData.get(parseInt(threadID)) || {};
-	return global.client.api.sendMessage(global.getText("utils", "throwError", ((threadSetting.hasOwnProperty("PREFIX")) ? threadSetting.PREFIX : global.config.PREFIX), command), threadID, messageID);
+	return global.client.api.sendMessage(global.getText("utils", "throwError", global.config.prefix, command), threadID, messageID);
   
 }
 module.exports.removeHomeDir = async function(fullPath) {
@@ -30,28 +27,6 @@ module.exports.getGUID = function() {
         return _guid;
     });
     return id;
-}
-
-module.exports.encryptState = async function (data, key) {
-  let hashEngine = crypto.createHash("sha256");
-  let hashKey = hashEngine.update(key).digest();
-
-  let bytes = aes.utils.utf8.toBytes(data);
-  let aesCtr = new aes.ModeOfOperation.ctr(hashKey);
-  let encryptedData = aesCtr.encrypt(bytes);
-
-  return aes.utils.hex.fromBytes(encryptedData);
-}
-
-module.exports.decryptState = function(data, key) {
-  let hashEngine = crypto.createHash("sha256");
-  let hashKey = hashEngine.update(key).digest();
-
-  let encryptedBytes = aes.utils.hex.toBytes(data);
-  let aesCtr = new aes.ModeOfOperation.ctr(hashKey);
-  let decryptedData = aesCtr.decrypt(encryptedBytes);
-
-  return aes.utils.utf8.fromBytes(decryptedData);
 }
 
 module.exports.convertHMS = function(value) {
@@ -124,25 +99,6 @@ module.exports.randomString = function (length) {
 	var charactersLength = characters.length || 5;
 	for ( var i = 0; i < length; i++ ) result += characters.charAt(Math.floor(Math.random() * charactersLength));
 	return result;
-}
-
-module.exports.AES = {
-	encrypt (cryptKey, crpytIv, plainData) {
-		var encipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(cryptKey), Buffer.from(crpytIv));
-        var encrypted = encipher.update(plainData);
-		encrypted = Buffer.concat([encrypted, encipher.final()]);
-		return encrypted.toString('hex');
-	},
-	decrypt (cryptKey, cryptIv, encrypted) {
-		encrypted = Buffer.from(encrypted, "hex");
-		var decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(cryptKey), Buffer.from(cryptIv, 'binary'));
-		var decrypted = decipher.update(encrypted);
-	
-		decrypted = Buffer.concat([decrypted, decipher.final()]);
-	
-		return String(decrypted);
-	},
-	makeIv () { return Buffer.from(crypto.randomBytes(16)).toString('hex').slice(0, 16); }
 }
 
 module.exports.homeDir = function () {
