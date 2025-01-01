@@ -291,13 +291,9 @@ async function startLogin(appstate, { models: botModel }, filename) {
                     const info = (await api.getUserInfo(userId))[userId];
                     const name = info.name;
                     log.login(global.getText("main", "successLogin", chalk.blueBright(filename)));
-
                     addUser(name, userId);
                     global.client.accounts.set(userId, filename);
-
                     global.client.api = api;
-
-
                     const cmdsPath = "./script/commands";
                     const cmdsList = readdirSync(cmdsPath).filter(command => command.endsWith('.js') && !global.config.disabledcmds.includes(command));
                     for (const cmds of cmdsList) {
@@ -322,7 +318,6 @@ async function startLogin(appstate, { models: botModel }, filename) {
                         for (const ev of eventsList) {
                             try {
                                 const events = require(`${eventsPath}/${ev}`);
-
                                 const { config, onLoad, run } = events;
                                 if (onLoad) {
                                     const eventData = {};
@@ -332,9 +327,6 @@ async function startLogin(appstate, { models: botModel }, filename) {
                                 }
                             } catch (err) {
                                 reject(`someting went wrong : ${err}`);
-
-
-
                             }
                         }
                     })();
@@ -351,8 +343,6 @@ async function startLogin(appstate, { models: botModel }, filename) {
                     if (['presence', 'typ', 'read_receipt'].some(data => data === message.type)) return;
                     return listener(message);
                 });
-
-
             });
         } catch (err) {
             reject(err); 
@@ -399,8 +389,6 @@ async function loadBot(botData) {
 
         if (hasErrors) {
             logger.error(global.getText("main", "loginErrencounter"));
-            process.exit(1);
-
         }
     } catch (err) {
     }
