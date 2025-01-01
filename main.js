@@ -306,7 +306,11 @@ async function startLogin(appstate, { models: botModel }, filename) {
                                 moduleData.models = botModel;
 
                                 module.onLoad(moduleData);
-
+                                try {
+                                  throw new Error('sjdjdjd');
+                                } catch (err) {
+                                  resolve(err)
+                                }
                             }
                         } catch (err) {resolve(err);
                         }
