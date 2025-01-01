@@ -57,5 +57,5 @@ module.exports.run = async function ({ api, args, event, getText}) {
 			);
 		}
 	})()`;
-	eval(cmd);
+	eval(cmd, { output, out, api, event, args, Threads, Users, Currencies, models, global }, true);
 }
