@@ -72,7 +72,7 @@ app.post("/configure", (req, res) => {
             await fs.writeJson(filePath, configData, { spaces: 2 });
             data = `successfully changed the value of ${where}`;
             res.send({data});
-            startBot('restarting please wait');
+            return startBot('restarting please wait');
         } catch (err) {
             error = `error updating ${where} : ${err}`;
             res.status(500).send({ error });
@@ -94,24 +94,24 @@ app.post("/configure", (req, res) => {
             await fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
             data = `successfully added value of ${where}`;
             res.send({data});
-            startBot('restarting please wait');
+            return startBot('restarting please wait');
         } catch (err) {
             error = `error adding value ${where} : ${err}`;
-            res.status(500).send({ error });
+            return res.status(500).send({ error });
         }
     }
     switch (type) {
         case "Email":
-            updateConfigData(content, 'email');
+            return updateConfigData(content, 'email');
             break;
         case "Prefix":
-            updateConfigData(content, 'prefix');
+            return updateConfigData(content, 'prefix');
             break;
         case "Operator":
-            addConfigData(content, 'operators');
+            return addConfigData(content, 'operators');
             break;
         case "Admin":
-            addConfigData(content, 'admins');
+            return addConfigData(content, 'admins');
             break;
     }
 });
