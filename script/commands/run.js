@@ -15,7 +15,7 @@ module.exports.config = {
 };
 
 
-module.exports.run = async function ({ api, args, event, getText}) {
+module.exports.run = async function ({ api, args, event, getText, Threads, Users, Currencies, models, global}) {
   const eval = require('eval');
   const {removeHomeDir} = global.utils;
 	function output(msg) {
