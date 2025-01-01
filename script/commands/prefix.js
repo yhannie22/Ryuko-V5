@@ -25,7 +25,7 @@ module.exports.handleEvent = async ({ event, api, Threads }) => {
     let str = i[0].toUpperCase() + i.slice(1);
     if (body === i.toUpperCase() | body === i | str === body) {
 		const prefix = threadSetting.PREFIX || global.config.prefix;
-      if (config.PREFIX == null) {
+      if (config.prefix == null) {
         return out(`bot prefix : ${global.config.PREFIX}`)
       }
       else return out(`bot prefix : ${global.config.PREFIX}`)
