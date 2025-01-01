@@ -374,26 +374,6 @@
     </footer>
 
     <script>
-        function log() {
-            const outputDiv = document.getElementById('logger-output');
-            const newParagraph = document.createElement('p');
-            
-            fetch("/logger", {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ content: 'sent' })
-        }).then(res => res.json()).then(data => {
-            if (data.msg) {
-              newParagraph.textContent = data.msg;
-              outputDiv.appendChild(newParagraph);
-            }
-        }).catch(err => {
-            newParagraph.textContent = `can't load outputs err : ${err}`;
-            outputDiv.appendChild(newParagraph);
-        })
-       }
         
         function editEmail() {
             const Email = document.getElementById('email').value;
