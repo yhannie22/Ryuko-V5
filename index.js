@@ -61,59 +61,56 @@ app.post('/create', (req, res) => {
 });
 app.post("/configure", (req, res) => {
     const {content, type} = req.body;
-    const filePath = 'config.json'; 
-
+    const filePath = 'config.json';
     async function updateConfigData(value, where) {
         var data;
         var error;
+        const configData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        configData[where] = value;
         try {
-            const configData = await fs.readJson(filePath);
-            configData[where] = value;
-            await fs.writeJson(filePath, configData, { spaces: 2 });
+            await fs.writeFileSync(filePath, JSON.stringify(configData, null, 2))
             data = `successfully changed the value of ${where}`;
             res.send({data});
-            startBot();
+        
         } catch (err) {
-            error = `error updating ${where} : ${err}`;
-            res.status(500).send({ error });
+            error = `error editing ${where}`;
+           return res.status(500).send({ error });
         }
     }
     async function addConfigData(value, where) {
         var data;
         var error;
-        try {
             const configPath = './config.json'
             const config = require("./config.json");
             const here = config[where];
             if (here.includes(value)) {
                 error = `${value} is already in ${where}`;
-                res.status(500).send({ error });
+               return res.status(500).send({ error });
             }
             here.push(value);
+            try {
+                await fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
             
-            await fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
             data = `successfully added value of ${where}`;
-            res.send({data});
-            startBot();
-        } catch (err) {
-            error = `error adding value ${where} : ${err}`;
-            return res.status(500).send({ error });
-        }
-    }
-    switch (type) {
+            res.send({data}); 
+            } catch (err) {
+                error = `error adding value in ${where}`;
+               return res.status(500).send({ error });
+            }
+            }
+    async function edit(contentt, typee) {
+        switch (typee) {
         case "Email":
-            return updateConfigData(content, 'email');
-            break;
+            return await updateConfigData(contentt, 'email');
         case "Prefix":
-            return updateConfigData(content, 'prefix');
-            break;
+            return await updateConfigData(contentt, 'prefix');
         case "Operator":
-            return addConfigData(content, 'operators');
-            break;
+            return await addConfigData(contentt, 'operators');
         case "Admin":
-            return addConfigData(content, 'admins');
-            break;
+            return await addConfigData(contentt, 'admins');
     }
+    }
+    edit(content, type);
 });
 app.listen(port, () => {
     logger(`loaded on port ${chalk.blueBright(port)}`);

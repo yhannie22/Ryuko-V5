@@ -405,12 +405,10 @@
                   Swal.fire({
                     icon: 'success',
                     title: 'Edited email successfully',
-                    text: 'restarting system please wait..',
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then(()=>{
-                    window.location.href = "/";
+                    text: 'restart your bot using "restart" command to apply changes',
+                    confirmButtonColor: '#4CAF50'
                 });
+                return;
                   }
           }).catch(err => {
               Swal.fire({
@@ -449,15 +447,13 @@
                 });
               }
               if (data.data) {
-                  Swal.fire({
+                   Swal.fire({
                     icon: 'success',
                     title: 'Edited prefix successfully',
-                    text: 'restarting system please wait..',
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then(()=>{
-               window.location.href = "/";
+                    text: 'restart your bot using "restart" command to apply changes',
+                    confirmButtonColor: '#4CAF50'
                 });
+                return;
               }
           }).catch(err => {
               Swal.fire({
@@ -496,15 +492,13 @@
                 });
               }
               if (data.data) {
-                  Swal.fire({
+                   Swal.fire({
                     icon: 'success',
                     title: 'Added operator successfully',
-                    text: 'restarting system please wait..',
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then(()=>{
-                      window.location.href = "/";
+                    text: 'restart your bot using "restart" command to apply changes',
+                    confirmButtonColor: '#4CAF50'
                 });
+                return;
               }
           }).catch(err => {
               Swal.fire({
@@ -543,15 +537,13 @@
                 });
               }
               if (data.data) {
-                  Swal.fire({
+                   Swal.fire({
                     icon: 'success',
                     title: 'Added admin successfully',
-                    text: 'restarting system please wait..',
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then(()=>{
-                      window.location.href = "/";
+                    text: 'restart your bot using "restart" command to apply changes',
+                    confirmButtonColor: '#4CAF50'
                 });
+                return;
               }
           }).catch(err => {
               Swal.fire({
