@@ -77,7 +77,7 @@ return (event) => {
 				break;
 			case "event":
 				handleEvent({ event });
-                handleRefresh({ event });
+        handleRefresh({ event });
 				break;
 			case "message_reaction":
 				handleReaction({ event });
