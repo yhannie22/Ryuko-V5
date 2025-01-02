@@ -72,7 +72,7 @@ app.post("/configure", (req, res) => {
             await fs.writeJson(filePath, configData, { spaces: 2 });
             data = `successfully changed the value of ${where}`;
             res.send({data});
-            return startBot('restarting please wait');
+            startBot();
         } catch (err) {
             error = `error updating ${where} : ${err}`;
             res.status(500).send({ error });
@@ -87,14 +87,14 @@ app.post("/configure", (req, res) => {
             const here = config[where];
             if (here.includes(value)) {
                 error = `${value} is already in ${where}`;
-                return res.status(500).send({ error });
+                res.status(500).send({ error });
             }
             here.push(value);
             
             await fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
             data = `successfully added value of ${where}`;
             res.send({data});
-            return startBot('restarting please wait');
+            startBot();
         } catch (err) {
             error = `error adding value ${where} : ${err}`;
             return res.status(500).send({ error });
