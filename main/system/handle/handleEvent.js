@@ -1,16 +1,21 @@
 module.exports = function ({api ,models, Users, Threads, Currencies }) {
     const logger = require("../../utility/logs.js");
    	const moment = require("moment");
-    return function ({ event }) {
+    return async function ({ event }) {
         const timeStart = Date.now()
         const time = moment.tz("Asia/Manila").format("HH:MM:ss L");
         const { userBanned, threadBanned } = global.data;
         const { events } = global.client;
-        const { developermode, approval, prefix, allowinbox, approvedgroups} = global.config;
+        const { developermode, approval, allowinbox, approvedgroups} = global.config;
         var { senderID, threadID } = event;
         senderID = String(senderID);
         threadID = String(threadID);
-      const notApproved = `this box is not approved.\nuse "${prefix}request" to send a approval request from bot operators`;
+        const bots = require("../../../bots.json");
+        const userId = await api.getCurrentUserID();
+        const prefix = bots.find(item => item.uid === userId)?.prefix;
+        const botname = bots.find(item => item.uid === userId)?.botname;
+        
+        const notApproved = `this box is not approved.\nuse "${prefix}request" to send a approval request from bot operators`;
         if (!approvedgroups.includes(threadID) && approval) {
           return api.sendMessage(notApproved, threadID, async (err, info) => {
             if (err) {
@@ -31,7 +36,9 @@ module.exports = function ({api ,models, Users, Threads, Currencies }) {
                     Obj.models= models 
                     Obj.Users= Users 
                     Obj.Threads = Threads
-                    Obj.Currencies = Currencies 
+                    Obj.Currencies = Currencies
+                    Obj.prefix = prefix
+                    Obj.botname = botname
                     eventRun.run(Obj);
                     if (developermode == !![]) 
                     	logger(global.getText('handleEvent', 'executeEvent', time, eventRun.config.name, threadID, Date.now() - timeStart) + '\n', 'evnt');

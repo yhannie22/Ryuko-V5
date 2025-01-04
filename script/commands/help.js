@@ -33,7 +33,7 @@ module.exports.languages = {
 };
 
 
-module.exports.handleEvent = function ({ api, event, getText }) {
+module.exports.handleEvent = function ({ api, event, getText, botname, prefix }) {
   const { commands } = global.client;
   const { threadID, messageID, body } = event;  
 
@@ -43,7 +43,6 @@ module.exports.handleEvent = function ({ api, event, getText }) {
   if (splitBody.length == 1 || !commands.has(splitBody[1].toLowerCase())) return;
   const threadSetting = global.data.threadData.get(parseInt(threadID)) || {};
   const command = commands.get(splitBody[1].toLowerCase());
-  const prefix = global.config.prefix;
   return api.sendMessage(
     getText(
       "moduleInfo",
@@ -66,15 +65,14 @@ module.exports.handleEvent = function ({ api, event, getText }) {
   );
 };
 
-module.exports.run = async function ({ api, event, args, getText }) {
+module.exports.run = async function ({ api, event, args, getText, botname, prefix }) {
   const { commands } = global.client;
   const { threadID, messageID } = event;
   const command = commands.get((args[0] || "").toLowerCase());
   const threadSetting = global.data.threadData.get(parseInt(threadID)) || {};
   const autoUnsend  = true;
   const delayUnsend = 60;
-  const prefix = global.config.prefix;
-
+  
   if (!command) {
     const commandList = Array.from(commands.values());
     const categories = new Set(commandList.map((cmd) => cmd.config.category.toLowerCase()));
@@ -172,7 +170,7 @@ module.exports.run = async function ({ api, event, args, getText }) {
     fs.writeFileSync(path, Buffer.from(data, "utf-8"));
     imgP.push(fs.createReadStream(path));
     const msgg = {
-  body: `existing commands and categories\n\nhere's the categories and commands\n\n ` + msg + `\n\n`
+  body: `existing commands and categories of ${botname} ai\n\nhere's the categories and commands\n\n ` + msg + `\n\n`
     };
 
     const sentMessage = await api.sendMessage(msgg, threadID, async (error, info) => {

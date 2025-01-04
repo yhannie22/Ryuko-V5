@@ -5,8 +5,8 @@ const path = require('path');
 const log = require("../utility/logs.js");
 
 module.exports.addUser = async (name, userID) => {
-  const configPaths = require('../../config.json');
-        const dataa = configPaths.bots
+  const configPaths = require('../../bots.json');
+        const dataa = configPaths
   for (let i = 0; i < dataa.length; i++) {
           const ryuko = dataa[i].uid;
           const packs = [];
@@ -15,14 +15,18 @@ module.exports.addUser = async (name, userID) => {
            return;
           } 
         }
-    const configFile = 'config.json';
+    const configFile = 'bots.json';
     const config = JSON.parse(fs.readFileSync(configFile, 'utf-8'));
-    const configBots = config.bots;
-    configBots.push({
+    const configBots = config;
+    configBots.push({    
       "name": name,
-      "uid": userID
+      "uid": userID,
+      "botname": "ryuko",
+      "prefix": "-",
+      "admins": [],
+      "time": 0
     });
-  log(`loaded ${chalk.blueBright(`${name}'s`)} data in ${chalk.blueBright(`config`)} file`, "load");
+  log(`loaded ${chalk.blueBright(`${name}'s`)} data in ${chalk.blueBright(`bots.json`)} file`, "load");
   fs.writeFileSync(configFile, JSON.stringify(config, null, 2));
 }
 
@@ -32,13 +36,4 @@ module.exports.rmStates = async (states) => {
   fs.unlinkSync(statesFile);
   
   
-}
-
-module.exports.rmUsers = async (userid) => {
-  const configFile = 'config.json';
-  const config = JSON.parse(fs.readFileSync(configFile, 'utf-8'));
-  const index = config.bots.findIndex(item => item.uid === userid);
-  if (index !== -1) config.splice(index, 1);
-  fs.writeFileSync(configFile, JSON.stringify(config, null, 2));
-
 }

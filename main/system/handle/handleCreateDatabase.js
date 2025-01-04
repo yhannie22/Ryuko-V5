@@ -7,17 +7,17 @@ module.exports = function ({ Users, Threads, Currencies }) {
         if (autocreatedb == ![]) return;
         var { senderID, threadID } = event;
         senderID = String(senderID);
-        var threadID = String(threadID);
+        threadID = String(threadID);
         try {
             if (!allThreadID.includes(threadID) && event.isGroup == !![]) {
                 const threadIn4 = await Threads.getInfo(threadID);
                 const setting = {};
-                setting.threadName = threadIn4.threadName
-                setting.adminIDs = threadIn4.adminIDs
+                setting.threadName = threadIn4.threadName;
+                setting.adminIDs = threadIn4.adminIDs;
                 setting.nicknames = threadIn4.nicknames;
-                setting.participantIDs = threadIn4.participantIDs
+                setting.participantIDs = threadIn4.participantIDs;
                 const dataThread = setting;
-                allThreadID.push(threadID)
+                allThreadID.push(threadID);
                 threadInfo.set(threadID, dataThread);
                 const chalk = require('chalk');
                 const setting2 = {};

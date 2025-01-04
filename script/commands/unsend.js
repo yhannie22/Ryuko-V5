@@ -1,7 +1,7 @@
 module.exports.config = {
     name: "unsend",
     version: "1.0.1",
-    permission: 1,
+    permission: 2,
     credits: "nazrul",
     description: "reply [unsend]",
     category: "system",

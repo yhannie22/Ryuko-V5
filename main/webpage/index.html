@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+        
         body {
             background-color: #121212;
             color: #fff;
@@ -71,6 +72,35 @@
             text-align: center;
             margin-top: 50px;
         }
+        .login-container {
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            animation: fade-in 0.5s ease-in-out forwards;
+            padding: 20px;
+            position: relative;
+            border-radius: 10px;
+            background-color: #1e1e1e;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .create-container {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            position: relative;
+            animation: fade-in 0.5s ease-in-out forwards;
+            opacity: 0;
+            border-radius: 10px;
+            background-color: #1e1e1e;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .password-container {
+            position: relative;
+            border-radius: 10px;
+            background-color: #1e1e1e;
+            text-align: center;
+            margin-top: 10px;
+        }
 
         p {
             line-height: 1.8;
@@ -79,18 +109,28 @@
             color: #b0b0b0;
         }
 
-        .password-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
 
+         @keyframes fade-in{
+  0% {
+      transform: translateY(-30%);
+    opacity: 0;
+  }
+  50% {
+      transform: translateY(-10%);
+    opacity: 0;
+  }
+  100% {
+      transform: translateY(0%);
+    opacity:1;
+  }
+}
         input[type="password"], input[type="text"] {
-            width: 100%;
+           width: 90%;
             padding: 15px;
             margin-bottom: 20px;
             border: 1px solid #444;
             border-radius: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
             background-color: #333;
             color: #fff;
             font-size: 1.2rem;
@@ -104,7 +144,7 @@
 
         .eye-icon {
             position: absolute;
-            right: 20px;
+            right: 30px;
             top: 40%;
             transform: translateY(-60%);
             cursor: pointer;
@@ -221,6 +261,56 @@
                 padding: 20px;
             }
         }
+        .user-card {
+         display: flex;
+         align-items: center;
+         margin-bottom: 10px;
+         border: 1px solid #dee2e6;
+         border-radius: 10px;
+         padding: 5px;
+         width: 100%;
+         text-align: center;
+         overflow: auto;
+         animation: glow 3s infinite alternate; 
+         }
+         @keyframes glow {
+         from {
+         border-color: #000; 
+         }
+         to {
+         border-color: #fff; 
+         }
+         }
+         .user-card img {
+         max-width: 100%;
+         border-radius: 10px;
+         margin-right: 10px;
+         }
+         .user-info {
+         flex-grow: 1;
+         }
+         .user-info h4 {
+         margin-left: 3px;
+         margin-bottom: 3px;
+         font-size: 16px;
+         white-space: nowrap;
+         overflow: hidden;
+         text-overflow: ellipsis;
+         text-align: start;
+         }
+         .user-info p {
+         margin: 0;
+         font-size: 12px;
+         white-space: nowrap;
+         overflow: hidden;
+         text-overflow: ellipsis;
+         text-align: start;
+         }
+         p {
+         padding: 3px;
+         }
+         p.uptime-user {
+         }
     </style>
 </head>
 <body>
@@ -238,23 +328,39 @@
         <div class="tab">
             <div class="tab-container">
                 <button class="tablinks active" onclick="openTab(event, 'Login')">ADMIN PANEL</button>
-                <button class="tablinks" onclick="openTab(event, 'About')">SOURCES</button>
+                <button class="tablinks" onclick="openTab(event, 'About')">INFO</button>
             </div>
         </div>
         <div id="About" class="tabcontent">
-            <h3>Ryuko V5</h3>
-            <p>botpack - Yan Maglinte</p>
-            <p>ws3-fca - Kenneth Aceberos</p>
-            <p>mirai - To the owner</p>
+            <div class="create-container">
+                <h3>SOURCES</h3>
+            <p>
+               botpack - Yan Maglinte</br>
+               ws3-fca - Kenneth Aceberos</br>
+               mirai - To the owner</br>
+               autobot - To the owner
+            </p>
+            </div>
+            <div class="create-container">
+                <div class="row">
+            <h1 class="col text-start" style="margin-left: 12px; font-size: 20px;">Current Online</h1>
+         </div>
+         <div class="row" id="user_online"></div>
+            </div>
         </div>
 
         <div id="Login" class="tabcontent active">
-            <h3>Administrator Login</h3>
-            <div class="password-container">
+           
+            <div class="login-container">
+                
+                 <h3>Administrator Login</h3>
+                 <div class="password-container">
                 <input type="password" id="loginPassword" placeholder="Password" required>
                 <i class="eye-icon" onclick="togglePasswordVisibility()">🙈</i>
+                </div>
+                <button onclick="login()">LOGIN</button>
             </div>
-            <button onclick="login()">LOGIN</button>
+            
         </div>
     </div>
 
@@ -263,6 +369,81 @@
     </footer>
 
     <script>
+        async function listOfAi() {
+             const userOnline = document.getElementById("user_online");
+             try {
+                 const response = await fetch("/info");
+                 const data = await response.json();
+                 userOnline.innerHTML = '';
+                 data.forEach(user => {
+                     const {
+                         name,
+                         thumbSrc,
+                         profileUrl,
+                         time,
+                     } = user;
+                     const userCard = document.createElement('div');
+                     userCard.className = 'col-12 user-card mb-4';
+                     const image = document.createElement('img');
+                     image.src = thumbSrc;
+                     image.alt = 'User Thumbnail';
+                     image.className = 'img-thumbnail';
+                     const userInfo = document.createElement('div');
+                     userInfo.className = 'user-info';
+                     const userName = document.createElement('h4');
+                     userName.textContent = name;
+                     const profileLink = document.createElement('p');
+                     profileLink.innerHTML = `${profileUrl}`;
+                     const uptimeUser = document.createElement('p');
+                     uptimeUser.className = 'uptime-user';
+                     uptimeUser.innerHTML = `Uptime: ${timeFormat(time)}`;
+                     userInfo.appendChild(userName);
+                     userInfo.appendChild(profileLink);
+                     userInfo.appendChild(uptimeUser);
+                     userCard.appendChild(image);
+                     userCard.appendChild(userInfo);
+                     userOnline.appendChild(userCard);
+    
+                     const intervalId = setInterval(() => {
+                         user.time++;
+                         updateTimer(userCard, user.time);
+                     }, 1000); 
+                 });
+             } catch (error) {
+                 console.error(error);
+                 userOnline.innerHTML = `<div class="alert alert-danger" role="alert">An error occurred while fetching data.</div>`;
+             }
+         }
+         
+         function updateTimer(userCard, currentTime) {
+             const uptimeUser = userCard.querySelector('.uptime-user');
+             uptimeUser.textContent = `uptime : ${timeFormat(currentTime)}`;
+         }
+         
+        function timeFormat(currentTime) {
+            const days = Math.floor(currentTime / (3600 * 24));
+            const hours = Math.floor((currentTime % (3600 * 24)) / 3600);
+            const minutes = Math.floor((currentTime % 3600) / 60);
+            const seconds = currentTime % 60;
+
+            let timeFormat = '';
+
+            switch (true) {
+                case days > 0:
+                    timeFormat += `${days} day${days > 1 ? 's' : ''} `;
+                case hours > 0:
+                    timeFormat += `${hours} hour${hours > 1 ? 's' : ''} `;
+                case minutes > 0:
+                    timeFormat += `${minutes} minute${minutes > 1 ? 's' : ''} `;
+                default:
+                    timeFormat += `${seconds} second${seconds > 1 ? 's' : ''}`;
+            }
+
+            return timeFormat.trim();
+        }
+
+         
+         listOfAi();
         function openTab(evt, tabName) {
             const tabcontent = document.querySelectorAll('.tabcontent');
             const tablinks = document.querySelectorAll('.tablinks');

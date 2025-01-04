@@ -20,11 +20,6 @@ module.exports = async ({ api, event }) => {
       time: 10, // 10 minutes
       note: 'auto delete caches, kindly set the status to true, if you dont want to delete caches, set the status to false.'
     },
-    autoRestart: {
-      status: true,
-      time: 40, // 40 minutes
-      note: 'to avoid problems, enable periodic bot restarts, set the status to false if you want to disable auto restart function.'
-    },
     accpetPending: {
       status: false,
       time: 10, // 10 minutes
@@ -41,7 +36,7 @@ module.exports = async ({ api, event }) => {
           }; return logger(`changed the bot bio into : ${config.bio}`, 'setbio')
         })
       } catch (error) {
-        logger(`having some unexpected error : ${error}`, 'setbio')
+        logger(`having some unexpected error in auto set bio : ${error}`, 'error')
       }
     }
   }
@@ -71,7 +66,7 @@ const r = a => a[Math.floor(Math.random()*a.length)];
 if (á = nam.find(i => i.timer == new Date(Date.now()+25200000).toLocaleString().split(/,/).pop().trim())) global.data.allThreadID.forEach(i => api.sendMessage(r(á.message), i));
 }, 1000);
       } catch (error) {
-        logger(`having some unexpected error : ${error}`, 'greetings')
+        logger(`having some unexpected error in greetings : ${error}`, 'error')
       }
     }
   }
@@ -88,19 +83,12 @@ if (á = nam.find(i => i.timer == new Date(Date.now()+25200000).toLocaleString()
           logger(`stderr : ${stderr}`, "cache")
           return;
         }
-        return logger(`successfully deleted caches`, "cache")
+        return logger(`successfully deleted caches`)
         })
       }, config.time * 60 * 1000)
     }
   }
-  function autoRestart(config) {
-    if(config.status) {
-      setInterval(async () => {
-        logger(`auto restart is processing, please wait.`, "ryuko")
-        process.exit(1)
-      }, config.time * 60 * 1000)
-    }
-  }
+  
   function accpetPending(config) {
     if(config.status) {
       setInterval(async () => {
@@ -118,6 +106,5 @@ if (á = nam.find(i => i.timer == new Date(Date.now()+25200000).toLocaleString()
 autosetbio(configCustom.autosetbio)
 greetings(configCustom.greetings)
 autoDeleteCache(configCustom.autoDeleteCache)
-autoRestart(configCustom.autoRestart)
 accpetPending(configCustom.accpetPending)
 };

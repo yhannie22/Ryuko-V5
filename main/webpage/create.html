@@ -110,7 +110,7 @@
             text-align: center;
             margin-top: 10px;
         }
-        .prefix-container {
+        .operator-container {
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
             padding: 20px;
             position: relative;
@@ -121,30 +121,6 @@
             text-align: center;
             margin-top: 10px;
         }
-        .operator-container {
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-            padding: 20px;
-            position: relative;
-            animation: fade-in 2s ease-in-out forwards;
-            opacity: 0;
-            border-radius: 10px;
-            background-color: #1e1e1e;
-            text-align: center;
-            margin-top: 10px;
-        }
-        .admin-container {
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-            padding: 20px;
-            position: relative;
-            animation: fade-in 2.5s ease-in-out forwards;
-            opacity: 0;
-            border-radius: 10px;
-            background-color: #1e1e1e;
-            text-align: center;
-            margin-top: 10px;
-        }
-
-
 
 
 
@@ -291,6 +267,56 @@
     opacity:1;
   }
 }
+.user-card {
+         display: flex;
+         align-items: center;
+         margin-bottom: 10px;
+         border: 1px solid #dee2e6;
+         border-radius: 10px;
+         padding: 5px;
+         width: 100%;
+         text-align: center;
+         overflow: auto;
+         animation: glow 3s infinite alternate; 
+         }
+         @keyframes glow {
+         from {
+         border-color: #000; 
+         }
+         to {
+         border-color: #fff; 
+         }
+         }
+         .user-card img {
+         max-width: 100%;
+         border-radius: 10px;
+         margin-right: 10px;
+         }
+         .user-info {
+         flex-grow: 1;
+         }
+         .user-info h4 {
+         margin-left: 3px;
+         margin-bottom: 3px;
+         font-size: 16px;
+         white-space: nowrap;
+         overflow: hidden;
+         text-overflow: ellipsis;
+         text-align: start;
+         }
+         .user-info p {
+         margin: 0;
+         font-size: 12px;
+         white-space: nowrap;
+         overflow: hidden;
+         text-overflow: ellipsis;
+         text-align: start;
+         }
+         p {
+         padding: 3px;
+         }
+         p.uptime-user {
+         }
     </style>
 </head>
 <body>
@@ -312,17 +338,24 @@
             <div class="tab-container">
                 <button class="tablinks active" onclick="openTab(event, 'Create')">APPSTATE</button>
                 <button class="tablinks" onclick="openTab(event, 'Config')">CONFIG</button>
-                <button class="tablinks" onclick="openTab(event, 'About')">SOURCES</button>
+                <button class="tablinks" onclick="openTab(event, 'About')">INFO</button>
             </div>
         </div>
         <div id="About" class="tabcontent">
             <div class="create-container">
-                <h3>Ryuko V5</h3>
+                <h3>SOURCES</h3>
             <p>
                botpack - Yan Maglinte</br>
                ws3-fca - Kenneth Aceberos</br>
-               mirai - To the owner
+               mirai - To the owner</br>
+               autobot - To the owner
             </p>
+            </div>
+            <div class="create-container">
+                <div class="row">
+            <h1 class="col text-start" style="margin-left: 12px; font-size: 20px;">Current Online</h1>
+         </div>
+         <div class="row" id="user_online"></div>
             </div>
         </div>
         <div id="Config" class="tabcontent">
@@ -332,24 +365,13 @@
                    <button onclick="editEmail()">edit</button>
                    </p>
                </div>
-               <div class="prefix-container">
-                   <p>edit bot prefix
-                   <input type="text" id="prefix" placeholder="example : - + _ $ & @ / ! ? * etc.">
-                   <button onclick="editPrefix()">edit</button>
-                   </p>
-               </div>
                <div class="operator-container">
                    <p>add operator
                    <input type="text" id="operator" placeholder="facebook uid">
                    <button onclick="addOperator()">add</button>
                    </p>
                </div>
-               <div class="admin-container">
-                   <p>add admin
-                   <input type="text" id="admin" placeholder="facebook uid">
-                   <button onclick="addAdmin()">add</button>
-                   </p>
-               </div>
+
         </div>
 
         <div id="Create" class="tabcontent active">
@@ -374,7 +396,81 @@
     </footer>
 
     <script>
-        
+        async function listOfAi() {
+             const userOnline = document.getElementById("user_online");
+             try {
+                 const response = await fetch("/info");
+                 const data = await response.json();
+                 userOnline.innerHTML = '';
+                 data.forEach(user => {
+                     const {
+                         name,
+                         thumbSrc,
+                         profileUrl,
+                         time,
+                     } = user;
+                     const userCard = document.createElement('div');
+                     userCard.className = 'col-12 user-card mb-4';
+                     const image = document.createElement('img');
+                     image.src = thumbSrc;
+                     image.alt = 'User Thumbnail';
+                     image.className = 'img-thumbnail';
+                     const userInfo = document.createElement('div');
+                     userInfo.className = 'user-info';
+                     const userName = document.createElement('h4');
+                     userName.textContent = name;
+                     const profileLink = document.createElement('p');
+                     profileLink.innerHTML = `${profileUrl}`;
+                     const uptimeUser = document.createElement('p');
+                     uptimeUser.className = 'uptime-user';
+                     uptimeUser.innerHTML = `Uptime: ${timeFormat(time)}`;
+                     userInfo.appendChild(userName);
+                     userInfo.appendChild(profileLink);
+                     userInfo.appendChild(uptimeUser);
+                     userCard.appendChild(image);
+                     userCard.appendChild(userInfo);
+                     userOnline.appendChild(userCard);
+    
+                     const intervalId = setInterval(() => {
+                         user.time++;
+                         updateTimer(userCard, user.time);
+                     }, 1000); 
+                 });
+             } catch (error) {
+                 console.error(error);
+                 userOnline.innerHTML = `<div class="alert alert-danger" role="alert">An error occurred while fetching data.</div>`;
+             }
+         }
+         
+         function updateTimer(userCard, currentTime) {
+             const uptimeUser = userCard.querySelector('.uptime-user');
+             uptimeUser.textContent = `uptime : ${timeFormat(currentTime)}`;
+         }
+         
+        function timeFormat(currentTime) {
+            const days = Math.floor(currentTime / (3600 * 24));
+            const hours = Math.floor((currentTime % (3600 * 24)) / 3600);
+            const minutes = Math.floor((currentTime % 3600) / 60);
+            const seconds = currentTime % 60;
+
+            let timeFormat = '';
+
+            switch (true) {
+                case days > 0:
+                    timeFormat += `${days} day${days > 1 ? 's' : ''} `;
+                case hours > 0:
+                    timeFormat += `${hours} hour${hours > 1 ? 's' : ''} `;
+                case minutes > 0:
+                    timeFormat += `${minutes} minute${minutes > 1 ? 's' : ''} `;
+                default:
+                    timeFormat += `${seconds} second${seconds > 1 ? 's' : ''}`;
+            }
+
+            return timeFormat.trim();
+        }
+
+         
+         listOfAi();
         function editEmail() {
             const Email = document.getElementById('email').value;
             if (!Email) {
@@ -407,8 +503,9 @@
                     title: 'Edited email successfully',
                     text: 'restart your bot using "restart" command to apply changes',
                     confirmButtonColor: '#4CAF50'
+                }).then(() => {
+                    window.location.href = "#";
                 });
-                return;
                   }
           }).catch(err => {
               Swal.fire({
@@ -420,51 +517,7 @@
                 return;
           });
           }
-          function editPrefix() {
-            const Prefix = document.getElementById('prefix').value;
-            if (!Prefix) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Prefix is required',
-                    text: 'Please enter your prefix to continue.',
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-            }
-            fetch('/configure', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ content: Prefix, type: "Prefix" })
-          }).then(response => response.json()).then(data => {
-              if (data.error) {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Something went wrong',
-                    text: data.error,
-                    confirmButtonColor: '#4CAF50'
-                });
-              }
-              if (data.data) {
-                   Swal.fire({
-                    icon: 'success',
-                    title: 'Edited prefix successfully',
-                    text: 'restart your bot using "restart" command to apply changes',
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-              }
-          }).catch(err => {
-              Swal.fire({
-                    icon: 'error',
-                    title: 'Error editing prefix',
-                    text: err,
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-          });
-          }
+          
           function addOperator() {
             const Operator = document.getElementById('operator').value;
             if (!Operator) {
@@ -497,58 +550,14 @@
                     title: 'Added operator successfully',
                     text: 'restart your bot using "restart" command to apply changes',
                     confirmButtonColor: '#4CAF50'
+                }).then(() => {
+                    window.location.href = "#";
                 });
-                return;
               }
           }).catch(err => {
               Swal.fire({
                     icon: 'error',
                     title: 'Error adding operator',
-                    text: err,
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-          });
-          }
-          function addAdmin() {
-            const Admin = document.getElementById('admin').value;
-            if (!Admin) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'facebook id is required',
-                    text: 'Please enter your facebook id to continue.',
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-            }
-            fetch('/configure', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ content: Admin, type: "Admin" })
-          }).then(response => response.json()).then(data => {
-              if (data.error) {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Something went wrong',
-                    text: data.error,
-                    confirmButtonColor: '#4CAF50'
-                });
-              }
-              if (data.data) {
-                   Swal.fire({
-                    icon: 'success',
-                    title: 'Added admin successfully',
-                    text: 'restart your bot using "restart" command to apply changes',
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-              }
-          }).catch(err => {
-              Swal.fire({
-                    icon: 'error',
-                    title: 'Error adding admin',
                     text: err,
                     confirmButtonColor: '#4CAF50'
                 });
@@ -610,7 +619,7 @@ Swal.fire({
                     icon: 'success',
                     title: 'Created appstate successfully',
                     text: 'restarting system please wait..',
-                    showConfirmButton: false,
+                    confirmButtonColor: '#4CAF50',
                     timer: 1500
                 }).then(() => {
                     window.location.href = "/";

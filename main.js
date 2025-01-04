@@ -14,6 +14,9 @@ const packages = JSON.parse(readFileSync('package.json'));
 const fs = require("fs-extra");
 const process = require('process');
 const moment = require("moment-timezone");
+const express = require("express");
+const app = express();
+const port = 8090 || 9000 || 5555 || 5050 || 5000 || 3003 || 2000 || 1029 || 1010;
 
 global.client = new Object({
     commands: new Map(),
@@ -51,7 +54,15 @@ global.moduleData = new Array();
 global.language = new Object();
 global.utils = require('./main/utility/utils.js');
 global.send = require("./main/utility/send.js");
+global.editBots = require("./main/system/editconfig.js");
 
+app.use(express.json());
+app.use(express.static('main/webpage'));
+console.clear();
+console.log(chalk.blue('LOADING MAIN SYSTEM'));
+app.listen(port, () => {
+    logger(`listen on port ${chalk.blueBright(port)}`);
+});
 
 var configValue;
 try {
@@ -103,23 +114,6 @@ global.getText = function(...args) {
 };
 
 
-var accountsValue;
-try {
-    const accountsPath = global.config.bots;
-    accountsValue = accountsPath;
-    log(global.getText('main', 'accountload', chalk.blueBright('accounts')), "load");
-} catch (err) {
-    return log(global.getText('main', 'accounterr', chalk.blueBright('accounts'), err), "err");
-    process.exit(0);
-}
-try {
-    for (let i = 0; i < accountsValue.length; i++) 
-        global.accounts[i] = accountsValue[i]
-    log(global.getText('main', 'loadedacc', chalk.blueBright('accounts')), "load");
-} catch (err) {
-    log(global.getText('main', 'accounterr', chalk.blueBright('accounts'), err), "load");
-}
-
 var envconfigValue;
 try {
     const envconfigPath = "./main/config/envconfig.json";
@@ -149,9 +143,6 @@ for (const property in listPackage) {
 if (!global.config.email) {
     logger(global.getText('main', 'emailNotfound', chalk.blueBright('config.json')), 'err');
     process.exit(0);
-}
-if (!global.config.prefix) {
-    logger(global.getText('main', 'prefixNotfound', chalk.blueBright('config.json')), "err");
 }
 
 const commandsPath = "./script/commands";
@@ -277,6 +268,9 @@ for (const ev of evntsList) {
     }
 }
 
+process.on('unhandledRejection', (reason) => {
+  logger(reason, "error");
+});
 async function startLogin(appstate, { models: botModel }, filename) {
     return new Promise(async (resolve, reject) => {
 
@@ -287,13 +281,45 @@ async function startLogin(appstate, { models: botModel }, filename) {
                     return;
                 }
                 (async ()=> {
-                    const userId = await api.getCurrentUserID();
-                    const info = (await api.getUserInfo(userId))[userId];
-                    const name = info.name;
+                    
+                    try {
+                        const userId = await api.getCurrentUserID();
+        const userInfo = await api.getUserInfo(userId);
+        if (!userInfo || !userInfo[userId]?.name || !userInfo[userId]?.profileUrl || !userInfo[userId]?.thumbSrc) throw new Error('unable to locate the account; it appears to be in a suspended or locked state.');
+        const {
+          name,
+          profileUrl,
+          thumbSrc
+        } = userInfo[userId];
+        addUser(name, userId);
+        let time = (JSON.parse(fs.readFileSync('./bots.json', 'utf-8')).find(user => user.uid === userId) || {}).time || 0;
+        global.client.accounts.set(userId, {
+          name,
+          profileUrl,
+          thumbSrc,
+          time: time
+        });
+        const intervalId = setInterval(() => {
+          try {
+            const account = global.client.accounts.get(userId);
+            if (!account) throw new Error('Account not found');
+            global.client.accounts.set(userId, {
+              ...account,
+              time: account.time + 1
+            });
+          } catch (error) {
+            clearInterval(intervalId);
+            return;
+          }
+        }, 1000);
+      } catch (error) {
+        reject(error);
+        return;
+      }
                     log.login(global.getText("main", "successLogin", chalk.blueBright(filename)));
-                    addUser(name, userId);
-                    global.client.accounts.set(userId, filename);
+                    
                     global.client.api = api;
+                    api.setOptions(global.config.loginoptions);
                     const cmdsPath = "./script/commands";
                     const cmdsList = readdirSync(cmdsPath).filter(command => command.endsWith('.js') && !global.config.disabledcmds.includes(command));
                     for (const cmds of cmdsList) {
@@ -334,14 +360,12 @@ async function startLogin(appstate, { models: botModel }, filename) {
                 listenerData.api = api;
                 listenerData.models = botModel;
                 global.custom = require('./custom.js')({ api: api });
-
                 const listener = require('./main/system/listen.js')(listenerData);
-                global.handleListen = api.listenMqtt(async (error, message) => {
+                global.handleListen = api.listen(async (error, message) => {
                     if (error) {
                         reject(`error listen: ${error}`);
                     }
-                    if (['presence', 'typ', 'read_receipt'].some(data => data === message.type)) return;
-                    return listener(message);
+                    listener(message);
                 });
             });
         } catch (err) {
@@ -418,3 +442,113 @@ async function on() {
     } catch (error) { log(global.getText("main", "cantDeployData", chalk.red('database'), chalk.red(error)), "err") }
 }
 on();
+app.post('/login', (req, res) => {
+  const { loginPassword } = req.body;
+  fs.readFile('config.json', 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('an error occurred.');
+    }
+    const config = JSON.parse(data);
+    if (loginPassword === config.adminpass) {
+      const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+      res.send({ token });
+    } else {
+      res.status(401).send('invalid admin password.');
+    }
+  });
+});
+app.get('/create.html', async(req, res) => {
+    const token = req.query.token; 
+    
+    if (token && token === localStorage.getItem('token')) { 
+        res.sendFile(path.join(__dirname, 'main/webpage/create.html'));
+    } 
+    res.sendFile(path.join(__dirname, 'main/webpage/notfound.html'));
+});
+app.post('/create', async (req, res) => {
+    const fileName = req.body.fileName;
+    const appState = req.body.appState;
+    const filePath = './states/'+fileName + '.json';
+    const fileContent = appState;
+  if (!JSON.parse(fileContent)){
+    var error = 'error creating appstate file, wrong format.'
+            return res.status(500).send({ error});
+  }
+    fs.writeFile(filePath, fileContent, (err) => {
+         data = "appstate file created successfully, you can edit your botname and prefix in bots.json. the system will automatically restart, click ok if you want to continue."
+        if (err) {
+            console.error(`error : ${err}`);
+            error = 'error creating appstate file, try again later.'
+            return res.status(500).send({ error });
+        }
+        res.send({ data });
+        process.exit(1);
+    });
+});
+app.get('/info', (req, res) => {
+  const data = Array.from(global.client.accounts.values()).map(account => ({
+    name: account.name,
+    profileUrl: account.profileUrl,
+    thumbSrc: account.thumbSrc,
+    time: account.time
+  }));
+  res.json(JSON.parse(JSON.stringify(data, null, 2)));
+});
+app.post("/configure", (req, res) => {
+    const {content, type} = req.body;
+    const filePath = 'config.json';
+    async function updateConfigData(value, where) {
+        var data;
+        var error;
+        const configData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        configData[where] = value;
+        try {
+            await fs.writeFileSync(filePath, JSON.stringify(configData, null, 2))
+            data = `successfully changed the value of ${where}`;
+            res.send({data});
+        
+        } catch (err) {
+            error = `error editing ${where}`;
+           return res.status(500).send({ error });
+        }
+    }
+    async function addConfigData(value, where) {
+        var data;
+        var error;
+            const configPath = './config.json'
+            const config = require("./config.json");
+            const here = config[where];
+            if (here.includes(value)) {
+                error = `${value} is already in ${where}`;
+               return res.status(500).send({ error });
+            }
+            here.push(value);
+            try {
+                await fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
+            
+            data = `successfully added value of ${where}`;
+            res.send({data}); 
+            } catch (err) {
+                error = `error adding value in ${where}`;
+               return res.status(500).send({ error });
+            }
+            }
+    async function edit(contentt, typee) {
+        switch (typee) {
+        case "Email":
+            return await updateConfigData(contentt, 'email');
+        case "Operator":
+            return await addConfigData(contentt, 'operators');
+    }
+    }
+    edit(content, type);
+});
+function autoRestart(config) {
+    if(config.status) {
+      setInterval(async () => {
+        process.exit(1)
+    }, config.time * 60 * 1000)
+}
+}
+autoRestart(global.config.autorestart)

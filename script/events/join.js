@@ -9,15 +9,15 @@ module.exports.config = {
 	}
 };
 
-module.exports.run = async function({ api, event,Threads }) {
+module.exports.run = async function({ api, event,Threads, botname, prefix}) {
 	const { join } = global.nodemodule["path"];
 	const { threadID } = event;
 	const data = (await Threads.getData(event.threadID)).data || {};
     const checkban = data.banOut || []
 	if  (checkban.includes(checkban[0])) return
 	else if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
-
-		return api.sendMessage(`bot connected successfully\n\nabout me?\nbot prefix : ${global.config.PREFIX}\n\nbot data?\nusers : ${global.data.allUserID.length}\ngroups : ${global.data.allThreadID.length}\n\nhow to use?\n${global.config.prefix}help (command list)\ngpt (question) - no prefix\ntalk (text) - no prefix\n\nryuko botpack v5`, threadID);
+        
+		return api.sendMessage(`bot connected successfully\n\nabout me?\nbot name : ${botname}\nbot prefix : ${prefix}\n\nbot data?\nusers : ${global.data.allUserID.length}\ngroups : ${global.data.allThreadID.length}\n\nhow to use?\n${global.config.prefix}help (command list)\nai (question) - no prefix\ntalk (text) - no prefix\n\nryuko botpack v5`, threadID);
 	}
 	else {
 		try {
