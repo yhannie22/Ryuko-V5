@@ -11,7 +11,7 @@ module.exports.config = {
   cooldowns: 5,
 };
 
-module.exports.handleEvent = async ({ event, api, Threads }) => {
+module.exports.handleEvent = async ({ event, api, Threads, prefix}) => {
   var { threadID, messageID, body, senderID } = event;
   function out(data) {
     api.sendMessage(data, threadID, messageID)
@@ -24,11 +24,11 @@ module.exports.handleEvent = async ({ event, api, Threads }) => {
   arr.forEach(i => {
     let str = i[0].toUpperCase() + i.slice(1);
     if (body === i.toUpperCase() | body === i | str === body) {
-		const prefix = global.config.prefix;
+		
       if (config.prefix == null) {
-        return out(`bot prefix : ${global.config.prefix}`)
+        return out(`bot prefix : ${prefix}`)
       }
-      else return out(`bot prefix : ${global.config.prefix}`)
+      else return out(`bot prefix : ${prefix}`)
     }
 
   });
