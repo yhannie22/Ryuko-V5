@@ -5,9 +5,12 @@ const FormData = require('form-data');
 const { resolve, basename } = require('path')
 const { writeFileSync, createReadStream, unlinkSync } = require('fs-extra');
 
-module.exports.throwError = function (command, threadID, messageID) {
+module.exports.throwError = async function (command, threadID, messageID) {
 	const threadSetting = global.data.threadData.get(parseInt(threadID)) || {};
-	return global.client.api.sendMessage(global.getText("utils", "throwError", global.config.prefix, command), threadID, messageID);
+    const userid = await global.client.api.getCurrentUserID();
+    const bots = require("../../bots.json");
+    const prefix = bots.find(item => item.uid === userId)?.prefix;
+	return global.client.api.sendMessage(global.getText("utils", "throwError", prefix, command), threadID, messageID);
   
 }
 module.exports.removeHomeDir = async function(fullPath) {
@@ -169,4 +172,4 @@ module.exports.removeBackground = async(image) => {
 		return rejectFunc(error)
 	});
 	return returnPromise;
-}
+		}
