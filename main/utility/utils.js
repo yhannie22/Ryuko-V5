@@ -9,7 +9,7 @@ module.exports.throwError = async function (command, threadID, messageID) {
 	const threadSetting = global.data.threadData.get(parseInt(threadID)) || {};
     const userid = await global.client.api.getCurrentUserID();
     const bots = require("../../bots.json");
-    const prefix = bots.find(item => item.uid === userId)?.prefix;
+    const prefix = bots.find(item => item.uid === userid)?.prefix;
 	return global.client.api.sendMessage(global.getText("utils", "throwError", prefix, command), threadID, messageID);
   
 }
