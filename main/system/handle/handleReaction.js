@@ -1,5 +1,5 @@
 module.exports = function ({ api, models, Users, Threads, Currencies }) {
-    return function ({ event }) {
+    return async function ({ event }) {
         const { handleReaction, commands } = global.client;
         const { messageID, threadID } = event;
         const bots = require("../../../bots.json");
