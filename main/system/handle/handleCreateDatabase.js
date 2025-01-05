@@ -19,7 +19,7 @@ module.exports = function ({ api, Users, Threads, Currencies }) {
                 setting.nicknames = threadIn4.nicknames;
                 setting.participantIDs = threadIn4.participantIDs;
                 const dataThread = setting;
-                setAllThread.push(threadID);
+                setAllThread.push(String(threadID));
                 threadInfo.set(threadID, dataThread);
                 const chalk = require('chalk');
                 const setting2 = {};

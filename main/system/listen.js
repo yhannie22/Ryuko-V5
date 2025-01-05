@@ -17,7 +17,6 @@ const fs = require("fs-extra");
                 
 			threads.forEach(async (data) => {
 				const idThread = String(data.threadID);
-                
                 global.data.allThreadID.get(botID).push(idThread);
 				global.data.threadData.set(idThread, data.data || {});
 				global.data.threadInfo.set(idThread, data.threadInfo || {});
