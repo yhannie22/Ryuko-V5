@@ -14,7 +14,7 @@ module.exports.run = async function({ api, event,Threads, botname, prefix}) {
 	const { threadID } = event;
 	const data = (await Threads.getData(event.threadID)).data || {};
     const checkban = data.banOut || []
-	const botID = await api.getCurrentUserID
+	const botID = await api.getCurrentUserID();
 	if  (checkban.includes(checkban[0])) return
 	else if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
         api.changeNickname(`${botname} ai`, threadID, botID);
