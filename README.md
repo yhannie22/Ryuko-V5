@@ -16,14 +16,15 @@ node index.js
 
 original file : [BotPack](https://replit.com/@YanMaglinte/BotPack?v=1) by ```YanMaglinte```</br>
 modified : [ryuko](https://github.com/ryukodeveloper/Ryuko-V4) by ```Ryuko Developer```</br>
-fca : [ws3-fca](https://www.npmjs.com/package/ws3-fca) by ```Kenneth Aceberos```
+fca : [ws3-fca](https://www.npmjs.com/package/ws3-fca) by ```Kenneth Aceberos```</br>
+```autobot```
 
 latest version : [click here](https://www.github.com/ryukodeveloper/Ryuko-V5)
 
 ## UPDATES
-
+• you can now edit the prefix, botname and admins for each bot in ``bots.json`` file!</br>
 • discover the admin access panel, you can configure your admin password in ``config.json``.</br>
-• to create your appstate go to ``states'`` folder and create your appstate file that ends with ``.json``. you can create a multiple appstates.</br>
+• to create your appstate go to ``states`` folder and create your appstate file that ends with ``.json``. you can create a multiple appstates.</br>
 • added email function, this updates belongs to premium system and box approval system. if the user is requesting for approval the notification will sent from your email address. enter your email address at ``config.json``.</br>
 • fixed spam in ban system.</br>
 • discover the new feature with ```premium command```, you can enable it by adding a variable named ```premium``` and the value is boolean</br></br>
@@ -45,9 +46,6 @@ module.exports.config = {
 ```txt
 UPCOMING UPDATE :
 adding aliases for each commands
-adding prefix config for each bots
-adding bot name config for each bots
-adding custom.js
 ```
 
 ## BOX APPROVAL

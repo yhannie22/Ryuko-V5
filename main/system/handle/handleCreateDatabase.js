@@ -1,5 +1,5 @@
 
-module.exports = function ({ Users, Threads, Currencies }) {
+module.exports = function ({ api, Users, Threads, Currencies }) {
     const logger =require("../../utility/logs.js");
     return async function ({ event }) {
         const { allUserID, allCurrenciesID, allThreadID, userName, threadInfo } = global.data; 
@@ -8,8 +8,10 @@ module.exports = function ({ Users, Threads, Currencies }) {
         var { senderID, threadID } = event;
         senderID = String(senderID);
         threadID = String(threadID);
+        const userID = await api.getCurrentUserID();
+        const setAllThread = allThreadID.get(userID);
         try {
-            if (!allThreadID.includes(threadID) && event.isGroup == !![]) {
+            if (!allThreadID.get(userID).includes(threadID) && event.isGroup == !![]) {
                 const threadIn4 = await Threads.getInfo(threadID);
                 const setting = {};
                 setting.threadName = threadIn4.threadName;
@@ -17,7 +19,7 @@ module.exports = function ({ Users, Threads, Currencies }) {
                 setting.nicknames = threadIn4.nicknames;
                 setting.participantIDs = threadIn4.participantIDs;
                 const dataThread = setting;
-                allThreadID.push(threadID);
+                setAllThread.push(threadID);
                 threadInfo.set(threadID, dataThread);
                 const chalk = require('chalk');
                 const setting2 = {};
@@ -41,7 +43,7 @@ module.exports = function ({ Users, Threads, Currencies }) {
                         console.log(global.getText('handleCreateDatabase', 'newUser', '\nname : ' + chalk.white(`${singleData.name}`) + "\nuser id :" + chalk.white(`${singleData.id}`))));
                     } catch(e) { console.log(e) };
                 }
-                console.log(global.getText('handleCreateDatabase', 'newThread', '\ngroup id : '+ chalk.white(`${threadID}`) + "\ngroup name : " + chalk.white(`${threadIn4.threadName}`)));
+                console.log(global.getText('handleCreateDatabase', 'newThread', '\nbot id : '+ chalk.white(`${userID}`) +'\ngroup id : '+ chalk.white(`${threadID}`) + "\ngroup name : " + chalk.white(`${threadIn4.threadName}`)));
             }
             if (!allUserID.includes(senderID) || !userName.has(senderID)) {
                 const infoUsers = await Users.getInfo(senderID),
@@ -50,7 +52,7 @@ module.exports = function ({ Users, Threads, Currencies }) {
                 await Users.createData(senderID, setting3)
                 allUserID.push(senderID) 
                 userName.set(senderID, infoUsers.name)
-                console.log(global.getText('handleCreateDatabase', 'newUser', '\nname : ' + await Users.getNameUser(senderID) + "\nuser id : " + senderID));
+                console.log(global.getText('handleCreateDatabase', 'newUser', '\nbot id : '+userID+'\nname : ' + await Users.getNameUser(senderID) + "\nuser id : " + senderID));
             }
             if (!allCurrenciesID.includes(senderID)) {
                 const setting4 = {};

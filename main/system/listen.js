@@ -9,11 +9,16 @@ const fs = require("fs-extra");
 	
 (async function () {
 		try {
-      const process = require("process");
+            const botID = await api.getCurrentUserID();
+            const threadData = [];
+            global.data.allThreadID.set(botID, threadData);
 			const [threads, users] = await Promise.all([Threads.getAll(), Users.getAll(['userID', 'name', 'data'])]);
-			threads.forEach(data => {
+            
+                
+			threads.forEach(async (data) => {
 				const idThread = String(data.threadID);
-				global.data.allThreadID.push(idThread);
+                
+                global.data.allThreadID.get(botID).push(idThread);
 				global.data.threadData.set(idThread, data.data || {});
 				global.data.threadInfo.set(idThread, data.threadInfo || {});
 				if (data.data && data.data.banned) {

@@ -85,8 +85,10 @@ module.exports.run = async function ({ api, event, args, Users }) {
     const moment = require("moment-timezone");
       var gio = moment.tz("Asia/Manila").format("DD/MM/YYYY - HH:mm:s");
     const { threadID, messageID, senderID, messageReply } = event;
+    const botID = await api.getCurrentUserID();
+    const botThread = global.data.allThreadID.get(botID);
     if (!args[0]) return api.sendMessage("please input message", threadID);
-    let allThread = global.data.allThreadID || [];
+    let allThread = botThread || [];
     let can = 0, canNot = 0;
     let text = `message from admins\n\ntime : ${gio}\nadmin name : ${await Users.getNameUser(senderID)}\nmessage : ${args.join(" ")}\n\nreply to this message if you want to respond from this announce.`;
     if(event.type == "message_reply") text = await getAtm(messageReply.attachments, `message from admins\n\ntime : ${gio}\nadmin name : ${await Users.getNameUser(senderID)}\nmessage : ${args.join(" ")}\n\nreply to this message if you want to respond from this announce.`);

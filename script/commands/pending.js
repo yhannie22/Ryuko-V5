@@ -71,7 +71,7 @@ module.exports.run = async function({ api, event, getText }) {
 
 	const list = [...spam, ...pending].filter(group => group.isSubscribed && group.isGroup);
 
-    for (const single of list) msg += `${index++}/ ${single.name}(${single.threadID})\n`;
+    for (const single of list) msg += `${index++}. ${single.name}(${single.threadID})\n`;
 
     if (list.length != 0) return api.sendMessage(getText("returnListPending", list.length, msg), threadID, (error, info) => {
 		global.client.handleReply.push({

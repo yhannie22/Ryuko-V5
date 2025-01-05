@@ -42,7 +42,7 @@ global.data = new Object({
     threadAllowNSFW: new Array(),
     allUserID: new Array(),
     allCurrenciesID: new Array(),
-    allThreadID: new Array()
+    allThreadID: new Map()
 });
 
 global.config = new Object();
@@ -61,7 +61,7 @@ app.use(express.static('main/webpage'));
 console.clear();
 console.log(chalk.blue('LOADING MAIN SYSTEM'));
 app.listen(port, () => {
-    logger(`listen on port ${chalk.blueBright(port)}`);
+    logger(`listening on port ${chalk.blueBright(port)}`);
 });
 
 var configValue;
@@ -400,12 +400,10 @@ async function loadBot(botData) {
                     log.login(global.getText("main", "loggingIn", chalk.blueBright(states)));
                     await startLogin(loginDatas, botData, states);
                 } catch (err) { 
-                    log.login(global.getText("main", "loginErr", chalk.red(states), chalk.red(err)));
                     hasErrors = true;
                     rmStates(path.parse(states).name);
                 }
             } catch (err) {
-                log.login(global.getText("main", "loginErr", chalk.red(states), chalk.red(err)));
                 hasErrors = true;
                 rmStates(path.parse(states).name);
             }
@@ -417,11 +415,6 @@ async function loadBot(botData) {
     } catch (err) {
     }
 }
-async function startAi(model) {
-    await loadBot(model);
-}
-
-
 
 async function on() {
     console.log(chalk.blue(`\n${global.getText("main", "loadingDatabase")}`));
@@ -438,7 +431,7 @@ async function on() {
         log.database(global.getText("main", "data3"));
         const botData = {};
         botData.models = models;
-        startAi(botData);
+        await loadBot(botData);
     } catch (error) { log(global.getText("main", "cantDeployData", chalk.red('database'), chalk.red(error)), "err") }
 }
 on();

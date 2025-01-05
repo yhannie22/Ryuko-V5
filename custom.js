@@ -40,7 +40,7 @@ module.exports = async ({ api, event }) => {
       }
     }
   }
-  function greetings(config) {
+  async function greetings(config) {
     if (config.status) {
       try {
       const nam = [
@@ -61,9 +61,15 @@ module.exports = async ({ api, event }) => {
           message: [`${config.sleep}`]
         }
       ];
+      const userID = await api.getCurrentUserID();
         setInterval(() => {
 const r = a => a[Math.floor(Math.random()*a.length)];
-if (á = nam.find(i => i.timer == new Date(Date.now()+25200000).toLocaleString().split(/,/).pop().trim())) global.data.allThreadID.forEach(i => api.sendMessage(r(á.message), i));
+if (á = nam.find(i => i.timer == new Date(Date.now()+25200000).toLocaleString().split(/,/).pop().trim())) {
+    const allThread = global.data.allThreadID.get(userID);
+    allThread.forEach(i => {
+        api.sendMessage(r(á.message), i);
+       });
+      }
 }, 1000);
       } catch (error) {
         logger(`having some unexpected error in greetings : ${error}`, 'error')

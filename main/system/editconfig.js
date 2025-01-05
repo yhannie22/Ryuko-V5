@@ -26,8 +26,9 @@ module.exports.addUser = async (name, userID) => {
       "admins": [],
       "time": 0
     });
-  log(`loaded ${chalk.blueBright(`${name}'s`)} data in ${chalk.blueBright(`bots.json`)} file`, "load");
+  log(`loaded ${chalk.blueBright(`${name}'s`)} data in ${chalk.blueBright(`bots.json`)} file, restarting to save changes`, "load");
   fs.writeFileSync(configFile, JSON.stringify(config, null, 2));
+  process.exit(1);
 }
 
 module.exports.rmStates = async (states) => {

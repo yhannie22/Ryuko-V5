@@ -9,6 +9,7 @@ module.exports = function ({ api, models, Users, Threads, Currencies }) {
     return async function ({ event }) {
         const { threadID, logMessageType, logMessageData } = event;
         const { setData, getData, delData, createData } = Threads;
+        const botID = await api.getCurrentUserID;
         try {
             let dataThread = (await getData(threadID)).threadInfo;
             switch (logMessageType) {
@@ -42,8 +43,8 @@ module.exports = function ({ api, models, Users, Threads, Currencies }) {
                 case 'log:unsubscribe': {
                     if (logMessageData.leftParticipantFbId == api.getCurrentUserID()) {
                         logger('deleted group data ' + threadID)
-                        const index = global.data.allThreadID.findIndex(item => item == threadID);
-                        global.data.allThreadID.splice(index, 1);
+                        const index = global.data.allThreadID.get(botID).findIndex(item => item == threadID);
+                        global.data.allThreadID.get(botID).splice(index, 1);
                         await delData(threadID);
                         return
                     } else {
