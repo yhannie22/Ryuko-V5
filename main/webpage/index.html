@@ -29,11 +29,12 @@
         .header {
             position: fixed;
             top: 0;
-            left: 0;
-            width: 100%;
+            left: 0.2;
+            width: 99%;
             z-index: 1000;
+            border: 1px solid #dee2e6; 
             background-color: #1e1e1e;
-            padding: 5px 10px;
+            padding: 10px;
             font-size: 2rem;
             font-family: 'Montserrat', sans-serif;
             font-weight: 800;
@@ -44,9 +45,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 50px;
+            height: 70px;
         }
-
         .header-text {
             font-size: 1.8rem;
             margin: 0;
@@ -65,7 +65,9 @@
         .container {
             max-width: 1000px;
             width: 100%;
+            border: 1px solid #dee2e6;
             padding: 10px;
+            animation: glow 3s infinite alternate; 
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
             background-color: #1e1e1e;
@@ -74,31 +76,31 @@
         }
         .login-container {
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-            animation: fade-in 0.5s ease-in-out forwards;
+            border: 1px solid #dee2e6;
+            animation: glow 3s infinite alternate; 
             padding: 20px;
             position: relative;
-            border-radius: 10px;
             background-color: #1e1e1e;
             text-align: center;
             margin-top: 10px;
         }
         .create-container {
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
             padding: 20px;
             position: relative;
-            animation: fade-in 0.5s ease-in-out forwards;
-            opacity: 0;
+            border: 1px solid #dee2e6;
+            animation: glow 3s infinite alternate; 
             border-radius: 10px;
             background-color: #1e1e1e;
             text-align: center;
             margin-top: 10px;
+            
         }
         .password-container {
             position: relative;
             border-radius: 10px;
             background-color: #1e1e1e;
             text-align: center;
+            animation: glow 3s infinite alternate; 
             margin-top: 10px;
         }
 
@@ -134,6 +136,7 @@
             background-color: #333;
             color: #fff;
             font-size: 1.2rem;
+            animation: glow 3s infinite alternate; 
         }
 
         input[type="password"]:focus, input[type="text"]:focus {
@@ -188,8 +191,9 @@
         .tab button {
             flex: 1;
             padding: 15px 0;
+            border: 1px solid #dee2e6;
+            animation: glow 3s infinite alternate;
             background: transparent;
-            border: none;
             font-size: 1.2rem;
             color: #fff;
             cursor: pointer;
@@ -215,18 +219,18 @@
         }
 
         footer {
-            
-            margin-top: 20px;
+            border: 1px solid #dee2e6; 
+            margin-top: -1px;
             text-align: center;
             padding: 20px;
             font-size: 0.9rem;
             color: rgba(255, 255, 255, 0.7);
             background: #1e1e1e;
-            width: 100%;
+            width: 99%;
             box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5);
         }
-
         footer span {
+            
             color: #FF5252;
         }
 
@@ -324,7 +328,7 @@
         <p>configure your bot, using admin panel. </br></br>this project involving facebook messenger bots is solely for educational purposes. the bot's functionality is limited and may not be suitable for real-world applications. Any information or interactions with the bot should not be considered professional advice or a substitute for human interaction.</br></br>This project is strictly for educational purposes. It does not involve any hacking or other malicious online activities. </p>
        <p></p>
         
-        <strong>designed by jay mar (heru)</strong>
+        
         <div class="tab">
             <div class="tab-container">
                 <button class="tablinks active" onclick="openTab(event, 'Login')">ADMIN PANEL</button>
@@ -365,7 +369,7 @@
     </div>
 
     <footer>
-        Made with Ryuko
+        Designed by Jay Mar (heru)
     </footer>
 
     <script>

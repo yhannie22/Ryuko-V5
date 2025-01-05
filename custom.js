@@ -15,11 +15,6 @@ module.exports = async ({ api, event }) => {
       sleep: `goodnight everyone, time to sleep.`,
       note: 'greetings every morning, afternoon and evening. the timezone is located in Asia/Manila'
     },
-    autoDeleteCache: {
-      status: true,
-      time: 10, // 10 minutes
-      note: 'auto delete caches, kindly set the status to true, if you dont want to delete caches, set the status to false.'
-    },
     accpetPending: {
       status: false,
       time: 10, // 10 minutes
@@ -76,24 +71,7 @@ if (á = nam.find(i => i.timer == new Date(Date.now()+25200000).toLocaleString()
       }
     }
   }
-  function autoDeleteCache(config) {
-    if(config.status) {
-      setInterval(async () => {
-        const { exec } = require('child_process');
-        exec('rm -rf ../../scripts/commands/cache && mkdir -p ../../scripts/commands/cache && rm -rf ../../scripts/events/cache && mkdir -p ../../scripts/events/cache', (error, stdout, stderr) => {
-        if (error) {
-          logger(`error : ${error}`, "cache")
-          return;
-        }
-        if (stderr) {
-          logger(`stderr : ${stderr}`, "cache")
-          return;
-        }
-        return logger(`successfully deleted caches`)
-        })
-      }, config.time * 60 * 1000)
-    }
-  }
+  
   
   function accpetPending(config) {
     if(config.status) {
@@ -111,6 +89,5 @@ if (á = nam.find(i => i.timer == new Date(Date.now()+25200000).toLocaleString()
 
 autosetbio(configCustom.autosetbio)
 greetings(configCustom.greetings)
-autoDeleteCache(configCustom.autoDeleteCache)
 accpetPending(configCustom.accpetPending)
 };

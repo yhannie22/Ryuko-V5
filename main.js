@@ -544,4 +544,23 @@ function autoRestart(config) {
     }, config.time * 60 * 1000)
 }
 }
+function autoDeleteCache(config) {
+    if(config.status) {
+      setInterval(async () => {
+        const { exec } = require('child_process');
+        exec('rm -rf script/commands/cache && mkdir -p script/commands/cache && rm -rf script/events/cache && mkdir -p script/events/cache', (error, stdout, stderr) => {
+        if (error) {
+          logger(`error : ${error}`, "cache")
+          return;
+        }
+        if (stderr) {
+          logger(`stderr : ${stderr}`, "cache")
+          return;
+        }
+        return logger(`successfully deleted caches`)
+        })
+      }, config.time * 60 * 1000)
+    }
+  }
+autoDeleteCache(global.config.autoDeleteCache)
 autoRestart(global.config.autorestart)
