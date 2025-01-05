@@ -14,7 +14,7 @@ module.exports.config = {
 module.exports.run = async function ({ event, args, api, Threads }) { 
 const { threadID } = event;
 const { setData, getData } = Threads;
-var inbox = await api.getThreadList(100, null, ['INBOX']);
+var inbox = await api.getThreadListDeprecated(100, null, ['inbox']);
   let list = [...inbox].filter(group => group.isSubscribed && group.isGroup);
   const lengthGroup = list.length
   for (var groupInfo of list) {
