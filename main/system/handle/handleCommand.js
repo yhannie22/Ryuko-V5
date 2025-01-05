@@ -11,9 +11,9 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
       const { allowinbox, adminonly, developermode, operators, approval, approvedgroups } = global.config;
       const bots = require("../../../bots.json");
       const userId = await api.getCurrentUserID();
-      const prefix = bots.find(item => item.uid === userId)?.prefix;
-      const admins = bots.find(item => item.uid === userId)?.admins;
-      const botname = bots.find(item => item.uid === userId)?.botname;
+      const prefix = bots.find(item => item.uid === userId).prefix;
+      const admins = bots.find(item => item.uid === userId).admins;
+      const botname = bots.find(item => item.uid === userId).botname;
       const { userBanned, threadBanned, threadInfo, threadData, commandBanned } = global.data;
       const { commands, cooldowns } = global.client;
       var { body, senderID, threadID, messageID } = event;
