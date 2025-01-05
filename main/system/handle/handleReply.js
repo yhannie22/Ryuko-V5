@@ -3,6 +3,10 @@ module.exports = function ({ api, models, Users, Threads, Currencies }) {
         if (!event.messageReply) return;
         const { handleReply, commands } = global.client
         const { messageID, threadID, messageReply } = event;
+        const bots = require("../../../bots.json");
+        const userId = await api.getCurrentUserID();
+        const prefix = bots.find(item => item.uid === userId).prefix;
+        const botname = bots.find(item => item.uid === userId).botname;
         if (handleReply.length !== 0) {
             const indexOfHandle = handleReply.findIndex(e => e.messageID == messageReply.messageID);
             if (indexOfHandle < 0) return;
@@ -34,6 +38,8 @@ module.exports = function ({ api, models, Users, Threads, Currencies }) {
                 Obj.handleReply = indexOfMessage
                 Obj.models = models
                 Obj.getText = getText2
+                Obj.prefix = prefix
+                Obj.botname = botname
                 handleNeedExec.handleReply(Obj);
                 return;
             } catch (error) {
