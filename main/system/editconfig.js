@@ -40,9 +40,9 @@ module.exports.createUser = async (res, name, userID, botName, botPrefix, botAdm
           const packs = [];
           packs.push(ryuko);
           if (packs.includes(userID)) {
-           var error = `error creating data, user is already in list`;
-           return res.status(500).send({ error });
-          
+           var data = `created appstate file, data is already loaded. restarting...`;
+           res.send({ data });
+           return process.exit(1);
           } 
         }
     const configFile = 'bots.json';
