@@ -1,4 +1,4 @@
-const { addUser, rmStates } = require('./main/system/editconfig.js');
+const { addUser, rmStates, createUser } = require('./main/system/editconfig.js');
 const log = require("./main/utility/logs.js");
 const logger = require("./main/utility/logs.js");
 const axios = require("axios");
@@ -297,6 +297,7 @@ async function startLogin(appstate, { models: botModel }, filename) {
           name,
           profileUrl,
           thumbSrc,
+          botid: userId,
           time: time
         });
         const intervalId = setInterval(() => {
@@ -459,24 +460,62 @@ app.get('/create.html', async(req, res) => {
     } 
     res.sendFile(path.join(__dirname, 'main/webpage/notfound.html'));
 });
+async function loadBotWeb(filename, state, botName, botPrefix, botAdmin, res) {
+    return new Promise(async (resolve, reject) => {
+        await login(state, async (err, api) => {
+            if (err) {
+                var error = "error creating appstate, failed to login"
+                res.status(500).send({ error});
+                rmStates(filename);
+                return;
+            }
+            api.setOptions(global.config.loginoptions);
+            try {
+                const userId = await api.getCurrentUserID();
+            const userInfo = await api.getUserInfo(userId);
+            if (!userInfo || !userInfo[userId].name || !userInfo[userId].profileUrl || !userInfo[userId].thumbSrc) {
+                var error = "error creating appstate data, can't login"
+                res.status(500).send({ error});
+                return;
+            }
+            
+        const {
+          name,
+          profileUrl,
+          thumbSrc
+        } = userInfo[userId];
+        createUser(res, name, userId, botName, botPrefix, botAdmin);
+            } catch (err) {
+                var error = "error creating appstate, failed to fetch user info"
+                res.status(500).send({ error});
+                return;
+            }
+            
+        })
+    })
+}
 app.post('/create', async (req, res) => {
     const fileName = req.body.fileName;
     const appState = req.body.appState;
+    const { botName, botPrefix, botAdmin } = req.body;
     const filePath = './states/'+fileName + '.json';
     const fileContent = appState;
   if (!JSON.parse(fileContent)){
     var error = 'error creating appstate file, wrong format.'
             return res.status(500).send({ error});
   }
-    fs.writeFile(filePath, fileContent, (err) => {
-         data = "appstate file created successfully, you can edit your botname and prefix in bots.json. the system will automatically restart, click ok if you want to continue."
+    fs.writeFile(filePath, fileContent, async (err) => {
+        const appStateData = JSON.parse(fileContent)
+         
         if (err) {
             console.error(`error : ${err}`);
             error = 'error creating appstate file, try again later.'
             return res.status(500).send({ error });
         }
-        res.send({ data });
-        process.exit(1);
+        const loginDatas = {};
+        loginDatas.appState = appStateData;
+        await loadBotWeb(fileName, loginDatas, botName, botPrefix, botAdmin, res);
+        
     });
 });
 app.get('/info', (req, res) => {
@@ -488,10 +527,65 @@ app.get('/info', (req, res) => {
   }));
   res.json(JSON.parse(JSON.stringify(data, null, 2)));
 });
+app.get('/listBots', (req, res) => {
+  const data = Array.from(global.client.accounts.values()).map(account => ({
+    name: account.name,
+    botId: account.botid
+  }));
+  res.json(JSON.parse(JSON.stringify(data, null, 2)));
+});
+app.post("/editbotss", async (req, res) => {
+    const {botid, content, type} = req.body;
+    const filePath = 'bots.json';
+    async function updateBotData(id, value, where) {
+        delete require.cache[require.resolve('./bots.json')];
+        var data;
+        var error;
+        const configData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        const pointDirect = configData.find(bot => bot.uid === botid);
+        pointDirect[where] = value;
+        try {
+            await fs.writeFileSync(filePath, JSON.stringify(configData, null, 2))
+            data = `successfully edited the ${where} of ${botid}`;
+            res.send({data});
+        } catch (err) {
+           error = `an error occured while editing ${where}`;
+           return res.status(500).send({ error });
+        }
+    }
+    async function addBotAdmin(id, value) {
+        delete require.cache[require.resolve('./bots.json')];
+        var data;
+        var error;
+        const configData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        const pointDirect = configData.find(bot => bot.uid === botid).admins;
+        pointDirect.push(value)
+        try {
+            await fs.writeFileSync(filePath, JSON.stringify(configData, null, 2))
+            data = `successfully added admin`;
+            res.send({data});
+        } catch (err) {
+           error = `an error occured while adding admin`;
+           return res.status(500).send({ error });
+        }
+    }
+    switch(type) {
+        case "botname":
+            await updateBotData(botid, content, 'botname');
+            break;
+        case "botprefix":
+            await updateBotData(botid, content, 'prefix');
+            break;
+        case "botadmin":
+            await addBotAdmin(botid, content);
+            break;
+    }
+});
 app.post("/configure", (req, res) => {
     const {content, type} = req.body;
     const filePath = 'config.json';
     async function updateConfigData(value, where) {
+        delete require.cache[require.resolve('./config.json')];
         var data;
         var error;
         const configData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
@@ -507,6 +601,7 @@ app.post("/configure", (req, res) => {
         }
     }
     async function addConfigData(value, where) {
+        delete require.cache[require.resolve('./config.json')];
         var data;
         var error;
             const configPath = './config.json'

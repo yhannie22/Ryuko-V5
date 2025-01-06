@@ -6,6 +6,7 @@ const log = require("../utility/logs.js");
 
 module.exports.addUser = async (name, userID) => {
   const configPaths = require('../../bots.json');
+  delete require.cache[require.resolve('../../bots.json')];
         const dataa = configPaths
   for (let i = 0; i < dataa.length; i++) {
           const ryuko = dataa[i].uid;
@@ -30,11 +31,41 @@ module.exports.addUser = async (name, userID) => {
   fs.writeFileSync(configFile, JSON.stringify(config, null, 2));
   process.exit(1);
 }
+module.exports.createUser = async (res, name, userID, botName, botPrefix, botAdmin) => {
+    delete require.cache[require.resolve('../../bots.json')];
+  const configPaths = require('../../bots.json');
+        const dataa = configPaths
+  for (let i = 0; i < dataa.length; i++) {
+          const ryuko = dataa[i].uid;
+          const packs = [];
+          packs.push(ryuko);
+          if (packs.includes(userID)) {
+           var error = `error creating data, user is already in list`;
+           return res.status(500).send({ error });
+          
+          } 
+        }
+    const configFile = 'bots.json';
+    const config = JSON.parse(fs.readFileSync(configFile, 'utf-8'));
+    const configBots = config;
+    let adminss = [];
+    adminss.push(botAdmin);
+    configBots.push({    
+      "name": name,
+      "uid": userID,
+      "botname": botName || "ryuko",
+      "prefix": botPrefix || "-",
+      "admins": adminss || [],
+      "time": 0
+    });
+    var data = "successfully created appstate and loaded data, restarting..."
+  res.send({data});
+  fs.writeFileSync(configFile, JSON.stringify(config, null, 2));
+  process.exit(1);
+}
 
 module.exports.rmStates = async (states) => {
   const fbstatesFolder = "states";
   const statesFile = join(`${fbstatesFolder}/${states}.json`)
   fs.unlinkSync(statesFile);
-  
-  
 }

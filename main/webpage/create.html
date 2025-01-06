@@ -2,7 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head >
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ryuko V5</title>
@@ -116,7 +116,16 @@
             text-align: center;
             margin-top: 10px;
         }
-
+        .editbot-container {
+            padding: 20px;
+            position: relative;
+            border: 1px solid #dee2e6;
+            animation: glow 3s infinite alternate; 
+            border-radius: 10px;
+            background-color: #1e1e1e;
+            text-align: center;
+            margin-top: 10px;
+        }
 
 
         input[type="text"], textarea[type="appState"] {
@@ -131,6 +140,23 @@
             color: #fff;
             font-size: 1.2rem;
             
+        }
+        .botlists  {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+            animation: glow 3s infinite alternate; 
+            background-color: #333;
+            color: #fff;
+            
+        }
+        .botlists:focus {
+            border-color: #4CAF50;
+            outline: none;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
         }
 
         input[type="text"]:focus {
@@ -315,6 +341,31 @@
          }
          p.uptime-user {
          }
+         .loader {
+    display: none;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid blue;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    animation: spin 1s linear infinite;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.loading {
+    background-color: #ccc;
+    pointer-events: none;
+}
+     
     </style>
 </head>
 <body>
@@ -357,6 +408,20 @@
             </div>
         </div>
         <div id="Config" class="tabcontent">
+            <div class="editbot-container">
+                   <p>select bot
+                   <select name="selectbots" class="botlists" id="listsofbots" onchange="detectedChanges(event)"></select>
+                   <p>edit bot name
+                   <input type="text" id="ebotname" placeholder="bot name">
+                    <button onclick="editBotName()">edit</button>
+                   <p>edit bot prefix
+                   <input type="text" id="ebotprefix" placeholder="bot prefix">
+                   <button onclick="editBotPrefix()">edit</button>
+                   <p>add bot admin
+                   <input type="text" id="ebotadmin" placeholder="facebook uid">
+                   <button onclick="addBotAdmin()">add</button>
+                   </p>
+               </div>
                <div class="email-container">
                    <p>edit email
                    <input type="text" id="email" placeholder="example@whatever.com">
@@ -369,6 +434,7 @@
                    <button onclick="addOperator()">add</button>
                    </p>
                </div>
+               
 
         </div>
 
@@ -378,11 +444,22 @@
                 <p>filename 
         <input type="text" id="fileName" placeholder="ex: ryuko" required>
         </p>
+        <p>bot name
+          <input type="text" id="botname" placeholder="bot name">
+            </p>
+            <p>bot prefix
+          <input type="text" id="botprefix" placeholder="bot prefix">
+            </p>
+            <p>bot admin
+          <input type="text" id="botadmin" placeholder="facebook uid">
+            </p>
                 <p>appstate 
         <textarea id="appState" type="appState" rows="10" placeholder="paste your appstate here"></textarea>
         
-
-        <button onclick="createFile()">create</button>
+            <button id="createbuttonn" onclick="createFile()">
+                    submit
+                </button>
+        
         </p>
            </div>
           
@@ -393,6 +470,33 @@
     </footer>
 
     <script>
+        
+        
+        async function listBots() {
+            const elm = document.getElementById("listsofbots");
+            try {
+             const df = document.createDocumentFragment();
+             const response = await fetch("/listBots");
+             const data = await response.json(); 
+             data.forEach(bot => {
+                 const {botId, name} = bot;
+                 var option = document.createElement('option');
+                 option.value = botId
+                 option.appendChild(document.createTextNode(name)); 
+                 df.appendChild(option);
+             });
+             elm.appendChild(df);
+            } catch (err) {
+                elm.innerHTML = `
+                <optgroup label="an error occurred while fetching data">
+  </optgroup>
+                `;
+            }
+        }
+        listBots();
+        function detectedChanges(e) {
+         document.getElementById("listsofbots").value = e.target.value;
+       }
         async function listOfAi() {
              const userOnline = document.getElementById("user_online");
              try {
@@ -435,7 +539,7 @@
                  });
              } catch (error) {
                  console.error(error);
-                 userOnline.innerHTML = `<div class="alert alert-danger" role="alert">An error occurred while fetching data.</div>`;
+                 userOnline.innerHTML = `<div class="alert alert-danger" role="alert">an error occurred while fetching data.</div>`;
              }
          }
          
@@ -468,6 +572,147 @@
 
          
          listOfAi();
+         function editBotName() {
+             const botid = document.getElementById('listsofbots').value;
+             const botname = document.getElementById('ebotname').value;
+             if (!botname) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Bot name is required',
+                    text: 'Please enter your bot name to continue.',
+                    confirmButtonColor: '#4CAF50'
+                });
+                return;
+            }
+            fetch('/editbotss', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ botid: botid, content: botname, type: "botname" })
+          }).then(response => response.json()).then(data => {
+              if (data.error) {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Something went wrong',
+                    text: data.error,
+                    confirmButtonColor: '#4CAF50'
+                });
+              }
+              if (data.data) {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Edited bot name successfully',
+                    text: 'automatically applied changes',
+                    confirmButtonColor: '#4CAF50'
+                }).then(() => {
+                    window.location.href;
+                });
+                  }
+          }).catch(err => {
+              Swal.fire({
+                    icon: 'error',
+                    title: 'Error editing bot name',
+                    text: err,
+                    confirmButtonColor: '#4CAF50'
+                });
+                return;
+          });
+         }
+         function editBotPrefix() {
+             const botid = document.getElementById('listsofbots').value;
+             const botprefix = document.getElementById('ebotprefix').value;
+             if (!botprefix) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Bot prefix is required',
+                    text: 'Please enter your bot prefix to continue.',
+                    confirmButtonColor: '#4CAF50'
+                });
+                return;
+            }
+            fetch('/editbotss', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ botid: botid, content: botprefix, type: "botprefix" })
+          }).then(response => response.json()).then(data => {
+              if (data.error) {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Something went wrong',
+                    text: data.error,
+                    confirmButtonColor: '#4CAF50'
+                });
+              }
+              if (data.data) {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Edited bot prefix successfully',
+                    text: 'automatically applied changes',
+                    confirmButtonColor: '#4CAF50'
+                }).then(() => {
+                    window.location.href;
+                });
+                  }
+          }).catch(err => {
+              Swal.fire({
+                    icon: 'error',
+                    title: 'Error editing bot prefix',
+                    text: err,
+                    confirmButtonColor: '#4CAF50'
+                });
+                return;
+          });
+         }
+         function addBotAdmin() {
+             const botid = document.getElementById('listsofbots').value;
+             const botadmin = document.getElementById('ebotadmin').value;
+             if (!botadmin) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Admin is required',
+                    text: 'Please enter your facebook uid to continue.',
+                    confirmButtonColor: '#4CAF50'
+                });
+                return;
+            }
+            fetch('/editbotss', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ botid: botid, content: botadmin, type: "botadmin" })
+          }).then(response => response.json()).then(data => {
+              if (data.error) {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Something went wrong',
+                    text: data.error,
+                    confirmButtonColor: '#4CAF50'
+                });
+              }
+              if (data.data) {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Added bot admin successfully',
+                    text: 'automatically applied changes',
+                    confirmButtonColor: '#4CAF50'
+                }).then(() => {
+                    window.location.href;
+                });
+                  }
+          }).catch(err => {
+              Swal.fire({
+                    icon: 'error',
+                    title: 'Error adding bot admin',
+                    text: err,
+                    confirmButtonColor: '#4CAF50'
+                });
+                return;
+          });
+         }
         function editEmail() {
             const Email = document.getElementById('email').value;
             if (!Email) {
@@ -498,10 +743,10 @@
                   Swal.fire({
                     icon: 'success',
                     title: 'Edited email successfully',
-                    text: 'restart your bot using "restart" command to apply changes',
+                    text: 'automatically applied changes',
                     confirmButtonColor: '#4CAF50'
                 }).then(() => {
-                    window.location.href = "#";
+                    window.location.href;
                 });
                   }
           }).catch(err => {
@@ -545,10 +790,10 @@
                    Swal.fire({
                     icon: 'success',
                     title: 'Added operator successfully',
-                    text: 'restart your bot using "restart" command to apply changes',
+                    text: 'automatically applied changes',
                     confirmButtonColor: '#4CAF50'
                 }).then(() => {
-                    window.location.href = "#";
+                    window.location.href;
                 });
               }
           }).catch(err => {
@@ -571,9 +816,20 @@
             document.getElementById(tabName).classList.add('active');
             evt.currentTarget.classList.add('active');
         }
+        const buttonss = document.getElementById('createbuttonn');
+         buttonss.addEventListener('click', () => {
+          buttonss.disabled = true;
+          setTimeout(() => {
+             buttonss.disabled = false;
+            }, 2000);
+          });
         function createFile() {
+         
           const fileName = document.getElementById('fileName').value;
           const appState = document.getElementById('appState').value;
+          var botname = document.getElementById('botname').value;
+          var botprefix = document.getElementById('botprefix').value;
+          var botadmin = document.getElementById('botadmin').value;
 if (!fileName) {
                 Swal.fire({
                     icon: 'error',
@@ -598,7 +854,7 @@ if (!appState) {
               headers: {
                   'Content-Type': 'application/json'
               },
-              body: JSON.stringify({ fileName: fileName, appState: appState })
+              body: JSON.stringify({ fileName: fileName, appState: appState, botName: botname, botPrefix: botprefix, botAdmin: botadmin  })
           })
           .then(response => response.json())
           .then(data => {
@@ -615,10 +871,10 @@ Swal.fire({
 Swal.fire({
                     icon: 'success',
                     title: 'Created appstate successfully',
-                    text: 'restarting system please wait..',
+                    text: data.data,
                     confirmButtonColor: '#4CAF50'
                 }).then(() => {
-                    window.location.href = "/";
+                    window.location.href;
                 });
                 }
           })
