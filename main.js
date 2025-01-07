@@ -532,6 +532,18 @@ app.post('/create', async (req, res) => {
         
     });
 });
+app.get('/cantfound', (req, res) => {
+    const errorFilePath = path.join(__dirname, 'main/webpage/notfound.html');
+    res.sendFile(errorFilePath, (err) => {
+        if (err) {
+            console.error(err);
+            res.status(err.status).end();
+        }
+    });
+});
+app.use((req, res, next) => {
+    res.status(404).redirect('/cantfound');
+});
 app.get('/info', (req, res) => {
   const data = Array.from(global.client.accounts.values()).map(account => ({
     name: account.name,
