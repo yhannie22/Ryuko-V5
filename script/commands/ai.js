@@ -17,7 +17,7 @@ module.exports.config = {
 module.exports.run = async function({api, event, args}) {
   const message = args.join(" ");
   if (!message) {
-    return api.sendMessage('please provide a question');
+    return api.sendMessage('please provide a question', event.threadID, event.messageID);
   }
 const { Hercai } = require('hercai');
 const herc = new Hercai();
