@@ -11,12 +11,16 @@ const configLog = require('./main/utility/config.json');
 const login = require("./main/system/ws3-fca/index.js");
 const listPackage = JSON.parse(readFileSync('package.json')).dependencies;
 const packages = JSON.parse(readFileSync('package.json'));
-const fs = require("fs-extra");
+const fs = require("fs-extra")
 const process = require('process');
 const moment = require("moment-timezone");
 const express = require("express");
 const app = express();
 const port = 8090 || 9000 || 5555 || 5050 || 5000 || 3003 || 2000 || 1029 || 1010;
+const dotenv = require('dotenv');
+
+dotenv.config();
+
 
 global.client = new Object({
     commands: new Map(),
@@ -57,7 +61,7 @@ global.send = require("./main/utility/send.js");
 global.editBots = require("./main/system/editconfig.js");
 
 app.use(express.json());
-app.use(express.static('main/webpage'));
+
 console.clear();
 console.log(chalk.blue('LOADING MAIN SYSTEM'));
 app.listen(port, () => {
@@ -436,29 +440,39 @@ async function on() {
     } catch (error) { log(global.getText("main", "cantDeployData", chalk.red('database'), chalk.red(error)), "err") }
 }
 on();
-app.post('/login', (req, res) => {
-  const { loginPassword } = req.body;
-  fs.readFile('config.json', 'utf8', (err, data) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send('an error occurred.');
+const jwt = require('jsonwebtoken');
+app.post('/login', async (req, res) => {
+    const { loginPassword } = req.body;
+
+    try {
+        const data = await fs.readFile('config.json', 'utf8');
+        const config = JSON.parse(data);
+        if (loginPassword === config.adminpass) {
+            const token = jwt.sign({ admin: true }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            return res.status(200).send({ token });
+        } else {
+            return res.status(401).send('Invalid admin password.');
+        }
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send('An error occurred while processing your request.');
     }
-    const config = JSON.parse(data);
-    if (loginPassword === config.adminpass) {
-      const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
-      res.send({ token });
-    } else {
-      res.status(401).send('invalid admin password.');
-    }
-  });
 });
-app.get('/create.html', async(req, res) => {
-    const token = req.query.token; 
-    
-    if (token && token === localStorage.getItem('token')) { 
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "main/webpage/index.html"));
+});
+
+app.get('/create.html', (req, res) => {
+    const token = req.query.token;
+    if (!token) {
+        return res.status(401).sendFile(path.join(__dirname, 'main/webpage/notfound.html'));
+    }
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(401).sendFile(path.join(__dirname, 'main/webpage/notfound.html'));
+        }
         res.sendFile(path.join(__dirname, 'main/webpage/create.html'));
-    } 
-    res.sendFile(path.join(__dirname, 'main/webpage/notfound.html'));
+    });
 });
 async function loadBotWeb(filename, state, botName, botPrefix, botAdmin, res) {
     return new Promise(async (resolve, reject) => {

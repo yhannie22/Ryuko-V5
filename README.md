@@ -1,91 +1,126 @@
 ## ABOUT ME
 
-name : ```Ryuko Developer```</br>
-age : ```18```</br>
-link : [facebook](https://www.facebook.com/ryukodev).</br>
-## START UP
+**Name**: `Ryuko Developer`  
+**Age**: `18`  
+**Contact**: [Facebook](https://www.facebook.com/ryukodev)  
 
-```txt
-npm install
-```
-```txt
-node index.js
-```
+---
+
+## GETTING STARTED
+
+To set up the project, follow these steps:
+
+1. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
+
+2. **Run the Application**:
+   ```bash
+   node index.js
+   ```
+
+---
 
 ## SOURCES
 
-original file : [BotPack](https://replit.com/@YanMaglinte/BotPack?v=1) by ```YanMaglinte```</br>
-modified : [ryuko](https://github.com/ryukodeveloper/Ryuko-V4) by ```Ryuko Developer```</br>
-fca : [ws3-fca](https://www.npmjs.com/package/ws3-fca) by ```Kenneth Aceberos```</br>
-```autobot```
+- **Original File**: [BotPack](https://replit.com/@YanMaglinte/BotPack?v=1) by `Yan Maglinte`  
+- **Modified Version**: [Ryuko](https://github.com/ryukodeveloper/Ryuko-V4) by `Ryuko Developer`  
+- **FCA Library**: [ws3-fca](https://www.npmjs.com/package/ws3-fca) by `Kenneth Aceberos`  
+- **Latest Version**: [Ryuko V5](https://www.github.com/ryukodeveloper/Ryuko-V5)
 
-latest version : [click here](https://www.github.com/ryukodeveloper/Ryuko-V5)
+---
 
 ## UPDATES
-• you can now edit the prefix, botname and admins for each bot in ``bots.json`` file!</br>
-• discover the admin access panel, you can configure your admin password in ``config.json``.</br>
-• to create your appstate go to ``states`` folder and create your appstate file that ends with ``.json``. you can create a multiple appstates.</br>
-• added email function, this updates belongs to premium system and box approval system. if the user is requesting for approval the notification will sent from your email address. enter your email address at ``config.json``.</br>
-• fixed spam in ban system.</br>
-• discover the new feature with ```premium command```, you can enable it by adding a variable named ```premium``` and the value is boolean</br></br>
-```premium ussage example```
-```js
+
+- **Configuration**: You can now edit the prefix, bot name, and admins for each bot in the `bots.json` file.
+- **Admin Access Panel**: Configure your admin password in `config.json`.
+- **App State Creation**: Create your app state files in the `states` folder, with filenames ending in `.json`. You can create multiple app states.
+- **Email Functionality**: Added email notifications for approval requests. Enter your email address in `config.json`.
+- **Spam Fix**: Resolved issues with spam in the ban system.
+- **Premium Command Feature**: Enable premium features by adding a `premium` variable with a boolean value.
+
+### Premium Usage Example
+
+```javascript
 module.exports.config = {
   name: "example",
-  version: "example",
-  credits: "example",
+  version: "1.0.0",
+  credits: "Ryuko Developer",
   permission: 0,
-  description: "example",
-  category: "example",
+  description: "An example command",
+  category: "Example",
   usages: "example",
   prefix: true,
-  premium: true, // this is the example of premium feature ussage
+  premium: true, // Enable premium feature
   cooldown: 0
 }
 ```
-```txt
-UPCOMING UPDATE :
-adding aliases for each commands
-```
+
+### Upcoming Update
+
+- **Command Aliases**: Adding aliases for each command.
+
+---
 
 ## BOX APPROVAL
 
-``box approval`` is set as default, you can disable it on ``config.json`` by setting the ``approval`` value into ``false``</br>
+The `box approval` feature is enabled by default. To disable it, set the `approval` value to `false` in `config.json`.
 
-you can approve box by using ``approve`` command without using prefix, how to use? just type ``approve (box/remove) (uid/tid)``</br>
+### Approving Boxes
 
-EXAMPLES : </br>
-
-view approved list 
-```txt 
-approve list
+You can approve boxes using the `approve` command without a prefix. The syntax is:
 ```
-add box from approved list 
-```txt
-approve box 4834812366643016
-```
-remove box from approved list 
-```txt
-approve remove 4834812366643016
+approve (box/remove) (uid/tid)
 ```
 
-## HOW TO ADD COMMANDS?
-```js
+### Examples:
+
+- **View Approved List**:
+  ```bash
+  approve list
+  ```
+
+- **Add Box from Approved List**:
+  ```bash
+  approve box 4834812366643016
+  ```
+
+- **Remove Box from Approved List**:
+  ```bash
+  approve remove 4834812366643016
+  ```
+
+---
+
+## HOW TO ADD COMMANDS
+
+To add a new command, use the following structure:
+
+```javascript
 module.exports.config = {
-  name: "example", // command name.
-  version: "1.0.0", // command version.
-  permission: 0, // set to 1 if you want to set the permission into a group admins, set to 2 if you want to set the permission into a bot admins, set to 3 if you want to set the permission into a bot operators.
-  credits: "", // who created the code
-  description: "example", // command description.
-  prefix: false, // set to true if you want to use the command with prefix, set to false if you want to use the commands without prefix.
-  premium: false, // pemium is disabled at config.json file, make sure to turn it on to unlock thi feature.
-  category: "example", // command category.
-  usages: "example", // command ussage.
-  cooldowns: 5 // 5 seconds command cooldown to avoid spamming it.
+  name: "example", // Command name
+  version: "1.0.0", // Command version
+  permission: 0, // Permission level (0: all, 1: group admins, 2: bot admins, 3: bot operators)
+  credits: "Ryuko Developer", // Creator of the code
+  description: "An example command", // Command description
+  prefix: false, // Use prefix (true/false)
+  premium: false, // Enable premium feature (true/false)
+  category: "Example", // Command category
+  usages: "example", // Command usage
+  cooldowns: 5 // Cooldown in seconds
 };
 
-module.exports.run = async ({api, event, args, Threads, Users, getText}) => {
-// simple sending a message if the user execute the command through fbchat
-  api.sendMessage('hello world', event.threadID, event.messageID);
+module.exports.run = async ({ api, event, args, Threads, Users, getText }) => {
+  // Send a simple message when the command is executed
+  api.sendMessage('Hello, world!', event.threadID, event.messageID);
 }
 ```
+
+---
+
+### CONCLUSION
+
+This documentation provides a comprehensive overview of the Ryuko Developer project, including setup instructions, updates, and command usage. If you have any questions or need further assistance, feel free to reach out!
+
+---

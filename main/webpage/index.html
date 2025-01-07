@@ -470,63 +470,76 @@
             }
         }
 
-        function login() {
-            const loginPassword = document.getElementById("loginPassword").value.trim();
+        async function login() {
+    const loginPassword = document.getElementById("loginPassword").value.trim();
+    if (!loginPassword) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Password Required',
+            text: 'Please enter your password to continue.',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
 
-            if (!loginPassword) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Password Required',
-                    text: 'Please enter your password to continue.',
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
+    const data = { loginPassword };
+
+    try {
+        Swal.fire({
+            title: 'Logging in...',
+            background: '#333',
+            color: '#fff',
+            showConfirmButton: false,
+            onBeforeOpen: () => {
+                Swal.showLoading();
             }
+        });
 
-            const data = { loginPassword };
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
 
-            fetch('/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.token) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Logged In Successfully',
-                            showConfirmButton: false,
-                            timer: 1500,
-                            background: '#333',
-                            color: '#fff',
-                            confirmButtonColor: '#4CAF50'
-                        }).then(() => {
-                            window.location.href = `/create.html?token=${data.token}`;
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Invalid Password',
-                            text: 'Please try again.',
-                            background: '#333',
-                            color: '#fff',
-                            confirmButtonColor: '#4CAF50'
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error("Login error:", error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Login Error',
-                        text: 'An error occurred. Please try again.',
-                        background: '#333',
-                        color: '#fff',
-                        confirmButtonColor: '#4CAF50'
-                    });
-                });
+        const result = await response.json();
+
+        if (response.ok && result.token) {
+            
+            localStorage.setItem('token', result.token);
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Logged In Successfully',
+                showConfirmButton: false,
+                timer: 1500,
+                background: '#333',
+                color: '#fff',
+                confirmButtonColor: '#4CAF50'
+            }).then(() => {
+                window.location.href = `/create.html?token=${result.token}`;
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Password',
+                text: 'Please try again.',
+                background: '#333',
+                color: '#fff',
+                confirmButtonColor: '#4CAF50'
+            });
         }
+    } catch (error) {
+        console.error("Login error:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Login Error',
+            text: 'An error occurred. Please try again.',
+            background: '#333',
+            color: '#fff',
+            confirmButtonColor: '#4CAF50'
+        });
+    }
+}
     </script>
 </body>
 </html>

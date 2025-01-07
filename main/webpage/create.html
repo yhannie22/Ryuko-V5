@@ -572,240 +572,317 @@
 
          
          listOfAi();
+         
          function editBotName() {
-             const botid = document.getElementById('listsofbots').value;
-             const botname = document.getElementById('ebotname').value;
-             if (!botname) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Bot name is required',
-                    text: 'Please enter your bot name to continue.',
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-            }
-            fetch('/editbotss', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ botid: botid, content: botname, type: "botname" })
-          }).then(response => response.json()).then(data => {
-              if (data.error) {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Something went wrong',
-                    text: data.error,
-                    confirmButtonColor: '#4CAF50'
-                });
-              }
-              if (data.data) {
-                  Swal.fire({
-                    icon: 'success',
-                    title: 'Edited bot name successfully',
-                    text: 'automatically applied changes',
-                    confirmButtonColor: '#4CAF50'
-                }).then(() => {
-                    window.location.href;
-                });
-                  }
-          }).catch(err => {
-              Swal.fire({
-                    icon: 'error',
-                    title: 'Error editing bot name',
-                    text: err,
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-          });
-         }
+    const botid = document.getElementById('listsofbots').value;
+    const botname = document.getElementById('ebotname').value;
+
+    
+    if (!botname) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Bot name is required',
+            text: 'Please enter your bot name to continue.',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
+
+    
+    if (!botid) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Bot is required',
+            text: 'Please select your bot to continue.',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
+
+    
+    fetch('/editbotss', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ botid: botid, content: botname, type: "botname" })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Something went wrong',
+                text: data.error,
+                confirmButtonColor: '#4CAF50'
+            });
+        } else if (data.data) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Edited bot name successfully',
+                text: 'Automatically applied changes',
+                confirmButtonColor: '#4CAF50'
+            }).then(() => {
+                window.location.reload(); 
+            });
+        }
+    })
+    .catch(err => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error editing bot name',
+            text: err,
+            confirmButtonColor: '#4CAF50'
+        });
+    });
+}
          function editBotPrefix() {
-             const botid = document.getElementById('listsofbots').value;
-             const botprefix = document.getElementById('ebotprefix').value;
-             if (!botprefix) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Bot prefix is required',
-                    text: 'Please enter your bot prefix to continue.',
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-            }
-            fetch('/editbotss', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ botid: botid, content: botprefix, type: "botprefix" })
-          }).then(response => response.json()).then(data => {
-              if (data.error) {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Something went wrong',
-                    text: data.error,
-                    confirmButtonColor: '#4CAF50'
-                });
-              }
-              if (data.data) {
-                  Swal.fire({
-                    icon: 'success',
-                    title: 'Edited bot prefix successfully',
-                    text: 'automatically applied changes',
-                    confirmButtonColor: '#4CAF50'
-                }).then(() => {
-                    window.location.href;
-                });
-                  }
-          }).catch(err => {
-              Swal.fire({
-                    icon: 'error',
-                    title: 'Error editing bot prefix',
-                    text: err,
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-          });
-         }
+    const botid = document.getElementById('listsofbots').value;
+    const botprefix = document.getElementById('ebotprefix').value;
+
+    
+    if (!botprefix) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Bot prefix is required',
+            text: 'Please enter your bot prefix to continue.',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
+
+    
+    if (!botid) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Bot is required',
+            text: 'Please select your bot to continue.',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
+
+    
+    fetch('/editbotss', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ botid: botid, content: botprefix, type: "botprefix" })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Something went wrong',
+                text: data.error,
+                confirmButtonColor: '#4CAF50'
+            });
+        } else if (data.data) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Edited bot prefix successfully',
+                text: 'Automatically applied changes',
+                confirmButtonColor: '#4CAF50'
+            }).then(() => {
+                window.location.reload(); 
+            });
+        }
+    })
+    .catch(err => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error editing bot prefix',
+            text: err,
+            confirmButtonColor: '#4CAF50'
+        });
+    });
+}
          function addBotAdmin() {
-             const botid = document.getElementById('listsofbots').value;
-             const botadmin = document.getElementById('ebotadmin').value;
-             if (!botadmin) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Admin is required',
-                    text: 'Please enter your facebook uid to continue.',
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-            }
-            fetch('/editbotss', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ botid: botid, content: botadmin, type: "botadmin" })
-          }).then(response => response.json()).then(data => {
-              if (data.error) {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Something went wrong',
-                    text: data.error,
-                    confirmButtonColor: '#4CAF50'
-                });
-              }
-              if (data.data) {
-                  Swal.fire({
-                    icon: 'success',
-                    title: 'Added bot admin successfully',
-                    text: 'automatically applied changes',
-                    confirmButtonColor: '#4CAF50'
-                }).then(() => {
-                    window.location.href;
-                });
-                  }
-          }).catch(err => {
-              Swal.fire({
-                    icon: 'error',
-                    title: 'Error adding bot admin',
-                    text: err,
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-          });
-         }
+    const botid = document.getElementById('listsofbots').value;
+    const botadmin = document.getElementById('ebotadmin').value;
+
+
+    if (!botadmin) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Admin is required',
+            text: 'Please enter your Facebook UID to continue.',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
+
+    if (!botid) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Bot is required',
+            text: 'Please select a bot to continue.',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
+
+    fetch('/editbotss', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ botid: botid, content: botadmin, type: "botadmin" })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Something went wrong',
+                text: data.error,
+                confirmButtonColor: '#4CAF50'
+            });
+        } else if (data.data) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Added bot admin successfully',
+                text: 'Automatically applied changes',
+                confirmButtonColor: '#4CAF50'
+            }).then(() => {
+                window.location.reload();
+            });
+        }
+    })
+    .catch(err => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error adding bot admin',
+            text: err,
+            confirmButtonColor: '#4CAF50'
+        });
+    });
+}
         function editEmail() {
-            const Email = document.getElementById('email').value;
-            if (!Email) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Email is required',
-                    text: 'Please enter your email to continue.',
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-            }
-            fetch('/configure', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ content: Email, type: "Email" })
-          }).then(response => response.json()).then(data => {
-              if (data.error) {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Something went wrong',
-                    text: data.error,
-                    confirmButtonColor: '#4CAF50'
-                });
-              }
-              if (data.data) {
-                  Swal.fire({
-                    icon: 'success',
-                    title: 'Edited email successfully',
-                    text: 'automatically applied changes',
-                    confirmButtonColor: '#4CAF50'
-                }).then(() => {
-                    window.location.href;
-                });
-                  }
-          }).catch(err => {
-              Swal.fire({
-                    icon: 'error',
-                    title: 'Error editing email',
-                    text: err,
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-          });
-          }
+    const email = document.getElementById('email').value;
+    const botid = document.getElementById('listsofbots').value; 
+    if (!botid) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Bot is required',
+            text: 'Please select a bot to continue.',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
+
+    if (!email) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Email is required',
+            text: 'Please enter your email to continue.',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
+
+    
+    fetch('/configure', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ content: email, type: "Email", botid: botid }) 
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Something went wrong',
+                text: data.error,
+                confirmButtonColor: '#4CAF50'
+            });
+        } else if (data.data) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Edited email successfully',
+                text: 'Automatically applied changes',
+                confirmButtonColor: '#4CAF50'
+            }).then(() => {
+                window.location.reload();
+            });
+        }
+    })
+    .catch(err => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error editing email',
+            text: err.message,
+            confirmButtonColor: '#4CAF50'
+        });
+    });
+}
           
           function addOperator() {
-            const Operator = document.getElementById('operator').value;
-            if (!Operator) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'facebook id is required',
-                    text: 'Please enter your facebook id to continue.',
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-            }
-            fetch('/configure', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ content: Operator, type: "Operator" })
-          }).then(response => response.json()).then(data => {
-              if (data.error) {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Something went wrong',
-                    text: data.error,
-                    confirmButtonColor: '#4CAF50'
-                });
-              }
-              if (data.data) {
-                   Swal.fire({
-                    icon: 'success',
-                    title: 'Added operator successfully',
-                    text: 'automatically applied changes',
-                    confirmButtonColor: '#4CAF50'
-                }).then(() => {
-                    window.location.href;
-                });
-              }
-          }).catch(err => {
-              Swal.fire({
-                    icon: 'error',
-                    title: 'Error adding operator',
-                    text: err,
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-          });
-          }
+    const operator = document.getElementById('operator').value;
+    const botid = document.getElementById('listsofbots').value; // Assuming you have a bot ID input
+
+    // Validate input
+    if (!botid) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Bot is required',
+            text: 'Please select a bot to continue.',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
+
+    if (!operator) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Facebook ID is required',
+            text: 'Please enter your Facebook ID to continue.',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
+
+    
+    fetch('/configure', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ content: operator, type: "Operator", botid: botid }) 
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Something went wrong',
+                text: data.error,
+                confirmButtonColor: '#4CAF50'
+            });
+        } else if (data.data) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Added operator successfully',
+                text: 'Automatically applied changes',
+                confirmButtonColor: '#4CAF50'
+            }).then(() => {
+                window.location.reload();
+            });
+        }
+    })
+    .catch(err => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error adding operator',
+            text: err.message,
+            confirmButtonColor: '#4CAF50'
+        });
+    });
+}
         function openTab(evt, tabName) {
             const tabcontent = document.querySelectorAll('.tabcontent');
             const tablinks = document.querySelectorAll('.tablinks');
@@ -824,70 +901,99 @@
             }, 2000);
           });
         function createFile() {
-         
-          const fileName = document.getElementById('fileName').value;
-          const appState = document.getElementById('appState').value;
-          var botname = document.getElementById('botname').value;
-          var botprefix = document.getElementById('botprefix').value;
-          var botadmin = document.getElementById('botadmin').value;
-if (!fileName) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'File name is required',
-                    text: 'Please enter your file name to continue.',
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-            }
-if (!appState) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Appstate is required',
-                    text: 'Please enter your app state to continue.',
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-            }
+    const fileName = document.getElementById('fileName').value;
+    const appState = document.getElementById('appState').value;
+    const botname = document.getElementById('botname').value;
+    const botprefix = document.getElementById('botprefix').value;
+    const botadmin = document.getElementById('botadmin').value;
 
-          fetch('/create', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ fileName: fileName, appState: appState, botName: botname, botPrefix: botprefix, botAdmin: botadmin  })
-          })
-          .then(response => response.json())
-          .then(data => {
-                if (data.error) {
-Swal.fire({
-                    icon: 'error',
-                    title: 'Something went wrong',
-                    text: data.error,
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-                }
-                if (data.data) {
-Swal.fire({
-                    icon: 'success',
-                    title: 'Created appstate successfully',
-                    text: data.data,
-                    confirmButtonColor: '#4CAF50'
-                }).then(() => {
-                    window.location.href;
-                });
-                }
-          })
-          .catch(error => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error creating appstate',
-                    text: error,
-                    confirmButtonColor: '#4CAF50'
-                });
-                return;
-          });
-      }
+    
+    if (!fileName) {
+        Swal.fire({
+            icon: 'error',
+            title: 'File name is required',
+            text: 'Please enter your file name to continue.',
+            background: '#333',
+                color: '#fff',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
+
+    if (!appState) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Appstate is required',
+            text: 'Please enter your app state to continue.',
+            background: '#333',
+                color: '#fff',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Creating appstate...',
+        text: 'Please wait while we process your request.',
+        background: '#333',
+                color: '#fff',
+                showConfirmButton: false,
+        allowOutsideClick: false,
+        onBeforeOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch('/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ fileName, appState, botName: botname, botPrefix: botprefix, botAdmin: botadmin })
+    })
+    .then(response => response.json())
+    .then(data => {
+        
+        Swal.close();
+
+        if (data.error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Something went wrong',
+                background: '#333',
+                color: '#fff',
+                text: data.error,
+                confirmButtonColor: '#4CAF50'
+            });
+            return;
+        }
+
+        if (data.data) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Created appstate successfully',
+                background: '#333',
+                color: '#fff',
+                text: data.data,
+                confirmButtonColor: '#4CAF50'
+            }).then(() => {
+                window.location.reload(); 
+            });
+        }
+    })
+    .catch(error => {
+        Swal.close();
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Error creating appstate',
+            background: '#333',
+                color: '#fff',
+            text: error.message,
+            confirmButtonColor: '#4CAF50'
+        });
+    });
+}
         
         
     </script>
