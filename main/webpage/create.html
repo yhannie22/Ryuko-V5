@@ -96,6 +96,16 @@
             text-align: center;
             margin-top: 10px;
         }
+        .toggle-container {
+            padding: 20px;
+            position: relative;
+            border: 1px solid #dee2e6;
+            animation: glow 3s infinite alternate; 
+            border-radius: 10px;
+            background-color: #1e1e1e;
+            text-align: center;
+            margin-top: 10px;
+        }
         .email-container {
             padding: 20px;
             position: relative;
@@ -365,7 +375,6 @@
     background-color: #ccc;
     pointer-events: none;
 }
-     
     </style>
 </head>
 <body>
@@ -408,6 +417,7 @@
             </div>
         </div>
         <div id="Config" class="tabcontent">
+            
             <div class="editbot-container">
                    <p>select bot
                    <select name="selectbots" class="botlists" id="listsofbots" onchange="detectedChanges(event)"></select>
@@ -470,8 +480,7 @@
     </footer>
 
     <script>
-        
-        
+
         async function listBots() {
             const elm = document.getElementById("listsofbots");
             try {
@@ -577,10 +586,22 @@
     const botid = document.getElementById('listsofbots').value;
     const botname = document.getElementById('ebotname').value;
 
-    
+    if (!botid) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Bot is required',
+            background: '#333',
+                color: '#fff',
+            text: 'Please select your bot to continue.',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
     if (!botname) {
         Swal.fire({
             icon: 'error',
+            background: '#333',
+                color: '#fff',
             title: 'Bot name is required',
             text: 'Please enter your bot name to continue.',
             confirmButtonColor: '#4CAF50'
@@ -589,15 +610,7 @@
     }
 
     
-    if (!botid) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Bot is required',
-            text: 'Please select your bot to continue.',
-            confirmButtonColor: '#4CAF50'
-        });
-        return;
-    }
+    
 
     
     fetch('/editbotss', {
@@ -613,12 +626,16 @@
             Swal.fire({
                 icon: 'error',
                 title: 'Something went wrong',
+                background: '#333',
+                color: '#fff',
                 text: data.error,
                 confirmButtonColor: '#4CAF50'
             });
         } else if (data.data) {
             Swal.fire({
                 icon: 'success',
+                background: '#333',
+                color: '#fff',
                 title: 'Edited bot name successfully',
                 text: 'Automatically applied changes',
                 confirmButtonColor: '#4CAF50'
@@ -632,6 +649,8 @@
             icon: 'error',
             title: 'Error editing bot name',
             text: err,
+            background: '#333',
+                color: '#fff',
             confirmButtonColor: '#4CAF50'
         });
     });
@@ -640,10 +659,24 @@
     const botid = document.getElementById('listsofbots').value;
     const botprefix = document.getElementById('ebotprefix').value;
 
+    if (!botid) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Bot is required',
+            background: '#333',
+                color: '#fff',
+            text: 'Please select your bot to continue.',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
+    
     
     if (!botprefix) {
         Swal.fire({
             icon: 'error',
+            background: '#333',
+                color: '#fff',
             title: 'Bot prefix is required',
             text: 'Please enter your bot prefix to continue.',
             confirmButtonColor: '#4CAF50'
@@ -652,16 +685,7 @@
     }
 
     
-    if (!botid) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Bot is required',
-            text: 'Please select your bot to continue.',
-            confirmButtonColor: '#4CAF50'
-        });
-        return;
-    }
-
+    
     
     fetch('/editbotss', {
         method: 'POST',
@@ -675,6 +699,8 @@
         if (data.error) {
             Swal.fire({
                 icon: 'error',
+                background: '#333',
+                color: '#fff',
                 title: 'Something went wrong',
                 text: data.error,
                 confirmButtonColor: '#4CAF50'
@@ -682,6 +708,8 @@
         } else if (data.data) {
             Swal.fire({
                 icon: 'success',
+                background: '#333',
+                color: '#fff',
                 title: 'Edited bot prefix successfully',
                 text: 'Automatically applied changes',
                 confirmButtonColor: '#4CAF50'
@@ -695,6 +723,8 @@
             icon: 'error',
             title: 'Error editing bot prefix',
             text: err,
+            background: '#333',
+                color: '#fff',
             confirmButtonColor: '#4CAF50'
         });
     });
@@ -703,22 +733,25 @@
     const botid = document.getElementById('listsofbots').value;
     const botadmin = document.getElementById('ebotadmin').value;
 
-
-    if (!botadmin) {
+    if (!botid) {
         Swal.fire({
             icon: 'error',
-            title: 'Admin is required',
-            text: 'Please enter your Facebook UID to continue.',
+            title: 'Bot is required',
+            background: '#333',
+                color: '#fff',
+            text: 'Please select a bot to continue.',
             confirmButtonColor: '#4CAF50'
         });
         return;
     }
 
-    if (!botid) {
+    if (!botadmin) {
         Swal.fire({
             icon: 'error',
-            title: 'Bot is required',
-            text: 'Please select a bot to continue.',
+            background: '#333',
+                color: '#fff',
+            title: 'Admin is required',
+            text: 'Please enter your Facebook UID to continue.',
             confirmButtonColor: '#4CAF50'
         });
         return;
@@ -738,6 +771,8 @@
                 icon: 'error',
                 title: 'Something went wrong',
                 text: data.error,
+                background: '#333',
+                color: '#fff',
                 confirmButtonColor: '#4CAF50'
             });
         } else if (data.data) {
@@ -745,6 +780,8 @@
                 icon: 'success',
                 title: 'Added bot admin successfully',
                 text: 'Automatically applied changes',
+                background: '#333',
+                color: '#fff',
                 confirmButtonColor: '#4CAF50'
             }).then(() => {
                 window.location.reload();
@@ -755,6 +792,8 @@
         Swal.fire({
             icon: 'error',
             title: 'Error adding bot admin',
+            background: '#333',
+                color: '#fff',
             text: err,
             confirmButtonColor: '#4CAF50'
         });
@@ -762,21 +801,13 @@
 }
         function editEmail() {
     const email = document.getElementById('email').value;
-    const botid = document.getElementById('listsofbots').value; 
-    if (!botid) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Bot is required',
-            text: 'Please select a bot to continue.',
-            confirmButtonColor: '#4CAF50'
-        });
-        return;
-    }
-
+    
     if (!email) {
         Swal.fire({
             icon: 'error',
             title: 'Email is required',
+            background: '#333',
+                color: '#fff',
             text: 'Please enter your email to continue.',
             confirmButtonColor: '#4CAF50'
         });
@@ -789,7 +820,7 @@
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ content: email, type: "Email", botid: botid }) 
+        body: JSON.stringify({ content: email, type: "Email" }) 
     })
     .then(response => response.json())
     .then(data => {
@@ -798,12 +829,16 @@
                 icon: 'error',
                 title: 'Something went wrong',
                 text: data.error,
+                background: '#333',
+                color: '#fff',
                 confirmButtonColor: '#4CAF50'
             });
         } else if (data.data) {
             Swal.fire({
                 icon: 'success',
                 title: 'Edited email successfully',
+                background: '#333',
+                color: '#fff',
                 text: 'Automatically applied changes',
                 confirmButtonColor: '#4CAF50'
             }).then(() => {
@@ -815,6 +850,8 @@
         Swal.fire({
             icon: 'error',
             title: 'Error editing email',
+            background: '#333',
+                color: '#fff',
             text: err.message,
             confirmButtonColor: '#4CAF50'
         });
@@ -823,23 +860,13 @@
           
           function addOperator() {
     const operator = document.getElementById('operator').value;
-    const botid = document.getElementById('listsofbots').value; // Assuming you have a bot ID input
-
-    // Validate input
-    if (!botid) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Bot is required',
-            text: 'Please select a bot to continue.',
-            confirmButtonColor: '#4CAF50'
-        });
-        return;
-    }
 
     if (!operator) {
         Swal.fire({
             icon: 'error',
             title: 'Facebook ID is required',
+            background: '#333',
+                color: '#fff',
             text: 'Please enter your Facebook ID to continue.',
             confirmButtonColor: '#4CAF50'
         });
@@ -852,7 +879,7 @@
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ content: operator, type: "Operator", botid: botid }) 
+        body: JSON.stringify({ content: operator, type: "Operator"}) 
     })
     .then(response => response.json())
     .then(data => {
@@ -861,12 +888,16 @@
                 icon: 'error',
                 title: 'Something went wrong',
                 text: data.error,
+                background: '#333',
+                color: '#fff',
                 confirmButtonColor: '#4CAF50'
             });
         } else if (data.data) {
             Swal.fire({
                 icon: 'success',
                 title: 'Added operator successfully',
+                background: '#333',
+                color: '#fff',
                 text: 'Automatically applied changes',
                 confirmButtonColor: '#4CAF50'
             }).then(() => {
@@ -878,6 +909,8 @@
         Swal.fire({
             icon: 'error',
             title: 'Error adding operator',
+            background: '#333',
+                color: '#fff',
             text: err.message,
             confirmButtonColor: '#4CAF50'
         });
