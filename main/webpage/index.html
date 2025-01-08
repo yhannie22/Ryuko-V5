@@ -186,10 +186,10 @@
         }
 
         .tab button {
+            margin-top: 30px;
             flex: 1;
             padding: 15px 0;
-            border: 1px solid #dee2e6;
-            animation: glow 3s infinite alternate;
+            border: 1px solid gray;
             background: transparent;
             font-size: 1.2rem;
             color: #fff;
@@ -203,13 +203,37 @@
         }
 
         .tab button.active {
-            color: #4CAF50;
-            border-bottom: 3px solid #4CAF50;
+            color: gray;
+            border-bottom: 3px solid gray;
         }
 
         .tabcontent {
             display: none;
         }
+        .social-buttons {
+            
+    display: absolute;
+    margin-top: -50px;
+    gap: 10px;
+}
+
+.social-buttons a {
+    display: inline-block;
+    width: 50px; 
+    height: 50px;
+}
+
+.social-buttons img {
+    border-radius: 50%;
+    background-size: cover;
+    border: 1px solid #dee2e6;
+    animation: glow 3s infinite alternate;
+    width: 30px; 
+    height: 30px;
+    
+}
+
+
 
         .tabcontent.active {
             display: block;
@@ -314,6 +338,18 @@
          }
          p.uptime-user {
          }
+         img {
+    border-radius: 50%;
+    display: absolute;
+    background-size: cover;
+    border: 1px solid #dee2e6;
+    animation: glow 3s infinite alternate;
+    width: 150px; 
+    height: 150px;
+    margin-top: 50px;
+    
+}
+
     </style>
 </head>
 <body>
@@ -321,13 +357,24 @@
         <div class="header-text">RYUKO V5</div>
         <div class="robot-icon"></div>
     </div>
-
     <div class="container">
-        <h4>LOG-IN TO CONTINUE</h4>
-        <p>configure your bot, using admin panel. </br></br>this project involving facebook messenger bots is solely for educational purposes. the bot's functionality is limited and may not be suitable for real-world applications. Any information or interactions with the bot should not be considered professional advice or a substitute for human interaction.</br></br>This project is strictly for educational purposes. It does not involve any hacking or other malicious online activities. </p>
-       <p></p>
         
-        
+            <img src="https://i.imgur.com/zJ55dIu.jpeg" alt="Program"/>
+        <h3>Ryuko</h3>
+        <p>
+        Configure your bot using the Admin Panel, where you can create an AppState via webpage and customize bot details.</br></br>
+        A Messenger Bot, or Chatbot, is an artificial intelligence (AI) powered software that engages in automated conversations with users through messaging platforms.</br></br>
+        If you have questions about this project please contact me through my social media accounts, click the icon bellow.
+        </p>
+        <div class="social-buttons">
+        <a href="https://www.facebook.com/ryukodev" target="_blank" class="facebook-button">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook" />
+        </a>
+        <a href="https://github.com/ryukodeveloper" target="_blank" class="github-button">
+            <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" />
+        </a>
+    
+        </div>
         <div class="tab">
             <div class="tab-container">
                 <button class="tablinks active" onclick="openTab(event, 'Login')">ADMIN PANEL</button>
@@ -378,6 +425,9 @@
                  const response = await fetch("/info");
                  const data = await response.json();
                  userOnline.innerHTML = '';
+                 if (!data[0]) {
+                         userOnline.innerHTML = `<div class="alert alert-danger" role="alert">there is no bot logged in</div>`;
+                     }
                  data.forEach(user => {
                      const {
                          name,
@@ -385,6 +435,7 @@
                          profileUrl,
                          time,
                      } = user;
+                     
                      const userCard = document.createElement('div');
                      userCard.className = 'col-12 user-card mb-4';
                      const image = document.createElement('img');
