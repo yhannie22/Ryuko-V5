@@ -486,9 +486,10 @@ async function startLogin(appstate, filename, botName, botPrefix, botAdmin) {
             authentication.sequelize = sequelize;
             const models = require('./main/system/database/model.js')(authentication);
             const botModel = models;
+            const userId = await api.getCurrentUserID();
 
             try {
-                const userId = await api.getCurrentUserID()
+                
                 const userInfo = await api.getUserInfo(userId);
                 if (!userInfo || !userInfo[userId]?.name || !userInfo[userId]?.profileUrl || !userInfo[userId]?.thumbSrc) throw new Error('unable to locate the account; it appears to be in a suspended or locked state.');
                 const {
@@ -578,9 +579,9 @@ async function startLogin(appstate, filename, botName, botPrefix, botAdmin) {
                 });
             } catch (error) {
                 console.error(error)
-                deleteUser(userIDd);
+                deleteUser(userId);
                 rmStates(filename);
-                global.client.accounts.delete(userIDd);
+                global.client.accounts.delete(userId);
                 return;
             }
         });
