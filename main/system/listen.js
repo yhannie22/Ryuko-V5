@@ -18,6 +18,7 @@ const fs = require("fs-extra");
 			threads.forEach(async (data) => {
 				const idThread = String(data.threadID);
                 global.data.allThreadID.get(botID).push(idThread);
+                global.client.onlines.push(botID);
 				global.data.threadData.set(idThread, data.data || {});
 				global.data.threadInfo.set(idThread, data.threadInfo || {});
 				if (data.data && data.data.banned) {

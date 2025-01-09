@@ -8,13 +8,12 @@ module.exports.config = {
     description: "set new data of boxes into data",
     category: "admin",
     usages: "",
-    cooldowns: 5,
-    
+    cooldowns: 5
 };
 module.exports.run = async function ({ event, args, api, Threads }) { 
 const { threadID } = event;
 const { setData, getData } = Threads;
-var inbox = await api.getThreadListDeprecated(100, null, ['inbox']);
+var inbox = await api.getThreadList(100, null, ['INBOX']);
   let list = [...inbox].filter(group => group.isSubscribed && group.isGroup);
   const lengthGroup = list.length
   for (var groupInfo of list) {

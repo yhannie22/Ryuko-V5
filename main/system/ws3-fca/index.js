@@ -462,7 +462,7 @@ async function login(loginData, options, callback) {
             isBehavior = false;
             loginws3();
           }
-          console.error("login", loginError);
+          logger.login(loginError);
           return callback(loginError);
         }
         callback(null, loginApi);

@@ -16,10 +16,11 @@ module.exports.run = async function ({ Users, event, args, api, Threads }) {
     const { threadID, logMessageData } = event;
     const { setData, getData } = Users;
     var { participantIDs } = await Threads.getInfo(threadID) || await api.getThreadInfo(threadID);
+    
     for (const id of participantIDs) {
-    console.log(`data has been updated id : ${id}`)
     let data = await api.getUserInfo(id);
     data.name
+    console.log(`data has been updated id : ${id}`)
     let userName = data[id].name
     await Users.setData(id, { name: userName, data: {} });
 }

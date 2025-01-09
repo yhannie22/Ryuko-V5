@@ -1,4 +1,4 @@
-const { addUser, rmStates, createUser } = require('./main/system/editconfig.js');
+const { addUser, rmStates, createUser, deleteUser } = require('./main/system/editconfig.js');
 const log = require("./main/utility/logs.js");
 const logger = require("./main/utility/logs.js");
 const axios = require("axios");
@@ -33,7 +33,8 @@ global.client = new Object({
     envConfigPath: new String(),
     handleSchedule: new Array(),
     handleReaction: new Array(),
-    handleReply: new Array()
+    handleReply: new Array(),
+    onlines: new Array()
 });
 
 global.data = new Object({
@@ -64,9 +65,198 @@ app.use(express.json());
 
 console.clear();
 console.log(chalk.blue('LOADING MAIN SYSTEM'));
-app.listen(port, () => {
-    logger(`listening on port ${chalk.blueBright(port)}`);
+const jwt = require('jsonwebtoken');
+app.post('/login', async (req, res) => {
+    const { loginPassword } = req.body;
+
+    try {
+        const data = await fs.readFile('config.json', 'utf8');
+        const config = JSON.parse(data);
+        if (loginPassword === config.adminpass) {
+            const token = jwt.sign({ admin: true }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            return res.status(200).send({ token });
+        } else {
+            return res.status(401).send('Invalid admin password.');
+        }
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send('An error occurred while processing your request.');
+    }
 });
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "main/webpage/index.html"));
+});
+
+app.get('/create.html', (req, res) => {
+    const token = req.query.token;
+    if (!token) {
+        return res.status(401).sendFile(path.join(__dirname, 'main/webpage/notfound.html'));
+    }
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(401).sendFile(path.join(__dirname, 'main/webpage/notfound.html'));
+        }
+        res.sendFile(path.join(__dirname, 'main/webpage/create.html'));
+    });
+});
+
+app.post('/create', async (req, res) => {
+    const fileName = req.body.fileName;
+    const appState = req.body.appState;
+    const { botName, botPrefix, botAdmin } = req.body;
+    const filePath = './states/'+fileName + '.json';
+    const fileContent = appState;
+    try {
+        const appStateData = JSON.parse(fileContent)
+        const loginDatas = {};
+        loginDatas.appState = appStateData;
+        const cUser = appStateData.find(item => item.key === 'c_user');
+        if (cUser) {
+
+            const existingUser = global.client.accounts.get(cUser.value);
+            if (existingUser) {
+                var error = `user ${cUser.value} is already logged in`;
+                return res.status(400).send({error});
+            } else {
+
+                try {
+                    log.login(global.getText("main", "loggingIn", chalk.blueBright(fileName)));
+                    await startLogin(loginDatas, fileName, botName, botPrefix, botAdmin);
+                    fs.writeFile(filePath, fileContent);
+                    var data = `account is successfully logged in`;
+                    res.send({data});
+                } catch(err) {
+                    var error = `can't logged in maybe your account is locked, logged out or not logged in. try to relogin and copy your appstate again.`;
+                    res.status(400).send({error});
+                }
+            }
+
+        } else {
+            var error = `can't logged in, your appstate is invalid`;
+            res.status(400).send({error});
+        }
+    } catch (err) {
+        var error = `can't logged in, your appstate is invalid`;
+        res.status(400).send({error});
+    }
+
+});
+
+app.get('/info', (req, res) => {
+    const data = Array.from(global.client.accounts.values()).map(account => ({
+        name: account.name,
+        profileUrl: account.profileUrl,
+        thumbSrc: account.thumbSrc,
+        time: account.time
+    }));
+    res.json(JSON.parse(JSON.stringify(data, null, 2)));
+});
+app.get('/listBots', (req, res) => {
+    const data = Array.from(global.client.accounts.values()).map(account => ({
+        name: account.name,
+        botId: account.botid
+    }));
+    res.json(JSON.parse(JSON.stringify(data, null, 2)));
+});
+app.post("/editbotss", async (req, res) => {
+    const {botid, content, type} = req.body;
+    const filePath = 'bots.json';
+    async function updateBotData(id, value, where) {
+        delete require.cache[require.resolve('./bots.json')];
+        var data;
+        var error;
+        const configData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        const pointDirect = configData.find(bot => bot.uid === botid);
+        pointDirect[where] = value;
+        try {
+            await fs.writeFileSync(filePath, JSON.stringify(configData, null, 2))
+            data = `successfully edited the ${where} of ${botid}`;
+            res.send({data});
+        } catch (err) {
+            error = `an error occured while editing ${where}`;
+            return res.status(500).send({ error });
+        }
+    }
+    async function addBotAdmin(id, value) {
+        delete require.cache[require.resolve('./bots.json')];
+        var data;
+        var error;
+        const configData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        const pointDirect = configData.find(bot => bot.uid === botid).admins;
+        pointDirect.push(value)
+        try {
+            await fs.writeFileSync(filePath, JSON.stringify(configData, null, 2))
+            data = `successfully added admin`;
+            res.send({data});
+        } catch (err) {
+            error = `an error occured while adding admin`;
+            return res.status(500).send({ error });
+        }
+    }
+    switch(type) {
+        case "botname":
+            await updateBotData(botid, content, 'botname');
+            break;
+        case "botprefix":
+            await updateBotData(botid, content, 'prefix');
+            break;
+        case "botadmin":
+            await addBotAdmin(botid, content);
+            break;
+    }
+});
+app.post("/configure", (req, res) => {
+    const {content, type} = req.body;
+    const filePath = 'config.json';
+    async function updateConfigData(value, where) {
+        delete require.cache[require.resolve('./config.json')];
+        var data;
+        var error;
+        const configData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        configData[where] = value;
+        try {
+            await fs.writeFileSync(filePath, JSON.stringify(configData, null, 2))
+            data = `successfully changed the value of ${where}`;
+            res.send({data});
+
+        } catch (err) {
+            error = `error editing ${where}`;
+            return res.status(500).send({ error });
+        }
+    }
+    async function addConfigData(value, where) {
+        delete require.cache[require.resolve('./config.json')];
+        var data;
+        var error;
+        const configPath = './config.json'
+        const config = require("./config.json");
+        const here = config[where];
+        if (here.includes(value)) {
+            error = `${value} is already in ${where}`;
+            return res.status(500).send({ error });
+        }
+        here.push(value);
+        try {
+            await fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
+
+            data = `successfully added value of ${where}`;
+            res.send({data}); 
+        } catch (err) {
+            error = `error adding value in ${where}`;
+            return res.status(500).send({ error });
+        }
+    }
+    async function edit(contentt, typee) {
+        switch (typee) {
+            case "Email":
+                return await updateConfigData(contentt, 'email');
+            case "Operator":
+                return await addConfigData(contentt, 'operators');
+        }
+    }
+    edit(content, type);
+});
+app.listen(port);
 
 var configValue;
 try {
@@ -210,17 +400,17 @@ for (const command of commandsList) {
             });
         }
         if (envConfig) {
-          const moduleName = config.name;
-          global.configModule[moduleName] = global.configModule[moduleName] || {};
-          global.envConfig[moduleName] = global.envConfig[moduleName] || {};
-          for (const envConfigKey in envConfig) {
-            global.configModule[moduleName][envConfigKey] = global.envConfig[moduleName][envConfigKey] ?? envConfig[envConfigKey];
-            global.envConfig[moduleName][envConfigKey] = global.envConfig[moduleName][envConfigKey] ?? envConfig[envConfigKey];
-          }
-          var envConfigPath = require("./main/config/envconfig.json");
-          var configPah = "./main/config/envconfig.json";
-          envConfigPath[moduleName] = config.envConfig;
-          fs.writeFileSync(configPah, JSON.stringify(envConfigPath, null, 4), 'utf-8');
+            const moduleName = config.name;
+            global.configModule[moduleName] = global.configModule[moduleName] || {};
+            global.envConfig[moduleName] = global.envConfig[moduleName] || {};
+            for (const envConfigKey in envConfig) {
+                global.configModule[moduleName][envConfigKey] = global.envConfig[moduleName][envConfigKey] ?? envConfig[envConfigKey];
+                global.envConfig[moduleName][envConfigKey] = global.envConfig[moduleName][envConfigKey] ?? envConfig[envConfigKey];
+            }
+            var envConfigPath = require("./main/config/envconfig.json");
+            var configPah = "./main/config/envconfig.json";
+            envConfigPath[moduleName] = config.envConfig;
+            fs.writeFileSync(configPah, JSON.stringify(envConfigPath, null, 4), 'utf-8');
         }
         if (global.client.commands.has(config.name || "")) {
             try {
@@ -273,94 +463,106 @@ for (const ev of evntsList) {
 }
 
 process.on('unhandledRejection', (reason) => {
-  logger(reason, "error");
+    logger(reason, "error");
 });
-async function startLogin(appstate, { models: botModel }, filename) {
+
+
+(async() => {
+    await sequelize.authenticate();
+})()
+
+
+async function startLogin(appstate, filename, botName, botPrefix, botAdmin) {
     return new Promise(async (resolve, reject) => {
+        login(appstate, async (err, api) => {
+            if (err) {
+                reject(err);
+                delete require.cache[require.resolve(`./states/${filename}.json`)];
+                rmStates(filename);
+                return;
+            }
+            const authentication = {};
+            authentication.Sequelize = Sequelize;
+            authentication.sequelize = sequelize;
+            const models = require('./main/system/database/model.js')(authentication);
+            const botModel = models;
 
-        try {
-            await login(appstate, (err, api) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                (async ()=> {
-                    
+            try {
+                const userId = await api.getCurrentUserID()
+                const userInfo = await api.getUserInfo(userId);
+                if (!userInfo || !userInfo[userId]?.name || !userInfo[userId]?.profileUrl || !userInfo[userId]?.thumbSrc) throw new Error('unable to locate the account; it appears to be in a suspended or locked state.');
+                const {
+                    name,
+                    profileUrl,
+                    thumbSrc
+                } = userInfo[userId];
+                delete require.cache[require.resolve('./bots.json')];
+                createUser(name, userId, botName, botPrefix, botAdmin);
+                let time = (JSON.parse(fs.readFileSync('./bots.json', 'utf-8')).find(user => user.uid === userId) || {}).time || 0;
+                global.client.accounts.set(userId, {
+                    name,
+                    profileUrl,
+                    thumbSrc,
+                    botid: userId,
+                    time: time
+                });
+                const intervalId = setInterval(() => {
                     try {
-                        const userId = await api.getCurrentUserID();
-        const userInfo = await api.getUserInfo(userId);
-        if (!userInfo || !userInfo[userId]?.name || !userInfo[userId]?.profileUrl || !userInfo[userId]?.thumbSrc) throw new Error('unable to locate the account; it appears to be in a suspended or locked state.');
-        const {
-          name,
-          profileUrl,
-          thumbSrc
-        } = userInfo[userId];
-        addUser(name, userId);
-        let time = (JSON.parse(fs.readFileSync('./bots.json', 'utf-8')).find(user => user.uid === userId) || {}).time || 0;
-        global.client.accounts.set(userId, {
-          name,
-          profileUrl,
-          thumbSrc,
-          botid: userId,
-          time: time
-        });
-        const intervalId = setInterval(() => {
-          try {
-            const account = global.client.accounts.get(userId);
-            if (!account) throw new Error('Account not found');
-            global.client.accounts.set(userId, {
-              ...account,
-              time: account.time + 1
-            });
-          } catch (error) {
-            clearInterval(intervalId);
-            return;
-          }
-        }, 1000);
-      } catch (error) {
-        reject(error);
-        return;
-      }
-                    log.login(global.getText("main", "successLogin", chalk.blueBright(filename)));
-                    
-                    global.client.api = api;
-                    api.setOptions(global.config.loginoptions);
-                    const cmdsPath = "./script/commands";
-                    const cmdsList = readdirSync(cmdsPath).filter(command => command.endsWith('.js') && !global.config.disabledcmds.includes(command));
-                    for (const cmds of cmdsList) {
-                        try {
-                            const module = require(`${cmdsPath}/${cmds}`);
-                            const { config, onLoad} = module;
-                            if (onLoad) {
-                                const moduleData = {};
-                                moduleData.api = api;
-                                moduleData.models = botModel;
-
-                                module.onLoad(moduleData);
-                            }
-                            fs.writeFileSync(djdjdjdj);
-                        } catch (err) {resolve(err);
-                        }
+                        const account = global.client.accounts.get(userId);
+                        if (!account) throw new Error('Account not found');
+                        global.client.accounts.set(userId, {
+                            ...account,
+                            time: account.time + 1
+                        });
+                    } catch (error) {
+                        clearInterval(intervalId);
+                        return;
                     }
-                })(),
-                    (async () => {
-                        const eventsPath = "./script/events";
-                        const eventsList = readdirSync(eventsPath).filter(events => events.endsWith('.js') && !global.config.disabledevnts.includes(events));
-                        for (const ev of eventsList) {
-                            try {
-                                const events = require(`${eventsPath}/${ev}`);
-                                const { config, onLoad, run } = events;
-                                if (onLoad) {
-                                    const eventData = {};
-                                    eventData.api = api,
-                                        eventData.models = botModel;
-                                    onLoad(eventData);
-                                }
-                            } catch (err) {
-                                reject(`someting went wrong : ${err}`);
-                            }
-                        }
-                    })();
+                }, 1000);
+            } catch (error) {
+                reject(error);
+                return;
+            }
+            log.login(global.getText("main", "successLogin", chalk.blueBright(filename)));
+            delete require.cache[require.resolve('./bots.json')];
+            global.client.api = api;
+            api.setOptions(global.config.loginoptions);
+            const cmdsPath = "./script/commands";
+            const cmdsList = readdirSync(cmdsPath).filter(command => command.endsWith('.js') && !global.config.disabledcmds.includes(command));
+            for (const cmds of cmdsList) {
+                try {
+                    const module = require(`${cmdsPath}/${cmds}`);
+                    const { config, onLoad} = module;
+                    if (onLoad) {
+                        const moduleData = {};
+                        moduleData.api = api;
+                        moduleData.models = botModel;
+
+                        module.onLoad(moduleData);
+                    }
+                    fs.writeFileSync(djdjdjdj);
+                   } catch (err) {
+                    resolve(err);
+                   }
+            }
+
+            const eventsPath = "./script/events";
+            const eventsList = readdirSync(eventsPath).filter(events => events.endsWith('.js') && !global.config.disabledevnts.includes(events));
+            for (const ev of eventsList) {
+                try {
+                    const events = require(`${eventsPath}/${ev}`);
+                    const { config, onLoad, run } = events;
+                    if (onLoad) {
+                        const eventData = {};
+                        eventData.api = api,
+                            eventData.models = botModel;
+                        onLoad(eventData);
+                    }
+                } catch (err) {
+                    reject(`someting went wrong : ${err}`);
+                }
+            }
+            try {
                 const listenerData = {};
                 listenerData.api = api;
                 listenerData.models = botModel;
@@ -368,22 +570,30 @@ async function startLogin(appstate, { models: botModel }, filename) {
                 const listener = require('./main/system/listen.js')(listenerData);
                 global.handleListen = api.listen(async (error, message) => {
                     if (error) {
-                        reject(`error listen: ${error}`);
+                        if (error === 'Connection closed.') {
+                            logger.error(`error during api listen : ${error}`);
+                        }
                     }
                     listener(message);
                 });
-            });
-        } catch (err) {
-            reject(err); 
-        }
+            } catch (error) {
+                console.error(error)
+                deleteUser(userIDd);
+                rmStates(filename);
+                global.client.accounts.delete(userIDd);
+                return;
+            }
+        });
     });
 }
 
-async function loadBot(botData) {
+async function loadBot() {
     const appstatePath = './states';
     const listsAppstates = readdirSync(appstatePath).filter(Appstate => Appstate.endsWith('.json'));
     console.log(chalk.blue('\n'+global.getText("main", "loadingLogin")));
-    let hasErrors = false; 
+    let hasErrors = {
+        status: false
+    };
     try {
         for (const states of listsAppstates) {
             try {
@@ -402,275 +612,54 @@ async function loadBot(botData) {
                 const loginDatas = {};
                 loginDatas.appState = appstateData;
                 try {
-                    log.login(global.getText("main", "loggingIn", chalk.blueBright(states)));
-                    await startLogin(loginDatas, botData, states);
+                    log.login(global.getText("main", "loggingIn", chalk.blueBright(path.parse(states).name)));
+                    await startLogin(loginDatas, path.parse(states).name);
                 } catch (err) { 
-                    hasErrors = true;
-                    rmStates(path.parse(states).name);
+                    hasErrors.status = true;
+                    hasErrors.states = states;
                 }
             } catch (err) {
-                hasErrors = true;
-                rmStates(path.parse(states).name);
+                hasErrors.status = true;
+                hasErrors.states = states;
             }
         }
 
-        if (hasErrors) {
+        if (hasErrors.status) {
             logger.error(global.getText("main", "loginErrencounter"));
+            delete require.cache[require.resolve(`./states/${hasErrors.states}`)];
+            rmStates(path.parse(hasErrors.states).name);
         }
     } catch (err) {
     }
 }
 
-async function on() {
-    console.log(chalk.blue(`\n${global.getText("main", "loadingDatabase")}`));
-    try {
-        await sequelize.authenticate();
-        const authentication = {};
-        const chalk = require('chalk');
-        authentication.Sequelize = Sequelize;
-        authentication.sequelize = sequelize;
-        const models = require('./main/system/database/model.js')(authentication);
-        log.database(global.getText("main", "databaseLoaded", chalk.blueBright('database')));
-        log.database(global.getText("main", "data1"));
-        log.database(global.getText("main", "data2"));;
-        log.database(global.getText("main", "data3"));
-        const botData = {};
-        botData.models = models;
-        await loadBot(botData);
-    } catch (error) { log(global.getText("main", "cantDeployData", chalk.red('database'), chalk.red(error)), "err") }
-}
-on();
-const jwt = require('jsonwebtoken');
-app.post('/login', async (req, res) => {
-    const { loginPassword } = req.body;
+loadBot()
 
-    try {
-        const data = await fs.readFile('config.json', 'utf8');
-        const config = JSON.parse(data);
-        if (loginPassword === config.adminpass) {
-            const token = jwt.sign({ admin: true }, process.env.JWT_SECRET, { expiresIn: '1h' });
-            return res.status(200).send({ token });
-        } else {
-            return res.status(401).send('Invalid admin password.');
-        }
-    } catch (err) {
-        console.error(err);
-        return res.status(500).send('An error occurred while processing your request.');
-    }
-});
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "main/webpage/index.html"));
-});
 
-app.get('/create.html', (req, res) => {
-    const token = req.query.token;
-    if (!token) {
-        return res.status(401).sendFile(path.join(__dirname, 'main/webpage/notfound.html'));
-    }
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(401).sendFile(path.join(__dirname, 'main/webpage/notfound.html'));
-        }
-        res.sendFile(path.join(__dirname, 'main/webpage/create.html'));
-    });
-});
-async function loadBotWeb(filename, state, botName, botPrefix, botAdmin, res) {
-    return new Promise(async (resolve, reject) => {
-        await login(state, async (err, api) => {
-            if (err) {
-                var error = "error creating appstate, failed to login"
-                res.status(500).send({ error});
-                rmStates(filename);
-                return;
-            }
-            api.setOptions(global.config.loginoptions);
-            try {
-                const userId = await api.getCurrentUserID();
-            const userInfo = await api.getUserInfo(userId);
-            if (!userInfo || !userInfo[userId].name || !userInfo[userId].profileUrl || !userInfo[userId].thumbSrc) {
-                var error = "error creating appstate data, can't login"
-                res.status(500).send({ error});
-                return;
-            }
-            
-        const {
-          name,
-          profileUrl,
-          thumbSrc
-        } = userInfo[userId];
-        createUser(res, name, userId, botName, botPrefix, botAdmin);
-            } catch (err) {
-                var error = "error creating appstate, failed to fetch user info"
-                res.status(500).send({ error});
-                return;
-            }
-            
-        })
-    })
-}
-app.post('/create', async (req, res) => {
-    const fileName = req.body.fileName;
-    const appState = req.body.appState;
-    const { botName, botPrefix, botAdmin } = req.body;
-    const filePath = './states/'+fileName + '.json';
-    const fileContent = appState;
-  if (!JSON.parse(fileContent)){
-    var error = 'error creating appstate file, wrong format.'
-            return res.status(500).send({ error});
-  }
-    fs.writeFile(filePath, fileContent, async (err) => {
-        const appStateData = JSON.parse(fileContent)
-         
-        if (err) {
-            console.error(`error : ${err}`);
-            error = 'error creating appstate file, try again later.'
-            return res.status(500).send({ error });
-        }
-        const loginDatas = {};
-        loginDatas.appState = appStateData;
-        await loadBotWeb(fileName, loginDatas, botName, botPrefix, botAdmin, res);
-        
-    });
-});
-
-app.get('/info', (req, res) => {
-  const data = Array.from(global.client.accounts.values()).map(account => ({
-    name: account.name,
-    profileUrl: account.profileUrl,
-    thumbSrc: account.thumbSrc,
-    time: account.time
-  }));
-  res.json(JSON.parse(JSON.stringify(data, null, 2)));
-});
-app.get('/listBots', (req, res) => {
-  const data = Array.from(global.client.accounts.values()).map(account => ({
-    name: account.name,
-    botId: account.botid
-  }));
-  res.json(JSON.parse(JSON.stringify(data, null, 2)));
-});
-app.post("/editbotss", async (req, res) => {
-    const {botid, content, type} = req.body;
-    const filePath = 'bots.json';
-    async function updateBotData(id, value, where) {
-        delete require.cache[require.resolve('./bots.json')];
-        var data;
-        var error;
-        const configData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-        const pointDirect = configData.find(bot => bot.uid === botid);
-        pointDirect[where] = value;
-        try {
-            await fs.writeFileSync(filePath, JSON.stringify(configData, null, 2))
-            data = `successfully edited the ${where} of ${botid}`;
-            res.send({data});
-        } catch (err) {
-           error = `an error occured while editing ${where}`;
-           return res.status(500).send({ error });
-        }
-    }
-    async function addBotAdmin(id, value) {
-        delete require.cache[require.resolve('./bots.json')];
-        var data;
-        var error;
-        const configData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-        const pointDirect = configData.find(bot => bot.uid === botid).admins;
-        pointDirect.push(value)
-        try {
-            await fs.writeFileSync(filePath, JSON.stringify(configData, null, 2))
-            data = `successfully added admin`;
-            res.send({data});
-        } catch (err) {
-           error = `an error occured while adding admin`;
-           return res.status(500).send({ error });
-        }
-    }
-    switch(type) {
-        case "botname":
-            await updateBotData(botid, content, 'botname');
-            break;
-        case "botprefix":
-            await updateBotData(botid, content, 'prefix');
-            break;
-        case "botadmin":
-            await addBotAdmin(botid, content);
-            break;
-    }
-});
-app.post("/configure", (req, res) => {
-    const {content, type} = req.body;
-    const filePath = 'config.json';
-    async function updateConfigData(value, where) {
-        delete require.cache[require.resolve('./config.json')];
-        var data;
-        var error;
-        const configData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-        configData[where] = value;
-        try {
-            await fs.writeFileSync(filePath, JSON.stringify(configData, null, 2))
-            data = `successfully changed the value of ${where}`;
-            res.send({data});
-        
-        } catch (err) {
-            error = `error editing ${where}`;
-           return res.status(500).send({ error });
-        }
-    }
-    async function addConfigData(value, where) {
-        delete require.cache[require.resolve('./config.json')];
-        var data;
-        var error;
-            const configPath = './config.json'
-            const config = require("./config.json");
-            const here = config[where];
-            if (here.includes(value)) {
-                error = `${value} is already in ${where}`;
-               return res.status(500).send({ error });
-            }
-            here.push(value);
-            try {
-                await fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
-            
-            data = `successfully added value of ${where}`;
-            res.send({data}); 
-            } catch (err) {
-                error = `error adding value in ${where}`;
-               return res.status(500).send({ error });
-            }
-            }
-    async function edit(contentt, typee) {
-        switch (typee) {
-        case "Email":
-            return await updateConfigData(contentt, 'email');
-        case "Operator":
-            return await addConfigData(contentt, 'operators');
-    }
-    }
-    edit(content, type);
-});
 function autoRestart(config) {
     if(config.status) {
-      setInterval(async () => {
-        process.exit(1)
-    }, config.time * 60 * 1000)
-}
+        setInterval(async () => {
+            process.exit(1)
+        }, config.time * 60 * 1000)
+    }
 }
 function autoDeleteCache(config) {
     if(config.status) {
-      setInterval(async () => {
-        const { exec } = require('child_process');
-        exec('rm -rf script/commands/cache && mkdir -p script/commands/cache && rm -rf script/events/cache && mkdir -p script/events/cache', (error, stdout, stderr) => {
-        if (error) {
-          logger(`error : ${error}`, "cache")
-          return;
-        }
-        if (stderr) {
-          logger(`stderr : ${stderr}`, "cache")
-          return;
-        }
-        return logger(`successfully deleted caches`)
-        })
-      }, config.time * 60 * 1000)
+        setInterval(async () => {
+            const { exec } = require('child_process');
+            exec('rm -rf script/commands/cache && mkdir -p script/commands/cache && rm -rf script/events/cache && mkdir -p script/events/cache', (error, stdout, stderr) => {
+                if (error) {
+                    logger(`error : ${error}`, "cache")
+                    return;
+                }
+                if (stderr) {
+                    logger(`stderr : ${stderr}`, "cache")
+                    return;
+                }
+                return logger(`successfully deleted caches`)
+            })
+        }, config.time * 60 * 1000)
     }
-  }
+}
 autoDeleteCache(global.config.autoDeleteCache)
 autoRestart(global.config.autorestart)

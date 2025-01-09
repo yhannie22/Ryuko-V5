@@ -4,6 +4,15 @@ const chalk = require("chalk");
 const path = require('path');
 const log = require("../utility/logs.js");
 
+module.exports.deleteUser = async (userid) => {
+  delete require.cache[require.resolve('../../bots.json')];
+  const configFile = 'bots.json';
+  let config = JSON.parse(fs.readFileSync(configFile, 'utf-8'));
+  const index = config.findIndex(item => item.uid === userid);
+  if (index !== -1) config.splice(index, 1);
+  fs.writeFileSync(configFile, JSON.stringify(config, null, 2));
+}
+
 module.exports.addUser = async (name, userID) => {
   const configPaths = require('../../bots.json');
   delete require.cache[require.resolve('../../bots.json')];
@@ -27,11 +36,10 @@ module.exports.addUser = async (name, userID) => {
       "admins": [],
       "time": 0
     });
-  log(`loaded ${chalk.blueBright(`${name}'s`)} data in ${chalk.blueBright(`bots.json`)} file, restarting to save changes`, "load");
+  log(`loaded ${chalk.blueBright(`${name}'s`)} data in ${chalk.blueBright(`bots.json`)} file`, "load");
   fs.writeFileSync(configFile, JSON.stringify(config, null, 2));
-  process.exit(1);
 }
-module.exports.createUser = async (res, name, userID, botName, botPrefix, botAdmin) => {
+module.exports.createUser = async (name, userID, botName, botPrefix, botAdmin) => {
     delete require.cache[require.resolve('../../bots.json')];
   const configPaths = require('../../bots.json');
         const dataa = configPaths
@@ -40,28 +48,24 @@ module.exports.createUser = async (res, name, userID, botName, botPrefix, botAdm
           const packs = [];
           packs.push(ryuko);
           if (packs.includes(userID)) {
-           var data = `created appstate file, data is already loaded. restarting...`;
-           res.send({ data });
-           return process.exit(1);
+              return;
           } 
         }
     const configFile = 'bots.json';
     const config = JSON.parse(fs.readFileSync(configFile, 'utf-8'));
     const configBots = config;
-    let adminss = [];
-    adminss.push(botAdmin);
+    const adminss = [];
+    if (botAdmin) adminss.push(botAdmin);
     configBots.push({    
       "name": name,
       "uid": userID,
       "botname": botName || "ryuko",
       "prefix": botPrefix || "-",
-      "admins": adminss || [],
+      "admins": adminss,
       "time": 0
     });
-    var data = "successfully created appstate and loaded data, restarting..."
-  res.send({data});
+    log(`loaded ${chalk.blueBright(`${name}'s`)} data in ${chalk.blueBright(`bots.json`)} file`, "load");
   fs.writeFileSync(configFile, JSON.stringify(config, null, 2));
-  process.exit(1);
 }
 
 module.exports.rmStates = async (states) => {
