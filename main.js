@@ -110,36 +110,20 @@ app.post('/create', async (req, res) => {
         const appStateData = JSON.parse(fileContent)
         const loginDatas = {};
         loginDatas.appState = appStateData;
-        const cUser = appStateData.find(item => item.key === 'c_user');
-        if (cUser) {
-
-            const existingUser = global.client.accounts.get(cUser.value);
-            if (existingUser) {
-                var error = `user ${cUser.value} is already logged in`;
-                return res.status(400).send({error});
-            } else {
-
-                try {
-                    log.login(global.getText("main", "loggingIn", chalk.blueBright(fileName)));
-                    await startLogin(loginDatas, fileName, botName, botPrefix, botAdmin);
-                    fs.writeFile(filePath, fileContent);
-                    var data = `account is successfully logged in`;
-                    res.send({data});
-                } catch(err) {
-                    var error = `can't logged in maybe your account is locked, logged out or not logged in. try to relogin and copy your appstate again.`;
-                    res.status(400).send({error});
-                }
-            }
-
-        } else {
-            var error = `can't logged in, your appstate is invalid`;
+        try {
+            log.login(global.getText("main", "loggingIn", chalk.blueBright(fileName)));
+            await startLogin(loginDatas, fileName, botName, botPrefix, botAdmin);
+            fs.writeFile(filePath, fileContent);
+            var data = `account is successfully logged in`;
+            res.send({data});
+        } catch(err) {
+            var error = `can't logged in maybe your account is locked, logged out or not logged in. try to relogin and copy your appstate again.`;
             res.status(400).send({error});
         }
     } catch (err) {
         var error = `can't logged in, your appstate is invalid`;
         res.status(400).send({error});
     }
-
 });
 
 app.get('/info', (req, res) => {
