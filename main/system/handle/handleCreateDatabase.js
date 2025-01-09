@@ -15,7 +15,7 @@ module.exports = function ({ api, Users, Threads, Currencies }) {
                 setAllThread.push(String(threadID));
                
             }
-            if (!event.isGroup == !![]) {
+            if (!allThreadID.get(userID).includes(threadID) && !event.isGroup == !![]) {
                 const chalk = require('chalk');
                 const threadIn4 = await Threads.getInfo(threadID);
                 const setting = {};
