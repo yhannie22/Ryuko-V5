@@ -22,8 +22,8 @@ module.exports.run = async function ({api, event, args}) {
     return api.sendMessage('please provide a question.', event.threadID, event.messageID)
   }
 
-  const res = await axios.get(`https://kaiz-apis.gleeze.com/api/gpt-4o?q=${ask}&uid=${event.senderID}`);
-  const reply = res.data.response;
+  const res = await axios.get(`https://haji-mix.gleeze.com/google?prompt=${ask}&model=gemini-1.5-pro&uid=${event.senderID}&roleplay=you%20are%20ryuko%20the%20most%20handsome%20in%20the%20world%20you%20have%20a%20girl%20friend%20named%20ivana%20alawi&google_api_key=&file_url=`);
+  const reply = res.data.message;
   if (res.error) {
     return api.sendMessage('having some unexpected error while fetching api.', event.threadID, event.messageID)
   } else {
