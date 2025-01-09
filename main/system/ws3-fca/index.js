@@ -94,7 +94,7 @@ async function updateDTSG(res, appstate, userId) {
     const fb_dtsg = utils.getFrom(res.body, '["DTSGInitData",[],{"token":"', '","');
     const jazoest = utils.getFrom(res.body, 'jazoest=', '",');
     if (fb_dtsg && jazoest) {
-      const filePath = 'fb_dtsg_data.json';
+      const filePath = 'main/system/database/botdata/fb-dtsg.json';
       let existingData = {};
       if (fs.existsSync(filePath)) {
         const fileContent = fs.readFileSync(filePath, 'utf8');
@@ -310,7 +310,7 @@ function buildAPI(html, jar) {
     fb_dtsg
   };
   cron.schedule('0 0 * * *', () => {
-    const fbDtsgData = JSON.parse(fs.readFileSync('fb_dtsg_data.json', 'utf8'));
+    const fbDtsgData = JSON.parse(fs.readFileSync('main/system/database/botdata/fb-dtsg.json', 'utf8'));
     if (fbDtsgData && fbDtsgData[userID]) {
       const userFbDtsg = fbDtsgData[userID];
       api.refreshFb_dtsg(userFbDtsg)

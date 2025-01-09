@@ -73,9 +73,9 @@ return (event) => {
 			case "message":
 			case "message_reply":
 			case "message_unsend":
-				handleCreateDatabase({ event });
 				handleCommand({ event });
 				handleReply({ event });
+                handleCreateDatabase({ event });
 				handleCommandEvent({ event });
 				break;
 			case "change_thread_image": 

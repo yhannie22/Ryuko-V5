@@ -27,7 +27,7 @@
   "disabledevnts": [],
   "loginoptions": {
     "selfListen": false,
-    "selfListenEvent": true,
+    "selfListenEvent": false,
     "listenEvents": true,
     "listenTyping": false,
     "updatePresence": false,

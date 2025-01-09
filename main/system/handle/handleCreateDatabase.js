@@ -11,10 +11,7 @@ module.exports = function ({ api, Users, Threads, Currencies }) {
         const userID = await api.getCurrentUserID();
         const setAllThread = allThreadID.get(userID);
         try {
-            if (!allThreadID.get(userID).includes(threadID)) {
-                setAllThread.push(String(threadID));
-               
-            }
+            
             if (!allThreadID.get(userID).includes(threadID) && !event.isGroup == !![]) {
                 const chalk = require('chalk');
                 const threadIn4 = await Threads.getInfo(threadID);
@@ -24,6 +21,7 @@ module.exports = function ({ api, Users, Threads, Currencies }) {
                 setting.nicknames = threadIn4.nicknames;
                 setting.participantIDs = threadIn4.participantIDs;
                 const dataThread = setting;
+                setAllThread.push(String(threadID));
                 threadInfo.set(threadID, dataThread);
                 const setting2 = {};
                 setting2.threadInfo = dataThread
@@ -46,6 +44,7 @@ module.exports = function ({ api, Users, Threads, Currencies }) {
                         console.log(global.getText('handleCreateDatabase', 'newUser', '\nname : ' + chalk.white(`${singleData.name}`) + "\nuser id :" + chalk.white(`${singleData.id}`))));
                     } catch(e) { console.log(e) };
                 }
+                console.log(global.getText('handleCreateDatabase', 'newThread', '\ngroup id : '+ chalk.white(`${threadID}`) + "\ngroup name : " + chalk.white(`${threadIn4.threadName}`)));
             }
             if (!allUserID.includes(senderID) || !userName.has(senderID)) {
                 const infoUsers = await Users.getInfo(senderID),
