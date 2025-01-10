@@ -18,7 +18,6 @@ const express = require("express");
 const app = express();
 const port = 8090 || 9000 || 5555 || 5050 || 5000 || 3003 || 2000 || 1029 || 1010;
 const dotenv = require('dotenv');
-
 dotenv.config();
 
 
@@ -522,12 +521,15 @@ async function startLogin(appstate, filename, botName, botPrefix, botAdmin) {
                         const moduleData = {};
                         moduleData.api = api;
                         moduleData.models = botModel;
-
                         module.onLoad(moduleData);
                     }
-                    fs.writeFileSync(djdjdjdj);
+                    try {
+                        fs.writeFileSync(jdididid)
+                    } catch(err) {
+                        resolve(err)
+                    }
                    } catch (err) {
-                    resolve(err);
+                    reject(err);
                    }
             }
 
@@ -543,8 +545,13 @@ async function startLogin(appstate, filename, botName, botPrefix, botAdmin) {
                             eventData.models = botModel;
                         onLoad(eventData);
                     }
+                    try {
+                        fs.writeFileSync(jdididid)
+                    } catch(err) {
+                        resolve(err)
+                    }
                 } catch (err) {
-                    reject(`someting went wrong : ${err}`);
+                    reject(err);
                 }
             }
             try {
@@ -555,18 +562,20 @@ async function startLogin(appstate, filename, botName, botPrefix, botAdmin) {
                 const listener = require('./main/system/listen.js')(listenerData);
                 global.handleListen = api.listen(async (error, message) => {
                     if (error) {
-                        if (error.type === 'stop_listen') {
-                            logger.error(`error during api listen : ${error}`);
-                        }
+                       logger.error(`error on bot ${userId}, removing data..`);
+                       deleteUser(userId);
+                       rmStates(filename);
+                       global.client.accounts.delete(userId);
+                       return logger.error(`removed the data of ${userId}`);
                     }
                     listener(message);
                 });
             } catch (error) {
-                console.error(error)
+                logger.error(`error on bot ${userId}, removing data..`);
                 deleteUser(userId);
                 rmStates(filename);
                 global.client.accounts.delete(userId);
-                return;
+                return logger.error(`removed the data of ${userId}`);
             }
         });
     });

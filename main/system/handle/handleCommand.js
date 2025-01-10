@@ -210,6 +210,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
           return lang;
         };
       else getText2 = () => { };
+      
       try {
         const Obj = {
           api: api,

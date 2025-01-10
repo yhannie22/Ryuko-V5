@@ -43,7 +43,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 70px;
+            height: 50px;
         }
         .header-text {
             font-size: 1.8rem;
@@ -62,12 +62,16 @@
         }
 
         .container {
+            display: relative;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             max-width: 1000px;
             width: 100%;
             padding: 10px;
             background-color: #1e1e1e;
             text-align: center;
-            margin-top: 50px;
+            margin-top: 10px;
         }
 
         p {
@@ -84,6 +88,7 @@
             background-color: #1e1e1e;
             text-align: center;
             margin-top: 10px;
+            width: 95%;
         }
 
         .create-container {
@@ -97,15 +102,27 @@
             margin-top: 10px;
         }
         .toggle-container {
-            padding: 20px;
-            position: relative;
-            border: 1px solid #dee2e6;
-            animation: glow 3s infinite alternate; 
-            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            max-width: 1000px;
+            width: 95%;
+            padding: 10px;
             background-color: #1e1e1e;
             text-align: center;
             margin-top: 10px;
         }
+        
+        @media screen and (max-width: 768px) {
+    .header-text {
+        font-size: 1.5rem;
+    }
+
+    .container {
+        padding: 20px;
+    }
+}
         .email-container {
             padding: 20px;
             position: relative;
@@ -205,14 +222,16 @@
 
         .tab-container {
             width: 100%;
+            max-width: 1000;
             display: flex;
             justify-content: center;
         }
 
         .tab button {
-            border: 1px solid gray;
+            margin-top: 30px;
             flex: 1;
             padding: 15px 0;
+            border: 1px solid gray;
             background: transparent;
             font-size: 1.2rem;
             color: #fff;
@@ -232,27 +251,11 @@
 
         .tabcontent {
             display: none;
+            
         }
 
         .tabcontent.active {
             display: block;
-        }
-
-        footer {
-            border: 1px solid #dee2e6; 
-            margin-top: -1px;
-            margin-bottom: -100px;
-            text-align: center;
-            padding: 20px;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-            background: #1e1e1e;
-            width: 100%;
-            max-width: 1000px;
-            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5);
-        }
-        footer span {
-            color: #FF5252;
         }
 
         @media (min-width: 768px) {
@@ -266,6 +269,9 @@
 
             button {
                 font-size: 1.4rem;
+            }
+                        .container {
+                padding: 20px;
             }
         }
 
@@ -407,6 +413,7 @@
     height: 30px;
     
 }
+
     </style>
 </head>
 <body>
@@ -416,13 +423,15 @@
     </div>
 
     <div class="container">
+
                     <img class="icon-main"src="https://i.imgur.com/izqhFnb.jpeg" alt="Program"/>
         <h3>Administrator</h3>
         <p>
-        Configure your bot using the Admin Panel, where you can create an AppState via webpage and customize bot details.</br></br>
-        A Messenger Bot, or Chatbot, is an artificial intelligence (AI) powered software that engages in automated conversations with users through messaging platforms.</br></br>
+        Configure your bot using the Admin Panel, where you can customize bot details.</br></br>
+        
         If you have questions about this project please contact me through my social media accounts, click the icon bellow.
         </p>
+    
         <div class="social-buttons">
         <a href="https://www.facebook.com/ryukodev" target="_blank" class="facebook-button">
             <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook" />
@@ -436,7 +445,7 @@
         
         <div class="tab">
             <div class="tab-container">
-                <button class="tablinks active" onclick="openTab(event, 'Create')">APPSTATE</button>
+                <button class="tablinks active" onclick="openTab(event, 'Bot')">BOT</button>
                 <button class="tablinks" onclick="openTab(event, 'Config')">CONFIG</button>
                 <button class="tablinks" onclick="openTab(event, 'About')">INFO</button>
             </div>
@@ -448,7 +457,8 @@
                botpack - Yan Maglinte</br>
                ws3-fca - Kenneth Aceberos</br>
                mirai - To the owner</br>
-               autobot - To the owner
+               autobot - To the owner</br>
+               design - Jay Mar & Ryuko
             </p>
             </div>
             <div class="create-container">
@@ -458,8 +468,7 @@
          <div class="row" id="user_online"></div>
             </div>
         </div>
-        <div id="Config" class="tabcontent">
-            
+        <div id="Bot" class="tabcontent active">
             <div class="editbot-container">
                    <p>select bot
                    <select name="selectbots" class="botlists" id="listsofbots" onchange="detectedChanges(event)"></select>
@@ -474,6 +483,9 @@
                    <button onclick="addBotAdmin()">add</button>
                    </p>
                </div>
+        </div>
+        <div id="Config" class="tabcontent">
+            
                <div class="email-container">
                    <p>edit email
                    <input type="text" id="email" placeholder="example@whatever.com">
@@ -490,36 +502,7 @@
 
         </div>
 
-        <div id="Create" class="tabcontent active">
-            <h3></h3>
-            <div class="create-container">
-                <p>filename 
-        <input type="text" id="fileName" placeholder="ex: ryuko" required>
-        </p>
-        <p>bot name
-          <input type="text" id="botname" placeholder="bot name">
-            </p>
-            <p>bot prefix
-          <input type="text" id="botprefix" placeholder="bot prefix">
-            </p>
-            <p>bot admin
-          <input type="text" id="botadmin" placeholder="facebook uid">
-            </p>
-                <p>appstate 
-        <textarea id="appState" type="appState" rows="10" placeholder="paste your appstate here"></textarea>
-        
-            <button id="createbuttonn" onclick="createFile()">
-                    login
-                </button>
-        
-        </p>
-           </div>
-          
         </div>
-    </div>
-    <footer>
-        Designed by Jay Mar (Heru)
-    </footer>
 
     <script>
 
@@ -977,109 +960,6 @@
             document.getElementById(tabName).classList.add('active');
             evt.currentTarget.classList.add('active');
         }
-        const buttonss = document.getElementById('createbuttonn');
-         buttonss.addEventListener('click', () => {
-          buttonss.disabled = true;
-          setTimeout(() => {
-             buttonss.disabled = false;
-            }, 2000);
-          });
-        function createFile() {
-    const fileName = document.getElementById('fileName').value;
-    const appState = document.getElementById('appState').value;
-    const botname = document.getElementById('botname').value;
-    const botprefix = document.getElementById('botprefix').value;
-    const botadmin = document.getElementById('botadmin').value;
-
-    
-    if (!fileName) {
-        Swal.fire({
-            icon: 'error',
-            title: 'File name is required',
-            text: 'Please enter your file name to continue.',
-            background: '#333',
-                color: '#fff',
-            confirmButtonColor: '#4CAF50'
-        });
-        return;
-    }
-
-    if (!appState) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Appstate is required',
-            text: 'Please enter your app state to continue.',
-            background: '#333',
-                color: '#fff',
-            confirmButtonColor: '#4CAF50'
-        });
-        return;
-    }
-
-    Swal.fire({
-        title: 'Logging in..',
-        text: 'Please wait while we are processing your request.',
-        background: '#333',
-                color: '#fff',
-                showConfirmButton: false,
-        allowOutsideClick: false,
-        onBeforeOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
-    fetch('/create', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ fileName, appState, botName: botname, botPrefix: botprefix, botAdmin: botadmin })
-    })
-    .then(response => response.json())
-    .then(data => {
-        
-        Swal.close();
-
-        if (data.error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Something went wrong',
-                background: '#333',
-                color: '#fff',
-                text: data.error,
-                confirmButtonColor: '#4CAF50'
-            });
-            return;
-        }
-
-        if (data.data) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Logged in successfully',
-                background: '#333',
-                color: '#fff',
-                text: data.data,
-                confirmButtonText: 'reload',
-                confirmButtonColor: '#4CAF50'
-            }).then(() => {
-                window.location.reload(); 
-            });
-        }
-    })
-    .catch(error => {
-        Swal.close();
-
-        Swal.fire({
-            icon: 'error',
-            title: 'Error logging in',
-            background: '#333',
-                color: '#fff',
-            text: error.message,
-            confirmButtonColor: '#4CAF50'
-        });
-    });
-}
-        
         
     </script>
 </body>
