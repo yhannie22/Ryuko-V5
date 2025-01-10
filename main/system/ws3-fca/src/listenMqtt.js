@@ -129,8 +129,6 @@ function listenMqtt(defaultFuncs, api, ctx, globalCallback) {
     } else {
       globalCallback({ type: "stop_listen", error: "Connection refused: Server unavailable" }, null);
     }
-    console.warn("login", "Error detected. Will relogin automatically...");
-    api.ws3.relogin();
     return;
   });
 

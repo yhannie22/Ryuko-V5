@@ -555,7 +555,7 @@ async function startLogin(appstate, filename, botName, botPrefix, botAdmin) {
                 const listener = require('./main/system/listen.js')(listenerData);
                 global.handleListen = api.listen(async (error, message) => {
                     if (error) {
-                        if (error === 'Connection closed.') {
+                        if (error.type === 'stop_listen') {
                             logger.error(`error during api listen : ${error}`);
                         }
                     }
