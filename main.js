@@ -111,12 +111,15 @@ async function update() {
   logger(`installing backup files...`);
   await installBackup();
   logger(`removing trash folder..`);
-  await exec(`rm -rf updated`);
-  await exec(`rm -rf backup`);
-  logger(`removed successfully.`);
+  await removeTrash();
   logger(`restarting to save changes...`);
   return process.exit(1);
 });
+  async function removeTrash() {
+      await exec(`rm -rf updated`);
+     await exec(`rm -rf backup`);
+    logger(`removed successfully.`);
+  }
   async function reformatMain() {
       const updatePath = `./updated`
   const listsFile = readdirSync(updatePath);
@@ -145,11 +148,13 @@ async function update() {
               logger(`moved backup file ${files} to main branch.`)
           } catch (err) {
               logger.error(`an error occurred while moving the ${files} in main branch`);
+              continue;
           }
       }
   }
 }
-setInterval(checkForUpdates, 3600000); 
+
+setInterval(checkForUpdates, 3600000);
 
 
 const jwt = require('jsonwebtoken');
