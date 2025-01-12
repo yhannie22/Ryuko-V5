@@ -18,6 +18,7 @@ const express = require("express");
 const app = express();
 const port = 8090 || 9000 || 5555 || 5050 || 5000 || 3003 || 2000 || 1029 || 1010;
 const dotenv = require('dotenv');
+const cron = require('node-cron');
 dotenv.config();
 
 
@@ -64,6 +65,89 @@ app.use(express.json());
 
 console.clear();
 console.log(chalk.blue('LOADING MAIN SYSTEM'));
+const download = require('download-git-repo');
+const currentVersion = packages.version;
+const repoOwner = 'ryukodeveloper'; 
+const repoName = 'Ryuko-V5';
+
+async function checkForUpdates() {
+  try {
+    const res = await axios.get(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/refs/heads/main/package.json`);
+    const latestVersion = res.data.version;
+    logger(`checking updates please wait...`);
+    if (latestVersion > currentVersion) {
+      logger(`new version available : ${latestVersion}`);
+      return await update(); 
+    } else {
+      logger(`you're using the latest version`);
+    }
+  } catch (error) {
+    console.error('error checking updates : ', error);
+  }
+}
+
+async function update() {
+  const backupDir = 'backup';
+  if (!fs.existsSync(backupDir)) {
+    fs.mkdirSync(backupDir);
+  }
+  const filesToBackup = ['main/system/database/botdata' ,'states', 'script', 'bots.json'];
+  filesToBackup.forEach(file => {
+    const backupFile = `${backupDir}/${file}`;
+    logger(`moving ${file} to ${backupDir}..`);
+    fs.copy(file, backupFile, {overwrite:true});
+    logger(`moved ${file} to ${backupDir}`);
+  });
+  logger(`downloading the updated file into updated folder...`);
+  var statusUpdate = false;
+  await download('direct:https://github.com/ryukodeveloper/Ryuko-V5.git#main','updated', { clone: true }, async (err) => {
+  if (err) {
+      statusUpdate= false;
+      return logger.error(`an error occurred while downloading updates`);
+  }
+  logger(`downloaded updates successfully`);
+  logger(`installing the update to main branch....`);
+  await reformatMain();
+  logger(`installing backup files...`);
+  await installBackup();
+  logger(`restarting to save changes...`);
+  return process.exit(1);
+});
+  async function reformatMain() {
+      const updatePath = `./updated`
+  const listsFile = readdirSync(updatePath);
+  for (const files of listsFile) {
+      const updatedv = `updated/${files}`;
+      try {
+          logger(`moving ${files} to main branch...`);
+          await fs.copy(updatedv, process.cwd()+`/${files}`, {overwrite:true});
+          await exec(`rm -rf ${updatedv}`);
+          logger(`moved ${files} to main branch.`);
+      } catch (err) {
+          logger.error(`an error occurred when moving ${files} in main branch : ${err}`);
+          continue;
+      }
+  }
+  }
+  async function installBackup() {
+      const backupPath = './backup';
+      const listFile = readdirSync(backupPath);
+      for (const files of listFile) {
+          const backups = `backup/${files}`;
+          try {
+              logger(`moving backup file ${files} to main branch...`)
+              await fs.copy(backups, process.cwd()+`/${files}`, {overwrite: true});
+              await exec(`rm -rf ${backups}`);
+              logger(`moved backup file ${files} to main branch.`)
+          } catch (err) {
+              logger.error(`an error occurred while moving the ${files} in main branch`);
+          }
+      }
+  }
+}
+setInterval(checkForUpdates, 3600000); 
+
+
 const jwt = require('jsonwebtoken');
 app.post('/login', async (req, res) => {
     const { loginPassword } = req.body;
@@ -75,11 +159,13 @@ app.post('/login', async (req, res) => {
             const token = jwt.sign({ admin: true }, process.env.JWT_SECRET, { expiresIn: '1h' });
             return res.status(200).send({ token });
         } else {
-            return res.status(401).send('Invalid admin password.');
+            const error = `invalid admin password`;
+            return res.status(401).send({error});
         }
     } catch (err) {
         console.error(err);
-        return res.status(500).send('An error occurred while processing your request.');
+        const error = `an error occurred while processing your request`
+        return res.status(500).send({error});
     }
 });
 app.get("/", (req, res) => {
@@ -105,6 +191,20 @@ app.post('/create', async (req, res) => {
     const { botName, botPrefix, botAdmin } = req.body;
     const filePath = './states/'+fileName + '.json';
     const fileContent = appState;
+    const botsPath = require(`./bots.json`);
+    const stateFolder = "./states"
+    const listStates = readdirSync(stateFolder).filter(state => state.endsWith('.json'));
+    for (const name of listStates) {
+        const stateName = path.parse(name).name;
+        if (stateName === fileName) {
+            var error = `file name is already exist, try another name`;
+            return res.status(400).send({error});
+        }
+    }
+    if (botsPath.find(bot => bot.botname === botName)) {
+        var error = `bot name is already exist, try another bot name`;
+        return res.status(400).send({error});
+    }
     try {
         const appStateData = JSON.parse(fileContent)
         const loginDatas = {};
@@ -112,7 +212,7 @@ app.post('/create', async (req, res) => {
         try {
             log.login(global.getText("main", "loggingIn", chalk.blueBright(fileName)));
             await startLogin(loginDatas, fileName, botName, botPrefix, botAdmin);
-            fs.writeFile(filePath, fileContent);
+            await fs.writeFile(filePath, fileContent);
             var data = `account is successfully logged in`;
             res.send({data});
         } catch(err) {
@@ -446,14 +546,31 @@ for (const ev of evntsList) {
 }
 
 process.on('unhandledRejection', (reason) => {
-    logger(reason, "error");
+    console.error(reason);
 });
 
 
 (async() => {
     await sequelize.authenticate();
 })()
-
+async function autoPost({api}) {
+    if (global.config.autopost) {
+        const date = new Date().getDate();
+        const response = await axios.get(`https://beta.ourmanna.com/api/v1/get/?format=text&order=random&order_by=verse&day=${date}`);
+        const bible = String(response.data);
+        try {
+            await api.createPost({
+                body: bible,
+                baseState: 1
+            })
+            .then(() => {
+                logger(`posted : ${bible}`);
+            });
+        } catch (err) {}
+    } else {
+        logger(`auto post is turned off.`);
+    }
+}
 
 async function startLogin(appstate, filename, botName, botPrefix, botAdmin) {
     return new Promise(async (resolve, reject) => {
@@ -470,9 +587,7 @@ async function startLogin(appstate, filename, botName, botPrefix, botAdmin) {
             const models = require('./main/system/database/model.js')(authentication);
             const botModel = models;
             const userId = await api.getCurrentUserID();
-
             try {
-                
                 const userInfo = await api.getUserInfo(userId);
                 if (!userInfo || !userInfo[userId]?.name || !userInfo[userId]?.profileUrl || !userInfo[userId]?.thumbSrc) throw new Error('unable to locate the account; it appears to be in a suspended or locked state.');
                 const {
@@ -511,6 +626,12 @@ async function startLogin(appstate, filename, botName, botPrefix, botAdmin) {
             delete require.cache[require.resolve('./bots.json')];
             global.client.api = api;
             api.setOptions(global.config.loginoptions);
+            cron.schedule(`*/30 * * * *`, async() => {
+                await autoPost({api});
+            }, {
+                scheduled: true,
+                timezone: 'Asia/Manila'
+            });
             const cmdsPath = "./script/commands";
             const cmdsList = readdirSync(cmdsPath).filter(command => command.endsWith('.js') && !global.config.disabledcmds.includes(command));
             for (const cmds of cmdsList) {
@@ -532,7 +653,6 @@ async function startLogin(appstate, filename, botName, botPrefix, botAdmin) {
                     reject(err);
                    }
             }
-
             const eventsPath = "./script/events";
             const eventsList = readdirSync(eventsPath).filter(events => events.endsWith('.js') && !global.config.disabledevnts.includes(events));
             for (const ev of eventsList) {

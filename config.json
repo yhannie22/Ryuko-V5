@@ -6,6 +6,7 @@
   "autocreatedb": true,
   "approval": false,
   "premium": false,
+  "autopost": true,
   "email": "sanjivfresh@gmail.com",
   "adminpass": "ryukodev",
   "operators": [
