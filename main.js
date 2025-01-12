@@ -71,87 +71,103 @@ const repoOwner = 'ryukodeveloper';
 const repoName = 'Ryuko-V5';
 
 async function checkForUpdates() {
-  try {
-    const res = await axios.get(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/refs/heads/main/package.json`);
-    const latestVersion = res.data.version;
-    logger(`checking updates please wait...`);
-    if (latestVersion > currentVersion) {
-      logger(`new version available : ${latestVersion}`);
-      return await update(); 
-    } else {
-      logger(`you're using the latest version`);
+    try {
+        const res = await axios.get(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/refs/heads/main/package.json`);
+        const latestVersion = res.data.version;
+        logger(`checking updates please wait...`);
+        if (latestVersion > currentVersion) {
+            logger(`new version available : ${latestVersion}`);
+            return await update(); 
+        } else {
+            logger(`you're using the latest version`);
+        }
+    } catch (error) {
+        console.error('error checking updates : ', error);
     }
-  } catch (error) {
-    console.error('error checking updates : ', error);
-  }
 }
 
 async function update() {
-  const backupDir = 'backup';
-  if (!fs.existsSync(backupDir)) {
-    fs.mkdirSync(backupDir);
-  }
-  const filesToBackup = ['main/system/database/botdata' ,'states', 'script', 'bots.json'];
-  filesToBackup.forEach(file => {
-    const backupFile = `${backupDir}/${file}`;
-    logger(`moving ${file} to ${backupDir}..`);
-    fs.copy(file, backupFile, {overwrite:true});
-    logger(`moved ${file} to ${backupDir}`);
-  });
-  logger(`downloading the updated file into updated folder...`);
-  var statusUpdate = false;
-  await download('direct:https://github.com/ryukodeveloper/Ryuko-V5.git#main','updated', { clone: true }, async (err) => {
-  if (err) {
-      statusUpdate= false;
-      return logger.error(`an error occurred while downloading updates`);
-  }
-  logger(`downloaded updates successfully`);
-  logger(`installing the update to main branch....`);
-  await reformatMain();
-  logger(`installing backup files...`);
-  await installBackup();
-  logger(`removing trash folder..`);
-  await removeTrash();
-  logger(`restarting to save changes...`);
-  return process.exit(1);
-});
-  async function removeTrash() {
-      await exec(`rm -rf updated`);
-     await exec(`rm -rf backup`);
-    logger(`removed successfully.`);
-  }
-  async function reformatMain() {
-      const updatePath = `./updated`
-  const listsFile = readdirSync(updatePath);
-  for (const files of listsFile) {
-      const updatedv = `updated/${files}`;
-      try {
-          logger(`moving ${files} to main branch...`);
-          await fs.copy(updatedv, process.cwd()+`/${files}`, {overwrite:true});
-          await exec(`rm -rf ${updatedv}`);
-          logger(`moved ${files} to main branch.`);
-      } catch (err) {
-          logger.error(`an error occurred when moving ${files} in main branch : ${err}`);
-          continue;
-      }
-  }
-  }
-  async function installBackup() {
-      const backupPath = './backup';
-      const listFile = readdirSync(backupPath);
-      for (const files of listFile) {
-          const backups = `backup/${files}`;
-          try {
-              logger(`moving backup file ${files} to main branch...`)
-              await fs.copy(backups, process.cwd()+`/${files}`, {overwrite: true});
-              await exec(`rm -rf ${backups}`);
-              logger(`moved backup file ${files} to main branch.`)
-          } catch (err) {
-              logger.error(`an error occurred while moving the ${files} in main branch`);
-              continue;
-          }
-      }
-  }
+    const backupDir = 'backup';
+    if (!fs.existsSync(backupDir)) {
+        fs.mkdirSync(backupDir);
+    }
+    const filesToBackup = ['main/system/database/botdata' ,'states', 'script', 'bots.json'];
+    filesToBackup.forEach(file => {
+        const backupFile = `${backupDir}/${file}`;
+        logger(`moving ${file} to ${backupDir}..`);
+        fs.copy(file, backupFile, {overwrite:true});
+        logger(`moved ${file} to ${backupDir}`);
+    });
+    logger(`downloading the updated file into updated folder...`);
+    var statusUpdate = false;
+    await download('direct:https://github.com/ryukodeveloper/Ryuko-V5.git#main','updated', { clone: true }, async (err) => {
+        if (err) {
+            statusUpdate= false;
+            return logger.error(`an error occurred while downloading updates`);
+        }
+        logger(`downloaded updates successfully`);
+        logger(`installing the update to main branch....`);
+        await reformatMain();
+        logger(`installing backup files...`);
+        await installBackup();
+        logger(`removing trash folder...`);
+        await removeTrash();
+        logger(`reinstalling dependencies...`);
+        await reinstallDep();
+        logger(`restarting to save changes...`);
+        return process.exit(1);
+    });
+    async function reinstallDep() {
+        try {
+            await execSync(`npm install --save`, {
+                stdio: 'inherit',
+                env: process.env,
+                shell: true,
+                cwd: join('./node_modules')
+            });
+            require.cache = {};
+            logger(`successfully reinstalled dependencies.`)
+        } catch (err) {
+            logger.error(`failed to reinstall dependencies`)
+        }
+    }
+    async function removeTrash() {
+        await exec(`rm -rf updated`);
+        await exec(`rm -rf backup`);
+        logger(`removed successfully.`);
+    }
+    async function reformatMain() {
+        const updatePath = `./updated`
+        const listsFile = readdirSync(updatePath);
+        for (const files of listsFile) {
+            const updatedv = `updated/${files}`;
+            try {
+                logger(`moving ${files} to main branch...`);
+                await fs.copy(updatedv, process.cwd()+`/${files}`, {overwrite:true});
+                await exec(`rm -rf ${updatedv}`);
+                logger(`moved ${files} to main branch.`);
+            } catch (err) {
+                logger.error(`an error occurred when moving ${files} in main branch : ${err}`);
+                continue;
+            }
+        }
+    }
+    async function installBackup() {
+        const backupPath = './backup';
+        const listFile = readdirSync(backupPath);
+        for (const files of listFile) {
+            const backups = `backup/${files}`;
+            try {
+                logger(`moving backup file ${files} to main branch...`)
+                await fs.copy(backups, process.cwd()+`/${files}`, {overwrite: true});
+                await exec(`rm -rf ${backups}`);
+                logger(`moved backup file ${files} to main branch.`)
+            } catch (err) {
+                logger.error(`an error occurred while moving the ${files} in main branch`);
+                continue;
+            }
+        }
+    }
 }
 
 setInterval(checkForUpdates, 3600000);
@@ -572,9 +588,9 @@ async function autoPost({api}) {
                 body: bible,
                 baseState: 1
             })
-            .then(() => {
-                logger(`posted : ${bible}`);
-            });
+                .then(() => {
+                    logger(`posted : ${bible}`);
+                });
         } catch (err) {}
     } else {
         logger(`auto post is turned off.`);
@@ -658,9 +674,9 @@ async function startLogin(appstate, filename, botName, botPrefix, botAdmin) {
                     } catch(err) {
                         resolve(err)
                     }
-                   } catch (err) {
+                } catch (err) {
                     reject(err);
-                   }
+                }
             }
             const eventsPath = "./script/events";
             const eventsList = readdirSync(eventsPath).filter(events => events.endsWith('.js') && !global.config.disabledevnts.includes(events));
@@ -691,11 +707,11 @@ async function startLogin(appstate, filename, botName, botPrefix, botAdmin) {
                 const listener = require('./main/system/listen.js')(listenerData);
                 global.handleListen = api.listen(async (error, message) => {
                     if (error) {
-                       logger.error(`error on bot ${userId}, removing data..`);
-                       deleteUser(userId);
-                       rmStates(filename);
-                       global.client.accounts.delete(userId);
-                       return logger.error(`removed the data of ${userId}`);
+                        logger.error(`error on bot ${userId}, removing data..`);
+                        deleteUser(userId);
+                        rmStates(filename);
+                        global.client.accounts.delete(userId);
+                        return logger.error(`removed the data of ${userId}`);
                     }
                     listener(message);
                 });
