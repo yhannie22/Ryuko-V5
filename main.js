@@ -110,6 +110,10 @@ async function update() {
   await reformatMain();
   logger(`installing backup files...`);
   await installBackup();
+  logger(`removing trash folder..`);
+  await exec(`rm -rf updated`);
+  await exec(`rm -rf backup`);
+  logger(`removed successfully.`);
   logger(`restarting to save changes...`);
   return process.exit(1);
 });
