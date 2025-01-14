@@ -108,6 +108,31 @@
             margin-top: 10px;
             width: 95%;
         }
+        .credential-container {
+            padding: 20px;
+            
+            border: 1px solid #dee2e6;
+            animation: glow 3s infinite alternate; 
+            border-radius: 10px;
+            max-width: 100;
+            background-color: #1e1e1e;
+            text-align: center;
+            margin-top: 10px;
+            width: 95%;
+        }
+        .appstate-container {
+            padding: 20px;
+            
+            border: 1px solid #dee2e6;
+            animation: glow 3s infinite alternate; 
+            border-radius: 10px;
+            max-width: 100;
+            background-color: #1e1e1e;
+            text-align: center;
+            margin-top: 10px;
+            width: 95%;
+        }
+        
         .password-container {
             position: relative;
             border-radius: 10px;
@@ -504,7 +529,7 @@
             
         </ul>
     </div>
-    <div class="online-container">
+    <div id="credentialForm"class="credential-container" >
             <h1 class="col text-start" style="font-size: 20px;">Facebook account</h1>
 
                  <input type="text" id="botemail" placeholder="facebook email">
@@ -522,6 +547,28 @@
             <button id="createbuttonn" onclick="createFile()">
                     login
                 </button>
+                <p>login using appstate : <a href="#" id="showAppstate">click here</a></p>
+            
+           </div>
+           <div id="appstateForm"class="appstate-container" style="display: none;">
+            <h1 class="col text-start" style="font-size: 20px;">Facebook appstate</h1>
+
+                 <textarea id="appState" type="appState" rows="10" placeholder="paste your appstate here"></textarea>
+            <h1 class="col text-start" style="font-size: 20px;">Enter bot details</h1>
+        <input type="text" id="afileName" placeholder="file name (ex : ryuko)" required>
+          <input type="text" id="abotname" placeholder="bot name">
+            
+    
+          <input type="text" id="abotprefix" placeholder="bot prefix (symbols)">
+          <input type="text" id="abotadmin" placeholder="bot admin (facebook uid)">
+            
+            
+            
+            <button id="createbuttonn" onclick="createFileAppstate()">
+                    login
+                </button>
+                <p>login using credentials : <a href="#" id="showCredential">click here</a></p>
+            
            </div>
            
     <div class="online-container">
@@ -532,6 +579,19 @@
             </div>
             
     <script>
+        const credentialForm = document.getElementById('credentialForm');
+        const appstateForm = document.getElementById('appstateForm');
+        const appstateButton = document.getElementById('showCredential');
+        const credentialButton = document.getElementById('showAppstate');
+        appstateButton.addEventListener('click', () => {
+            appstateForm.style.display = 'none'
+            credentialForm.style.display = 'block'
+        })
+        credentialButton.addEventListener('click', () => {
+            credentialForm.style.display = 'none'
+            appstateForm.style.display = 'block'
+            
+        })
         const menuToggle = document.querySelector('.menu-toggle');
 const menuContainer = document.getElementById('menu-container');
 
@@ -558,19 +618,6 @@ function createFile() {
     const botprefix = document.getElementById('botprefix').value;
     const botadmin = document.getElementById('botadmin').value;
 
-    
-    if (!fileName) {
-        Swal.fire({
-            icon: 'error',
-            title: 'File name is required',
-            text: 'Please enter your file name to continue.',
-            background: '#333',
-                color: '#fff',
-            confirmButtonColor: '#4CAF50'
-        });
-        return;
-    }
-
     if (!botemail) {
         Swal.fire({
             icon: 'error',
@@ -593,6 +640,19 @@ function createFile() {
         });
         return;
     }
+    if (!fileName) {
+        Swal.fire({
+            icon: 'error',
+            title: 'File name is required',
+            text: 'Please enter your file name to continue.',
+            background: '#333',
+                color: '#fff',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
+
+    
 
     Swal.fire({
         title: 'Logging in..',
@@ -611,7 +671,102 @@ function createFile() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ fileName, botemail: botemail, botpassword: botpassword, botName: botname, botPrefix: botprefix, botAdmin: botadmin })
+        body: JSON.stringify({ isAppstate: false, appstate: null, fileName, botemail: botemail, botpassword: botpassword, botName: botname, botPrefix: botprefix, botAdmin: botadmin })
+    })
+    .then(response => response.json())
+    .then(data => {
+        
+        Swal.close();
+
+        if (data.error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Something went wrong',
+                background: '#333',
+                color: '#fff',
+                text: data.error,
+                confirmButtonColor: '#4CAF50'
+            });
+            return;
+        }
+
+        if (data.data) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Logged in successfully',
+                background: '#333',
+                color: '#fff',
+                text: data.data,
+                confirmButtonText: 'reload',
+                confirmButtonColor: '#4CAF50'
+            }).then(() => {
+                window.location.reload(); 
+            });
+        }
+    })
+    .catch(error => {
+        Swal.close();
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Error logging in',
+            background: '#333',
+                color: '#fff',
+            text: error.message,
+            confirmButtonColor: '#4CAF50'
+        });
+    });
+}
+function createFileAppstate() {
+    const fileName = document.getElementById('afileName').value;
+    const appState = document.getElementById('appState').value;
+    const botname = document.getElementById('abotname').value;
+    const botprefix = document.getElementById('abotprefix').value;
+    const botadmin = document.getElementById('abotadmin').value;
+
+    if (!appState) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Appstate is required',
+            text: 'Please enter your appstate to continue.',
+            background: '#333',
+                color: '#fff',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
+    if (!fileName) {
+        Swal.fire({
+            icon: 'error',
+            title: 'File name is required',
+            text: 'Please enter your file name to continue.',
+            background: '#333',
+                color: '#fff',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
+
+    
+
+    Swal.fire({
+        title: 'Logging in..',
+        text: 'Please wait while we are processing your request.',
+        background: '#333',
+                color: '#fff',
+                showConfirmButton: false,
+        allowOutsideClick: false,
+        onBeforeOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch('/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ isAppstate: true, appstate: appState, fileName, botemail: botemail, botpassword: botpassword, botName: botname, botPrefix: botprefix, botAdmin: botadmin })
     })
     .then(response => response.json())
     .then(data => {

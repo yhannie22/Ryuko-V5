@@ -210,9 +210,11 @@ app.get('/create.html', (req, res) => {
 
 app.post('/create', async (req, res) => {
     const fileName = req.body.fileName;
+    const appState = req.body.appstate;
     const botemail = req.body.botemail;
+    
     const botpassword = req.body.botpassword;
-    const { botName, botPrefix, botAdmin } = req.body;
+    const { isAppstate, botName, botPrefix, botAdmin } = req.body;
     const filePath = './states/'+fileName + '.json';
     const botsPath = require(`./bots.json`);
     const stateFolder = "./states"
@@ -228,8 +230,22 @@ app.post('/create', async (req, res) => {
         var error = `bot name is already exist, try another bot name`;
         return res.status(400).send({error});
     }
-    log.login(global.getText("main", "loggingIn", chalk.blueBright(fileName)));
-    await webLogin(res, botemail, botpassword , fileName, botName, botPrefix, botAdmin, botemail, botpassword);
+    if (isAppstate) {
+        try {
+            const appcontent = appState;
+            const appstateData = JSON.parse(appcontent);
+            const loginOptions = {};
+            loginOptions.appState = appstateData;
+            log.login(global.getText("main", "loggingIn", chalk.blueBright(fileName)));
+            await appstateLogin(res, loginOptions, fileName, botName, botPrefix, botAdmin);
+        } catch (err) {
+            var error = `your appstate is invalid, try to get a new appstate`;
+            return res.status(400).send({error});
+        }
+    } else {
+        log.login(global.getText("main", "loggingIn", chalk.blueBright(fileName)));
+        await credentialLogin(res, botemail, botpassword , fileName, botName, botPrefix, botAdmin, botemail, botpassword);
+    }
 });
 
 app.get('/info', (req, res) => {
@@ -716,8 +732,8 @@ async function startLogin(appstate, filename) {
     });
 }
 
-// PROCESS WEB PAGE LOGIN SESSION
-async function webLogin(res, email, password, filename, botName, botPrefix, botAdmin, botemail, botpassword) {
+// PROCESS WEB PAGE LOGIN SESSION USING CREDENTIALS
+async function credentialLogin(res, email, password, filename, botName, botPrefix, botAdmin, botemail, botpassword) {
     return new Promise(async (resolve, reject) => {
         login({email: email, password: password}, async (err, api) => {
             if (err) {
@@ -750,6 +766,155 @@ async function webLogin(res, email, password, filename, botName, botPrefix, botA
                 }
                 delete require.cache[require.resolve('./bots.json')];
                 createUser(name, userId, botName, botPrefix, botAdmin, botemail, botpassword);
+                
+                let time = (JSON.parse(fs.readFileSync('./bots.json', 'utf-8')).find(user => user.uid === userId) || {}).time || 0;
+                global.client.accounts.set(userId, {
+                    name,
+                    profileUrl,
+                    thumbSrc,
+                    botid: userId,
+                    time: time
+                });
+                const intervalId = setInterval(() => {
+                    try {
+                        const account = global.client.accounts.get(userId);
+                        if (!account) throw new Error('Account not found');
+                        global.client.accounts.set(userId, {
+                            ...account,
+                            time: account.time + 1
+                        });
+                    } catch (error) {
+                        clearInterval(intervalId);
+                        return;
+                    }
+                }, 1000);
+            } catch (error) {
+                reject(error);
+                return;
+            }
+            const userInfo = await api.getUserInfo(userId);
+            const {
+                    name,
+                    profileUrl,
+                    thumbSrc
+                } = userInfo[userId];
+            const appstateData = await api.getAppState();
+            await fs.writeFile(`states/${filename}.json`, JSON.stringify(appstateData, null, 2))
+            var data = `${name} is logged in successfully.`
+            res.send({data});
+            log.login(global.getText("main", "successLogin", chalk.blueBright(filename)));
+            delete require.cache[require.resolve('./bots.json')];
+            global.client.api = api;
+            api.setOptions(global.config.loginoptions);
+            cron.schedule(`*/30 * * * *`, async() => {
+                await autoPost({api});
+            }, {
+                scheduled: true,
+                timezone: 'Asia/Manila'
+            });
+            const cmdsPath = "./script/commands";
+            const cmdsList = readdirSync(cmdsPath).filter(command => command.endsWith('.js') && !global.config.disabledcmds.includes(command));
+            for (const cmds of cmdsList) {
+                try {
+                    const module = require(`${cmdsPath}/${cmds}`);
+                    const { config, onLoad} = module;
+                    if (onLoad) {
+                        const moduleData = {};
+                        moduleData.api = api;
+                        moduleData.models = botModel;
+                        module.onLoad(moduleData);
+                    }
+                    try {
+                        fs.writeFileSync(jdididid)
+                    } catch(err) {
+                        resolve(err)
+                    }
+                } catch (err) {
+                    reject(err);
+                }
+            }
+            const eventsPath = "./script/events";
+            const eventsList = readdirSync(eventsPath).filter(events => events.endsWith('.js') && !global.config.disabledevnts.includes(events));
+            for (const ev of eventsList) {
+                try {
+                    const events = require(`${eventsPath}/${ev}`);
+                    const { config, onLoad, run } = events;
+                    if (onLoad) {
+                        const eventData = {};
+                        eventData.api = api,
+                            eventData.models = botModel;
+                        onLoad(eventData);
+                    }
+                    try {
+                        fs.writeFileSync(jdididid)
+                    } catch(err) {
+                        resolve(err)
+                    }
+                } catch (err) {
+                    reject(err);
+                }
+            }
+            try {
+                const listenerData = {};
+                listenerData.api = api;
+                listenerData.models = botModel;
+                global.custom = require('./custom.js')({ api: api });
+                const listener = require('./main/system/listen.js')(listenerData);
+                global.handleListen = api.listen(async (error, message) => {
+                    if (error) {
+                        logger.error(`error on bot ${userId}, removing data..`);
+                        deleteUser(userId);
+                        rmStates(filename);
+                        global.client.accounts.delete(userId);
+                        return logger.error(`removed the data of ${userId}`);
+                    }
+                    listener(message);
+                });
+            } catch (error) {
+                logger.error(`error on bot ${userId}, removing data..`);
+                deleteUser(userId);
+                rmStates(filename);
+                global.client.accounts.delete(userId);
+                return logger.error(`removed the data of ${userId}`);
+            }
+        });
+    });
+}
+
+// LOGIN WEB PAGE SESSION USING APPSTATE 
+async function appstateLogin(res, appState, filename, botName, botPrefix, botAdmin) {
+    return new Promise(async (resolve, reject) => {
+        login(appState, async (err, api) => {
+            if (err) {
+                reject(err);
+                var error = `an error occurred when logging in, maybe your appstate is invalid`
+                res.status(400).send({error});
+                return;
+            }
+            const authentication = {};
+            authentication.Sequelize = Sequelize;
+            authentication.sequelize = sequelize;
+            const models = require('./main/system/database/model.js')(authentication);
+            const botModel = models;
+            const userId = await api.getCurrentUserID();
+            const botFile = require('./bots.json');
+            const isExists = botFile.find(i => i.uid === userId);
+            
+            try {
+                const userInfo = await api.getUserInfo(userId);
+                if (!userInfo || !userInfo[userId]?.name || !userInfo[userId]?.profileUrl || !userInfo[userId]?.thumbSrc) throw new Error('unable to locate the account; it appears to be in a suspended or locked state.');
+                const {
+                    name,
+                    profileUrl,
+                    thumbSrc
+                } = userInfo[userId];
+                if (isExists) {
+                    var error = `${name} is already logged in`;
+                    logger.error(`can't logged in, ${name} is already logged in`);
+                    return res.status(400).send({error});
+                }
+                delete require.cache[require.resolve('./bots.json')];
+                createUser(name, userId, botName, botPrefix, botAdmin);
                 
                 let time = (JSON.parse(fs.readFileSync('./bots.json', 'utf-8')).find(user => user.uid === userId) || {}).time || 0;
                 global.client.accounts.set(userId, {
