@@ -4,6 +4,7 @@ const utils = require("./utils");
 const fs = require("fs");
 const cron = require("node-cron");
 const chalk = require("chalk");
+var cheerio = require("cheerio");
 const logger = require('../../utility/logs.js');
 let checkVerified = null;
 let ctx = null;
@@ -75,7 +76,7 @@ async function setOptions(globalOptions, options = {}) {
 
 async function updateDTSG(res, appstate, userId) {
   try {
-    const appstateCUser = (appstate.find(i => i.key == 'i_user') || appstate.find(i => i.key == 'c_user'))
+    const appstateCUser = (appstate.find(i => i.key === 'i_user') || appstate.find(i => i.key === 'c_user'))
     const UID = userId || appstateCUser.value;
     if (!res || !res.body) {
       throw new Error("Invalid response: Response body is missing.");
@@ -97,7 +98,6 @@ async function updateDTSG(res, appstate, userId) {
     }
     return res;
   } catch (error) {
-    console.error('updateDTSG', `Error updating DTSG for user ${userId}: ${error.message}`);
     return;
   }
 }
@@ -309,10 +309,138 @@ function buildAPI(globalOptions, html, jar) {
   return [ctx, defaultFuncs];
 }
 
+function makeLogin(jar, email, password, loginOptions, callback) {
+  return function(res) {
+    var html = res.body;
+    var $ = cheerio.load(html);
+    var arr = [];
+    $("#login_form input").map(function(i, v){
+      arr.push({val: $(v).val(), name: $(v).attr("name")});
+    });
+
+    arr = arr.filter(function(v) {
+      return v.val && v.val.length;
+    });
+
+    var form = utils.arrToForm(arr);
+    form.lsd = utils.getFrom(html, "[\"LSD\",[],{\"token\":\"", "\"}");
+    form.lgndim = Buffer.from("{\"w\":1440,\"h\":900,\"aw\":1440,\"ah\":834,\"c\":24}").toString('base64');
+    form.email = email;
+    form.pass = password;
+    form.default_persistent = '0';
+    form.lgnrnd = utils.getFrom(html, "name=\"lgnrnd\" value=\"", "\"");
+    form.locale = 'en_US';
+    form.timezone = '240';
+    form.lgnjs = ~~(Date.now() / 1000);
+    var willBeCookies = html.split("\"_js_");
+    willBeCookies.slice(1).map(function(val) {
+      var cookieData = JSON.parse("[\"" + utils.getFrom(val, "", "]") + "]");
+      jar.setCookie(utils.formatCookie(cookieData, "facebook"), "https://www.facebook.com");
+    });
+    return utils
+      .post("https://www.facebook.com/login.php?login_attempt=1&lwv=110", jar, form, loginOptions)
+      .then(utils.saveCookies(jar))
+      .then(function(res) {
+        var headers = res.headers;
+        if (!headers.location) {
+          throw {error: "Wrong username/password."};
+        }
+        if (headers.location.indexOf('https://www.facebook.com/checkpoint/') > -1) {
+          console.info("login", "You have login approvals turned on.");
+          var nextURL = 'https://www.facebook.com/checkpoint/?next=https%3A%2F%2Fwww.facebook.com%2Fhome.php';
+
+          return utils
+            .get(headers.location, jar, null, loginOptions)
+            .then(utils.saveCookies(jar))
+            .then(function(res) {
+              var html = res.body;
+              var $ = cheerio.load(html);
+              var arr = [];
+              $("form input").map(function(i, v){
+                arr.push({val: $(v).val(), name: $(v).attr("name")});
+              });
+
+              arr = arr.filter(function(v) {
+                return v.val && v.val.length;
+              });
+
+              var form = utils.arrToForm(arr);
+              if (html.indexOf("checkpoint/?next") > -1) {
+                throw {
+                  error: 'login-approval',
+                  continue: function(code) {
+                    form.approvals_code = code;
+                    form['submit[Continue]'] = 'Continue';
+                    return utils
+                      .post(nextURL, jar, form, loginOptions)
+                      .then(utils.saveCookies(jar))
+                      .then(function() {
+                        form.name_action_selected = 'save_device';
+
+                        return utils
+                          .post(nextURL, jar, form, loginOptions)
+                          .then(utils.saveCookies(jar));
+                      })
+                      .then(function(res) {
+                        var headers = res.headers;
+                        if (!headers.location && res.body.indexOf('Review Recent Login') > -1) {
+                          throw {error: "Something went wrong with login approvals."};
+                        }
+
+                        var appState = utils.getAppState(jar);
+                        
+                        return loginHelper(appState, email, password, loginOptions, callback);
+                      })
+                      .catch(function(err) {
+                        callback(err);
+                      });
+                  }
+                };
+              } else {
+                if (!loginOptions.forceLogin) {
+                  throw {error: "Couldn't login. Facebook might have blocked this account. Please login with a browser or enable the option 'forceLogin' and try again."};
+                }
+                if (html.indexOf("Suspicious Login Attempt") > -1) {
+                  form['submit[This was me]'] = "This was me";
+                } else {
+                  form['submit[This Is Okay]'] = "This Is Okay";
+                }
+                return utils
+                  .post(nextURL, jar, form, loginOptions)
+                  .then(utils.saveCookies(jar))
+                  .then(function() {
+                    form.name_action_selected = 'save_device';
+                    return utils
+                      .post(nextURL, jar, form, loginOptions)
+                      .then(utils.saveCookies(jar));
+                  })
+                  .then(function(res) {
+                    var headers = res.headers;
+
+                    if (!headers.location && res.body.indexOf('Review Recent Login') > -1) {
+                      throw {error: "Something went wrong with review recent login."};
+                    }
+
+                    var appState = utils.getAppState(jar);
+                    return loginHelper(appState, email, password, loginOptions, callback);
+                  })
+                  .catch(function(e) {
+                    callback(e);
+                  });
+              }
+            });
+        }
+
+        return utils
+          .get('https://www.facebook.com/', jar, null, loginOptions)
+          .then(utils.saveCookies(jar));
+      });
+  };
+}
+
 async function loginHelper(appState, email, password, globalOptions, apiCustomized = {}, callback) {
   let mainPromise = null;
   const jar = utils.getJar();
-  // console.log("login", 'Logging in...');
   if (appState) {
     if (utils.getType(appState) === 'Array' && appState.some(c => c.name)) {
       appState = appState.map(c => {
@@ -347,12 +475,14 @@ async function loginHelper(appState, email, password, globalOptions, apiCustomiz
         noRef: true
       }).then(utils.saveCookies(jar));
   } else {
-    if (email) {
-      return logger(`currently, the login method by email and password is no longer supported, please use the login method by appstate`, "error");
-    }
-    else {
-      return logger(`no appstate given, please check your appstate file`, "error");
-    }
+      var appState = utils.getAppState(jar);
+    mainPromise = utils
+      .get("https://www.facebook.com/", null, null, globalOptions,
+      {
+          noRef: true
+      })
+      .then(makeLogin(jar, email, password, globalOptions, callback))
+      .then(utils.saveCookies(jar))
   }
 
   api = {
@@ -366,6 +496,7 @@ async function loginHelper(appState, email, password, globalOptions, apiCustomiz
       return uniqueAppState.length > 0 ? uniqueAppState : appState;
     }
   };
+  appState = await api.getAppState();
   mainPromise = mainPromise
     .then(res => bypassAutoBehavior(res, jar, globalOptions, appState))
     .then(res => updateDTSG(res, appState))

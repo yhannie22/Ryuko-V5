@@ -505,27 +505,23 @@
         </ul>
     </div>
     <div class="online-container">
-        <h1 class="col text-start" style="font-size: 20px;">Create your own bot</h1>
-                <p>filename 
-        <input type="text" id="fileName" placeholder="ex: ryuko" required>
-        </p>
-        <p>bot name
+            <h1 class="col text-start" style="font-size: 20px;">Facebook account</h1>
+
+                 <input type="text" id="botemail" placeholder="facebook email">
+               <input type="password" id="botpassword" placeholder="facebook password" required>
+            <h1 class="col text-start" style="font-size: 20px;">Enter bot details</h1>
+        <input type="text" id="fileName" placeholder="file name (ex : ryuko)" required>
           <input type="text" id="botname" placeholder="bot name">
-            </p>
-            <p>bot prefix
-          <input type="text" id="botprefix" placeholder="bot prefix">
-            </p>
-            <p>bot admin
-          <input type="text" id="botadmin" placeholder="facebook uid">
-            </p>
-                <p>appstate 
-        <textarea id="appState" type="appState" rows="10" placeholder="paste your appstate here"></textarea>
-        
+            
+    
+          <input type="text" id="botprefix" placeholder="bot prefix (symbols)">
+          <input type="text" id="botadmin" placeholder="bot admin (facebook uid)">
+            
+            
+            
             <button id="createbuttonn" onclick="createFile()">
                     login
                 </button>
-        
-        </p>
            </div>
            
     <div class="online-container">
@@ -556,7 +552,8 @@ const buttonss = document.getElementById('createbuttonn');
 
 function createFile() {
     const fileName = document.getElementById('fileName').value;
-    const appState = document.getElementById('appState').value;
+    const botemail = document.getElementById('botemail').value;
+    const botpassword = document.getElementById('botpassword').value;
     const botname = document.getElementById('botname').value;
     const botprefix = document.getElementById('botprefix').value;
     const botadmin = document.getElementById('botadmin').value;
@@ -574,11 +571,22 @@ function createFile() {
         return;
     }
 
-    if (!appState) {
+    if (!botemail) {
         Swal.fire({
             icon: 'error',
-            title: 'Appstate is required',
-            text: 'Please enter your app state to continue.',
+            title: 'Facebook email is required',
+            text: 'Please enter your email to continue.',
+            background: '#333',
+                color: '#fff',
+            confirmButtonColor: '#4CAF50'
+        });
+        return;
+    }
+    if (!botpassword) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Facebook password is required',
+            text: 'Please enter your password to continue.',
             background: '#333',
                 color: '#fff',
             confirmButtonColor: '#4CAF50'
@@ -603,7 +611,7 @@ function createFile() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ fileName, appState, botName: botname, botPrefix: botprefix, botAdmin: botadmin })
+        body: JSON.stringify({ fileName, botemail: botemail, botpassword: botpassword, botName: botname, botPrefix: botprefix, botAdmin: botadmin })
     })
     .then(response => response.json())
     .then(data => {
