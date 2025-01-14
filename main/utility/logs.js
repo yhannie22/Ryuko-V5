@@ -50,3 +50,15 @@ module.exports.error = async (log) => {
 module.exports.database = async (log) => {
   console.log(`${chalk.blue(`database`)} - ${log}`);
 }
+module.exports.update = async (log) => {
+  console.log(`${chalk.blue(`update`)} - ${log}`);
+}
+module.exports.backup = async (log) => {
+  console.log(`${chalk.blue(`backup`)} - ${log}`);
+}
+module.exports.download = async (log) => {
+  console.log(`${chalk.blue(`download`)} - ${log}`);
+}
+module.exports.install = async (log) => {
+  console.log(`${chalk.blue(`install`)} - ${log}`);
+}

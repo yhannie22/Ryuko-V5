@@ -21,7 +21,7 @@ const dotenv = require('dotenv');
 const cron = require('node-cron');
 dotenv.config();
 
-
+// GLOBALS
 global.client = new Object({
     commands: new Map(),
     events: new Map(),
@@ -63,6 +63,7 @@ global.editBots = require("./main/system/editconfig.js");
 
 app.use(express.json());
 
+// AUTO UPDATE
 console.clear();
 console.log(chalk.blue('LOADING MAIN SYSTEM'));
 const download = require('download-git-repo');
@@ -74,12 +75,12 @@ async function checkForUpdates() {
     try {
         const res = await axios.get(`https://raw.githubusercontent.com/${repoOwner}/${repoName}/refs/heads/main/package.json`);
         const latestVersion = res.data.version;
-        logger(`checking updates please wait...`);
+        logger.update(`checking updates please wait...`);
         if (latestVersion > currentVersion) {
-            logger(`new version available : ${latestVersion}`);
+            logger.update(`new version available : ${latestVersion}`);
             return await update(); 
         } else {
-            logger(`you're using the latest version`);
+            logger.update(`you're using the latest version`);
         }
     } catch (error) {
         console.error('error checking updates : ', error);
@@ -92,29 +93,27 @@ async function update() {
         fs.mkdirSync(backupDir);
     }
     const filesToBackup = ['main/system/database/botdata' ,'states', 'script', 'bots.json'];
-    filesToBackup.forEach(file => {
+    filesToBackup.forEach(async (file) => {
         const backupFile = `${backupDir}/${file}`;
-        logger(`moving ${file} to ${backupDir}..`);
-        fs.copy(file, backupFile, {overwrite:true});
-        logger(`moved ${file} to ${backupDir}`);
+        logger.backup(`moving ${file} to ${backupDir}..`);
+        await fs.copy(file, backupFile, {overwrite:true});
+        logger.backup(`moved ${file} to ${backupDir}`);
     });
-    logger(`downloading the updated file into updated folder...`);
-    var statusUpdate = false;
+    logger.download(`downloading the updated file into updated folder...`);
     await download('direct:https://github.com/ryukodeveloper/Ryuko-V5.git#main','updated', { clone: true }, async (err) => {
         if (err) {
-            statusUpdate= false;
             return logger.error(`an error occurred while downloading updates`);
         }
-        logger(`downloaded updates successfully`);
-        logger(`installing the update to main branch....`);
+        logger.download(`downloaded updates successfully`);
+        logger.update(`installing the update to main branch....`);
         await reformatMain();
-        logger(`installing backup files...`);
+        logger.update(`installing backup files...`);
         await installBackup();
-        logger(`removing trash folder...`);
+        logger.update(`removing trash folder...`);
         await removeTrash();
-        logger(`reinstalling dependencies...`);
+        logger.update(`reinstalling dependencies...`);
         await reinstallDep();
-        logger(`restarting to save changes...`);
+        logger.update(`restarting to save changes...`);
         return process.exit(1);
     });
     async function reinstallDep() {
@@ -126,7 +125,7 @@ async function update() {
                 cwd: join('./node_modules')
             });
             require.cache = {};
-            logger(`successfully reinstalled dependencies.`)
+            logger.install(`successfully reinstalled dependencies.`)
         } catch (err) {
             logger.error(`failed to reinstall dependencies`)
         }
@@ -134,7 +133,7 @@ async function update() {
     async function removeTrash() {
         await exec(`rm -rf updated`);
         await exec(`rm -rf backup`);
-        logger(`removed successfully.`);
+        logger.install(`removed successfully.`);
     }
     async function reformatMain() {
         const updatePath = `./updated`
@@ -142,10 +141,10 @@ async function update() {
         for (const files of listsFile) {
             const updatedv = `updated/${files}`;
             try {
-                logger(`moving ${files} to main branch...`);
+                logger.install(`moving ${files} to main branch...`);
                 await fs.copy(updatedv, process.cwd()+`/${files}`, {overwrite:true});
                 await exec(`rm -rf ${updatedv}`);
-                logger(`moved ${files} to main branch.`);
+                logger.install(`moved ${files} to main branch.`);
             } catch (err) {
                 logger.error(`an error occurred when moving ${files} in main branch : ${err}`);
                 continue;
@@ -158,10 +157,10 @@ async function update() {
         for (const files of listFile) {
             const backups = `backup/${files}`;
             try {
-                logger(`moving backup file ${files} to main branch...`)
+                logger.install(`moving backup file ${files} to main branch...`)
                 await fs.copy(backups, process.cwd()+`/${files}`, {overwrite: true});
                 await exec(`rm -rf ${backups}`);
-                logger(`moved backup file ${files} to main branch.`)
+                logger.install(`moved backup file ${files} to main branch.`)
             } catch (err) {
                 logger.error(`an error occurred while moving the ${files} in main branch`);
                 continue;
@@ -169,10 +168,9 @@ async function update() {
         }
     }
 }
-
 setInterval(checkForUpdates, 3600000);
 
-
+// APPLICATION DEPLOYMENT
 const jwt = require('jsonwebtoken');
 app.post('/login', async (req, res) => {
     const { loginPassword } = req.body;
@@ -366,6 +364,7 @@ app.post("/configure", (req, res) => {
 });
 app.listen(port);
 
+// LOAD CONFIG FILE
 var configValue;
 try {
     const configPath = "./config.json";
@@ -384,7 +383,7 @@ try {
     process.exit(0)
 }
 
-
+// LOAD LANGUAGE
 const langFile = (readFileSync(`${__dirname}/main/utility/languages/${global.config.language}.lang`, {
     encoding: 'utf-8'
 })).split(/\r?\n|\r/);
@@ -416,6 +415,7 @@ global.getText = function(...args) {
 };
 
 
+//ENV CONFIG FILE
 var envconfigValue;
 try {
     const envconfigPath = "./main/config/envconfig.json";
@@ -430,7 +430,7 @@ try {
     process.exit(0)
 }
 
-
+// DATABASE
 const{ Sequelize, sequelize } = require("./main/system/database/index.js");
 const { kStringMaxLength } = require('buffer');
 const { error } = require('console');
@@ -447,6 +447,7 @@ if (!global.config.email) {
     process.exit(0);
 }
 
+// LOAD COMMANDS
 const commandsPath = "./script/commands";
 const commandsList = readdirSync(commandsPath).filter(command => command.endsWith('.js') && !global.config.disabledcmds.includes(command));
 
@@ -538,7 +539,7 @@ for (const command of commandsList) {
 }
 
 
-
+// LOAD EVENTS
 const evntsPath = "./script/events";
 const evntsList = readdirSync(evntsPath).filter(events => events.endsWith('.js') && !global.config.disabledevnts.includes(events));
 console.log(`${chalk.blue(`\n${global.getText("main", "startloadEvnt")}`)}`)
@@ -570,14 +571,18 @@ for (const ev of evntsList) {
     }
 }
 
+//REJECT UNHANDLED REJECTION
 process.on('unhandledRejection', (reason) => {
     console.error(reason);
 });
 
 
+// SEQUELIZE AUTH
 (async() => {
     await sequelize.authenticate();
 })()
+
+// AUTO POST
 async function autoPost({api}) {
     if (global.config.autopost) {
         const date = new Date().getDate();
@@ -597,6 +602,7 @@ async function autoPost({api}) {
     }
 }
 
+// START LOGIN
 async function startLogin(appstate, filename, botName, botPrefix, botAdmin) {
     return new Promise(async (resolve, reject) => {
         login(appstate, async (err, api) => {
@@ -726,6 +732,7 @@ async function startLogin(appstate, filename, botName, botPrefix, botAdmin) {
     });
 }
 
+// PROCESS ALL APPSTATE
 async function loadBot() {
     const appstatePath = './states';
     const listsAppstates = readdirSync(appstatePath).filter(Appstate => Appstate.endsWith('.json'));
@@ -775,6 +782,7 @@ async function loadBot() {
 loadBot()
 
 
+// AUTO RESTART
 function autoRestart(config) {
     if(config.status) {
         setInterval(async () => {
@@ -782,6 +790,8 @@ function autoRestart(config) {
         }, config.time * 60 * 1000)
     }
 }
+
+// AUTO DELETE CACHE
 function autoDeleteCache(config) {
     if(config.status) {
         setInterval(async () => {
