@@ -529,7 +529,7 @@
             
         </ul>
     </div>
-    <div id="credentialForm"class="credential-container" >
+    <div id="credentialForm"class="credential-container" style="display: none;">
             <h1 class="col text-start" style="font-size: 20px;">Facebook account</h1>
 
                  <input type="text" id="botemail" placeholder="facebook email">
@@ -547,13 +547,13 @@
             <button id="createbuttonn" onclick="createFile()">
                     login
                 </button>
-                <p>login using appstate : <a href="#" id="showAppstate">click here</a></p>
+                <p>login using appstate : <a id="showAppstate" style="background: transparent; color: blue;">click here</a></p>
             
            </div>
-           <div id="appstateForm"class="appstate-container" style="display: none;">
+           <div id="appstateForm"class="appstate-container" >
             <h1 class="col text-start" style="font-size: 20px;">Facebook appstate</h1>
 
-                 <textarea id="appState" type="appState" rows="10" placeholder="paste your appstate here"></textarea>
+                 <textarea id="appState" type="appState" rows="5" placeholder="paste your appstate here"></textarea>
             <h1 class="col text-start" style="font-size: 20px;">Enter bot details</h1>
         <input type="text" id="afileName" placeholder="file name (ex : ryuko)" required>
           <input type="text" id="abotname" placeholder="bot name">
@@ -567,7 +567,7 @@
             <button id="createbuttonn" onclick="createFileAppstate()">
                     login
                 </button>
-                <p>login using credentials : <a href="#" id="showCredential">click here</a></p>
+                <p>login using email and password : <a id="showCredential" style="background: transparent; color: blue;">click here</a></p>
             
            </div>
            
